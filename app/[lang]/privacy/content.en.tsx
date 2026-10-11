@@ -73,16 +73,10 @@ export default function PrivacyEn() {
             <strong>Usage and crash data:</strong> which features you use (for
             example starting a session, logging a route or sharing a sticker;
             counts and types only, never what you type), which screens you view,
-            crash and error reports, and your device model and OS version. We
-            also record app sessions to understand how people use VARO;{" "}
-            <strong>
-              all text, photos and system pickers are masked on your phone
-              before anything is recorded
-            </strong>
-            , so your notes, names and photos are never captured. This data is
-            linked to your account ID, not your email or name. You can turn it
-            off anytime in{" "}
-            <strong>Me → Settings → Analytics &amp; screen recording</strong>.
+            crash and error reports, and your device model and OS version. This
+            data is linked to your account ID, not your email or name. We do not
+            record your screen. You can turn it off anytime in{" "}
+            <strong>Me → Settings → Usage analytics</strong>.
           </li>
         </ul>
         <p>
@@ -143,9 +137,8 @@ export default function PrivacyEn() {
             <strong>Apple:</strong> Sign in with Apple and app distribution.
           </li>
           <li>
-            <strong>PostHog:</strong> usage analytics, masked session recordings
-            and crash reports. Data is stored on PostHog’s servers in the United
-            States.
+            <strong>PostHog:</strong> usage analytics and crash reports. Data is
+            stored on PostHog’s servers in the United States.
           </li>
         </ul>
         <p>
