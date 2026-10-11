@@ -5,57 +5,56 @@ import Image from "next/image";
 import { SiteFooter } from "@/components/landing/site-footer";
 import { SiteHeader } from "@/components/landing/site-header";
 import { Container } from "@/components/landing/ui";
+import { alternates, getI18n } from "@/lib/i18n";
 
-export const metadata: Metadata = {
-  title: "VARO 的理念：Venture · Attempt · Resilience · Overcome",
-  description:
-    "每一條路線都是一場冒險。不斷嘗試、帶著韌性再上去，直到突破。完攀只是一瞬間，VARO 記住的是讓那一刻發生的每一次嘗試。",
-};
+export async function generateMetadata(): Promise<Metadata> {
+  const { locale, t } = await getI18n();
 
-/** One letter per hold on the route, bottom of the wall to the top. */
+  return {
+    ...t.philosophy.meta,
+    alternates: alternates(locale, "/philosophy"),
+  };
+}
+
+/** One letter per hold on the route, bottom of the wall to the top. Copy lives in the dictionary. */
 const STEPS = [
   {
     letter: "V",
     word: "Venture",
-    zh: "探索",
-    line: "每一條新路線，都是一次未知。",
-    sub: "站在牆下，讀線，然後決定出發。",
     color: "#E5484D",
     radius: "46% 54% 38% 62% / 52% 44% 56% 48%",
   },
   {
     letter: "A",
     word: "Attempt",
-    zh: "嘗試",
-    line: "伸手、起攀，換一種解法，再伸一次手。",
-    sub: "沒有白費的嘗試，每一次都讓下一次更近。",
     color: "#F5D90A",
     radius: "58% 42% 50% 50% / 40% 58% 42% 60%",
   },
   {
     letter: "R",
     word: "Resilience",
-    zh: "韌性",
-    line: "掉下來，拍掉止滑粉，再上去。",
-    sub: "調整呼吸、調整腳點，調整自己。",
     color: "#3E8BFF",
     radius: "40% 60% 56% 44% / 56% 46% 54% 44%",
   },
   {
     letter: "O",
     word: "Overcome",
-    zh: "突破",
-    line: "終於，完成那個曾經做不到的動作。",
-    sub: "站上頂點的那一刻，屬於前面的每一次。",
     color: "#D4FF5A",
     radius: "52% 48% 44% 56% / 46% 54% 46% 54%",
   },
 ];
 
-export default function PhilosophyPage() {
+const keyword = (word: string) => (
+  <em className="not-italic text-lime">{word}</em>
+);
+
+export default async function PhilosophyPage() {
+  const { t } = await getI18n();
+  const copy = t.philosophy;
+
   return (
     <>
-      <SiteHeader />
+      <SiteHeader path="/philosophy" />
       <main className="relative overflow-hidden">
         {/* Bolt-hole grid */}
         <div
@@ -66,7 +65,7 @@ export default function PhilosophyPage() {
         {/* Opening */}
         <Container className="relative pb-20 pt-36 sm:pt-44">
           <p className="rise text-[14px] font-semibold tracking-[0.12em] text-lime">
-            THE NAME · 名字的由來
+            {copy.eyebrow}
           </p>
           <h1
             aria-label="VARO"
@@ -87,15 +86,7 @@ export default function PhilosophyPage() {
             className="rise mt-8 max-w-[38rem] text-[19px] leading-[1.85] text-cream [text-wrap:pretty] sm:text-[22px]"
             style={{ ["--rise-delay" as string]: "140ms" }}
           >
-            每一條路線，都是一場{" "}
-            <em className="not-italic text-lime">Venture</em>。
-            <br />
-            我們不斷 <em className="not-italic text-lime">
-              Attempt
-            </em>，帶著 <em className="not-italic text-lime">Resilience</em>{" "}
-            再上去，
-            <br className="hidden sm:block" />
-            直到 <em className="not-italic text-lime">Overcome</em>。
+            {copy.opening(keyword)}
           </p>
         </Container>
 
@@ -145,15 +136,17 @@ export default function PhilosophyPage() {
                     <span className="font-display text-[34px] leading-tight sm:text-[48px]">
                       {s.word}
                     </span>
-                    <span className="text-[17px] font-bold text-mute sm:text-[19px]">
-                      {s.zh}
-                    </span>
+                    {copy.steps[i].label ? (
+                      <span className="text-[17px] font-bold text-mute sm:text-[19px]">
+                        {copy.steps[i].label}
+                      </span>
+                    ) : null}
                   </p>
                   <p className="mt-3 text-[20px] font-bold leading-[1.5] text-cream [text-wrap:pretty] sm:text-[26px]">
-                    {s.line}
+                    {copy.steps[i].line}
                   </p>
                   <p className="mt-2 text-[16px] leading-[1.7] text-mute sm:text-[18px]">
-                    {s.sub}
+                    {copy.steps[i].sub}
                   </p>
                 </div>
               </li>
@@ -164,9 +157,7 @@ export default function PhilosophyPage() {
         {/* Closing */}
         <Container className="relative pb-28 text-center">
           <p className="mx-auto max-w-[34rem] text-[19px] leading-[1.85] text-mute [text-wrap:balance] sm:text-[22px]">
-            完攀只是一瞬間。
-            <br />
-            VARO 想記住的，是讓那一刻發生的每一次嘗試。
+            {copy.closing}
           </p>
           <p className="mt-10 font-display text-[44px] leading-[1.05] sm:text-[72px]">
             Every attempt <span className="text-lime">counts.</span>

@@ -38,6 +38,8 @@ export const siteConfig: SiteConfig = {
   screenshots: [],
 };
 
-export const partnerHref = siteConfig.partnerEmail
-  ? `mailto:${siteConfig.partnerEmail}?subject=${encodeURIComponent("Varo 場館合作")}`
-  : null;
+/** Mailto for gym enquiries, or null when no inbox is set. */
+export const partnerHref = (subject: string) =>
+  siteConfig.partnerEmail
+    ? `mailto:${siteConfig.partnerEmail}?subject=${encodeURIComponent(subject)}`
+    : null;

@@ -4,14 +4,19 @@ import { SiteFooter } from "./site-footer";
 import { SiteHeader } from "./site-header";
 import { Container } from "./ui";
 
+import { getI18n } from "@/lib/i18n";
+
 /** Shared shell for long-form text pages (privacy, support). */
-export function LegalPage({
+export async function LegalPage({
+  path,
   eyebrow,
   title,
   updated,
   intro,
   children,
 }: {
+  /** Unprefixed path of the page, for the language switch. */
+  path: string;
   eyebrow: string;
   title: string;
   /** Shown as 最後更新, e.g. "2026.10.11". */
@@ -19,9 +24,11 @@ export function LegalPage({
   intro?: ReactNode;
   children: ReactNode;
 }) {
+  const { t } = await getI18n();
+
   return (
     <>
-      <SiteHeader />
+      <SiteHeader path={path} />
       <main className="relative">
         <Container className="pb-24 pt-32 sm:pt-40">
           <div className="max-w-[44rem]">
@@ -33,7 +40,8 @@ export function LegalPage({
             </h1>
             {updated ? (
               <p className="mt-3 text-[14px] text-mute tabular">
-                最後更新：{updated}
+                {t.legal.updated}
+                {updated}
               </p>
             ) : null}
             {intro ? (

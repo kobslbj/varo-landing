@@ -5,8 +5,13 @@ import { flashes, session, sends, type SessionClimb } from "./data";
 import { holdColors } from "./ui";
 import { HoldShape, ROUTE } from "./holds";
 
+import { getI18n, type Dictionary } from "@/lib/i18n";
+
 /** The session page: photo on top, quick counts, one card per route. */
-export function SessionScreen() {
+export async function SessionScreen() {
+  const { t } = await getI18n();
+  const s = t.screens;
+
   return (
     <div aria-hidden className="flex h-full flex-col bg-black text-white">
       <StatusBar />
@@ -26,32 +31,30 @@ export function SessionScreen() {
         />
         <div className="absolute inset-0 bg-gradient-to-t from-black/85 via-black/10 to-transparent" />
         <span className="absolute left-3 top-3 rounded-full bg-black/55 px-2 py-[3px] text-[9px] font-bold">
-          最高完攀{" "}
+          {s.topSend}{" "}
           <span className="font-display text-[11px] text-hold-red">V5</span>
         </span>
         <span className="absolute right-3 top-3 rounded-full bg-black/55 px-2 py-[3px] text-[9px] font-bold tabular">
           1 / 3
         </span>
         <div className="absolute inset-x-3 bottom-3">
-          <p className="text-[18px] font-extrabold leading-tight">
-            {session.gym}
-          </p>
+          <p className="text-[18px] font-extrabold leading-tight">{s.gym}</p>
           <p className="mt-0.5 text-[10px] font-semibold text-white/75 tabular">
-            {session.date} · {session.duration}
+            {session.date} · {s.duration(session.durationMinutes)}
           </p>
         </div>
       </div>
 
       <div className="mt-3 flex gap-1.5 px-3">
-        <Pill label="條紀錄" value={session.climbs.length} />
-        <Pill label="完攀" value={sends.length} />
-        <Pill flash label="Flash" value={flashes.length} />
+        <Pill label={s.climbs} value={session.climbs.length} />
+        <Pill label={s.sends} value={sends.length} />
+        <Pill flash label={s.flash} value={flashes.length} />
       </div>
 
-      <p className="mt-3 px-4 text-[11px] font-bold">路線</p>
+      <p className="mt-3 px-4 text-[11px] font-bold">{s.routes}</p>
       <ul className="mt-1.5 flex flex-col gap-1.5 px-3">
         {session.climbs.slice(0, 4).map((c) => (
-          <RouteCard key={c.id} climb={c} />
+          <RouteCard key={c.id} climb={c} t={s} />
         ))}
       </ul>
     </div>
@@ -59,7 +62,10 @@ export function SessionScreen() {
 }
 
 /** The finish screen: the splash's little route and the character topping out. */
-export function FinishScreen() {
+export async function FinishScreen() {
+  const { t } = await getI18n();
+  const s = t.screens;
+
   return (
     <div aria-hidden className="flex h-full flex-col bg-black text-white">
       <StatusBar />
@@ -85,16 +91,16 @@ export function FinishScreen() {
           width={512}
         />
       </div>
-      <p className="text-center text-[19px] font-extrabold">又往上一點了</p>
+      <p className="text-center text-[19px] font-extrabold">{s.finishTitle}</p>
       <p className="mt-1 text-center text-[11px] text-[#a1a1a8] tabular">
-        完攀 {sends.length} 條 · Flash {flashes.length} 條
+        {s.finishSummary(sends.length, flashes.length)}
       </p>
       <div className="mt-auto flex flex-col gap-2 px-4 pb-6">
         <div className="flex h-10 items-center justify-center rounded-full bg-white text-[13px] font-bold text-black">
-          分享
+          {s.share}
         </div>
         <div className="flex h-10 items-center justify-center rounded-full bg-[#232326] text-[13px] font-bold">
-          查看這次紀錄
+          {s.viewSession}
         </div>
       </div>
     </div>
@@ -127,7 +133,9 @@ function Pill({
   );
 }
 
-function RouteCard({ climb }: { climb: SessionClimb }) {
+type ScreenCopy = Dictionary["screens"];
+
+function RouteCard({ climb, t }: { climb: SessionClimb; t: ScreenCopy }) {
   return (
     <li className="flex h-[38px] items-center gap-2.5 rounded-[12px] bg-[#161618] px-3">
       <span
@@ -137,16 +145,22 @@ function RouteCard({ climb }: { climb: SessionClimb }) {
         {climb.grade}
       </span>
       <span className="flex flex-1 items-center gap-1.5">
-        <Result result={climb.result} />
+        <Result result={climb.result} t={t} />
         <span className="text-[9px] text-[#a1a1a8]">
-          {climb.wall} · 嘗試 {climb.attempts} 次
+          {t.walls[climb.wall]} · {t.attempts(climb.attempts)}
         </span>
       </span>
     </li>
   );
 }
 
-function Result({ result }: { result: SessionClimb["result"] }) {
+function Result({
+  result,
+  t,
+}: {
+  result: SessionClimb["result"];
+  t: ScreenCopy;
+}) {
   if (result === "flash") {
     return (
       <span className="-skew-x-12 rounded-[3px] bg-lime px-1.5 py-[1px] font-display text-[8px] tracking-wide text-black">
@@ -157,10 +171,12 @@ function Result({ result }: { result: SessionClimb["result"] }) {
   if (result === "send") {
     return (
       <span className="text-[11px] font-bold">
-        <span className="text-[#4ade80]">✓</span> 完攀
+        <span className="text-[#4ade80]">✓</span> {t.sent}
       </span>
     );
   }
 
-  return <span className="text-[11px] font-bold text-[#a1a1a8]">嘗試中</span>;
+  return (
+    <span className="text-[11px] font-bold text-[#a1a1a8]">{t.attempting}</span>
+  );
 }

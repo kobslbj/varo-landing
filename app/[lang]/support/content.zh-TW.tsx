@@ -1,19 +1,16 @@
-import type { Metadata } from "next";
-
 import Link from "next/link";
 
 import { LegalPage, Section } from "@/components/landing/legal-page";
 import { siteConfig } from "@/config/site";
 
-export const metadata: Metadata = {
+export const meta = {
   title: "支援｜VARO",
   description: "VARO 的常見問題與聯絡方式。",
-  alternates: { canonical: "/support" },
 };
 
 const email = siteConfig.contactEmail;
 
-export default function SupportPage() {
+export default function SupportZh() {
   return (
     <LegalPage
       eyebrow="SUPPORT · 支援"
@@ -28,6 +25,7 @@ export default function SupportPage() {
           </a>
         </>
       }
+      path="/support"
       title="需要幫忙嗎？"
     >
       <Section title="在 App 內回報問題或提供意見">

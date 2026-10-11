@@ -1,17 +1,14 @@
-import type { Metadata } from "next";
-
 import { LegalPage, Section } from "@/components/landing/legal-page";
 import { siteConfig } from "@/config/site";
 
-export const metadata: Metadata = {
+export const meta = {
   title: "隱私權政策｜VARO",
   description: "VARO 會蒐集哪些資料、如何使用與保護，以及你可以怎麼刪除它們。",
-  alternates: { canonical: "/privacy" },
 };
 
 const email = siteConfig.contactEmail;
 
-export default function PrivacyPage() {
+export default function PrivacyZh() {
   return (
     <LegalPage
       eyebrow="PRIVACY · 隱私權政策"
@@ -22,6 +19,7 @@ export default function PrivacyPage() {
           。這份政策說明我們蒐集什麼、為什麼、存在哪裡，以及你可以如何刪除。
         </p>
       }
+      path="/privacy"
       title="隱私權政策"
       updated="2026.10.11"
     >
@@ -30,11 +28,17 @@ export default function PrivacyPage() {
           <li>
             <strong>帳號資料：</strong>使用「以 Apple 登入」時，Apple
             提供的使用者識別碼與電子郵件（若你選擇「隱藏我的電子郵件」，我們只會收到
-            Apple 的轉寄地址）。我們不會取得你的 Apple 密碼。
+            Apple 的轉寄地址），以及你第一次登入時 Apple
+            提供的姓名（若你有分享），用來預填你的暱稱。我們不會取得你的 Apple
+            密碼。
           </li>
           <li>
             <strong>個人檔案：</strong>
             暱稱、系統產生的使用者名稱、你上傳的頭貼，以及你自行填寫的主場岩館。
+          </li>
+          <li>
+            <strong>身體數據（選填）：</strong>
+            你自行填寫的身高與臂展，用來計算臂展差。只有你自己看得到。
           </li>
           <li>
             <strong>開始使用時的問卷：</strong>攀岩資歷、使用目標、得知 VARO

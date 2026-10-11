@@ -3,8 +3,11 @@ import Link from "next/link";
 import { Container } from "./ui";
 
 import { siteConfig } from "@/config/site";
+import { getI18n } from "@/lib/i18n";
 
-export function SiteFooter() {
+export async function SiteFooter() {
+  const { t, href } = await getI18n();
+
   return (
     <Container className="relative">
       <div className="flex flex-wrap items-center justify-between gap-x-6 gap-y-2 border-t border-line py-6 text-[13px] text-[#7d7c78]">
@@ -18,14 +21,20 @@ export function SiteFooter() {
           >
             Justin Li
           </a>{" "}
-          from Taiwan <TaiwanFlag />
+          from Taiwan <TaiwanFlag label={t.footer.flag} />
         </p>
         <nav className="flex items-center gap-5">
-          <Link className="transition-colors hover:text-cream" href="/support">
-            支援
+          <Link
+            className="transition-colors hover:text-cream"
+            href={href("/support")}
+          >
+            {t.footer.support}
           </Link>
-          <Link className="transition-colors hover:text-cream" href="/privacy">
-            隱私權政策
+          <Link
+            className="transition-colors hover:text-cream"
+            href={href("/privacy")}
+          >
+            {t.footer.privacy}
           </Link>
           <span className="hidden font-display tracking-[0.06em] md:inline">
             {siteConfig.tagline}
@@ -37,10 +46,10 @@ export function SiteFooter() {
 }
 
 /** Drawn as SVG: flag emoji don't render on Windows (they show "TW"). */
-function TaiwanFlag() {
+function TaiwanFlag({ label }: { label: string }) {
   return (
     <svg
-      aria-label="台灣國旗"
+      aria-label={label}
       className="ml-1 inline-block h-[0.8em] w-auto -translate-y-px rounded-[2px] align-baseline"
       role="img"
       viewBox="0 0 120 80"

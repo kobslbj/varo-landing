@@ -1,6 +1,7 @@
 /**
  * Illustrative data for the hero's app previews (labelled 介面示意).
- * Totals are derived from the list, never typed twice.
+ * Totals are derived from the list, never typed twice. Display text
+ * (gym name, wall names, duration) comes from the dictionary.
  */
 import type { HoldColor } from "./ui";
 
@@ -10,15 +11,14 @@ export interface SessionClimb {
   id: string;
   grade: string;
   hold: HoldColor;
-  wall: "斜板" | "垂直" | "外傾" | "屋簷";
+  wall: "slab" | "vertical" | "overhang" | "roof";
   attempts: number;
   result: ClimbResult;
 }
 
 export const session = {
-  gym: "VARO 抱石館",
   date: "2026.10.11",
-  duration: "1 小時 12 分",
+  durationMinutes: 72,
   /** Unsplash photos, see `photoCredits`. */
   photos: ["/shots/climb-3.jpg", "/shots/climb-5.jpg", "/shots/climb-1.jpg"],
   climbs: [
@@ -26,7 +26,7 @@ export const session = {
       id: "a",
       grade: "V5",
       hold: "red",
-      wall: "外傾",
+      wall: "overhang",
       attempts: 6,
       result: "send",
     },
@@ -34,7 +34,7 @@ export const session = {
       id: "b",
       grade: "V3",
       hold: "blue",
-      wall: "垂直",
+      wall: "vertical",
       attempts: 1,
       result: "flash",
     },
@@ -42,7 +42,7 @@ export const session = {
       id: "c",
       grade: "V4",
       hold: "yellow",
-      wall: "屋簷",
+      wall: "roof",
       attempts: 4,
       result: "send",
     },
@@ -50,7 +50,7 @@ export const session = {
       id: "d",
       grade: "V6",
       hold: "purple",
-      wall: "外傾",
+      wall: "overhang",
       attempts: 5,
       result: "attempt",
     },
@@ -58,7 +58,7 @@ export const session = {
       id: "e",
       grade: "V2",
       hold: "green",
-      wall: "斜板",
+      wall: "slab",
       attempts: 2,
       result: "send",
     },

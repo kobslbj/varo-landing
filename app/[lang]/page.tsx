@@ -4,7 +4,7 @@ import { SiteHeader } from "@/components/landing/site-header";
 export default function Home() {
   return (
     <>
-      <SiteHeader />
+      <SiteHeader path="/" />
       <main>
         <Hero />
       </main>

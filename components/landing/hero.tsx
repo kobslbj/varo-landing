@@ -5,10 +5,15 @@ import { Phone3D } from "./phone-3d";
 import { FinishScreen, SessionScreen } from "./screens";
 import { SiteFooter } from "./site-footer";
 import { Container, CtaLink, DemoLabel } from "./ui";
+import { session } from "./data";
 
 import { partnerHref, siteConfig } from "@/config/site";
+import { getI18n } from "@/lib/i18n";
 
-export function Hero() {
+export async function Hero() {
+  const { t } = await getI18n();
+  const partner = partnerHref(t.partnerSubject);
+
   return (
     <section className="relative flex min-h-dvh flex-col overflow-hidden">
       {/* Bolt-hole grid, like a climbing wall */}
@@ -26,7 +31,7 @@ export function Hero() {
         {/* Copy */}
         <div className="lg:col-span-6">
           <p className="rise text-[14px] font-semibold tracking-[0.04em] text-lime sm:text-[15px]">
-            為台灣抱石而生的紀錄與社群 App
+            {t.hero.eyebrow}
           </p>
           <h1
             className="rise mt-5 font-display text-[46px] leading-[1.04] tracking-[-0.01em] sm:text-[64px] lg:text-[68px] xl:text-[76px]"
@@ -40,11 +45,9 @@ export function Hero() {
             className="rise mt-7 max-w-[32rem] text-[17px] leading-[1.8] text-mute [text-wrap:pretty] sm:text-[19px]"
             style={{ ["--rise-delay" as string]: "120ms" }}
           >
-            <span className="font-semibold text-cream">
-              記錄每次挑戰，看見自己的進步。
-            </span>
+            <span className="font-semibold text-cream">{t.hero.lead}</span>
             <br />
-            從第一次摸線到終於完攀，與岩友分享值得記住的每一刻。
+            {t.hero.body}
           </p>
 
           <div
@@ -53,17 +56,18 @@ export function Hero() {
           >
             {siteConfig.appStoreUrl ? (
               <CtaLink href={siteConfig.appStoreUrl}>
-                <AppleIcon />在 App Store 下載
+                <AppleIcon />
+                {t.hero.download}
               </CtaLink>
             ) : (
               <span className="inline-flex h-13 items-center gap-2 self-start rounded-lg bg-cream px-6 text-[16px] font-semibold text-ink">
                 <AppleIcon />
-                即將登陸 App Store
+                {t.hero.comingSoon}
               </span>
             )}
-            {partnerHref ? (
-              <CtaLink href={partnerHref} variant="outline">
-                場館合作
+            {partner ? (
+              <CtaLink href={partner} variant="outline">
+                {t.nav.partner}
               </CtaLink>
             ) : null}
           </div>
@@ -75,7 +79,7 @@ export function Hero() {
 
           <Phone3D
             className="absolute right-0 top-[2%] w-[44%] opacity-95"
-            label="Varo 完成訓練畫面示意"
+            label={t.hero.finishLabel}
             tilt="right"
           >
             <FinishScreen />
@@ -94,14 +98,14 @@ export function Hero() {
             />
             <Phone3D
               className="relative z-20"
-              label="Varo 訓練紀錄畫面示意：VARO 抱石館，5 條路線"
+              label={t.hero.sessionLabel(t.screens.gym, session.climbs.length)}
             >
               <SessionScreen />
             </Phone3D>
           </div>
 
           <div className="absolute bottom-[-2%] right-[2%]">
-            <DemoLabel>介面示意</DemoLabel>
+            <DemoLabel>{t.hero.demo}</DemoLabel>
           </div>
         </div>
       </Container>
