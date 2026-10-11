@@ -24,7 +24,7 @@ export default function PrivacyEn() {
       }
       path="/privacy"
       title="Privacy Policy"
-      updated="2026.10.11"
+      updated="2026.10.12"
     >
       <Section title="1. Data we collect">
         <ul>
@@ -69,11 +69,26 @@ export default function PrivacyEn() {
             app, along with the app version, platform and OS version at the
             time, so we can track down issues.
           </li>
+          <li>
+            <strong>Usage and crash data:</strong> which features you use (for
+            example starting a session, logging a route or sharing a sticker;
+            counts and types only, never what you type), which screens you view,
+            crash and error reports, and your device model and OS version. We
+            also record app sessions to understand how people use VARO;{" "}
+            <strong>
+              all text, photos and system pickers are masked on your phone
+              before anything is recorded
+            </strong>
+            , so your notes, names and photos are never captured. This data is
+            linked to your account ID, not your email or name. You can turn it
+            off anytime in{" "}
+            <strong>Me → Settings → Analytics &amp; screen recording</strong>.
+          </li>
         </ul>
         <p>
           We <strong>do not</strong> collect your location, contacts,
-          advertising identifier or browsing history, and the app contains no
-          third-party analytics or advertising tools.
+          advertising identifier or browsing history. The app contains no
+          advertising tools and never tracks you across other apps or websites.
         </p>
       </Section>
 
@@ -86,6 +101,10 @@ export default function PrivacyEn() {
           <li>
             To handle the feedback and bug reports you send, and to improve the
             app.
+          </li>
+          <li>
+            To understand how features are used, find what feels clunky, and fix
+            crashes and errors.
           </li>
           <li>To keep the service secure, for example by preventing abuse.</li>
         </ul>
@@ -122,6 +141,11 @@ export default function PrivacyEn() {
           </li>
           <li>
             <strong>Apple:</strong> Sign in with Apple and app distribution.
+          </li>
+          <li>
+            <strong>PostHog:</strong> usage analytics, masked session recordings
+            and crash reports. Data is stored on PostHog’s servers in the United
+            States.
           </li>
         </ul>
         <p>

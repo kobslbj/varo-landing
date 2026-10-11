@@ -21,7 +21,7 @@ export default function PrivacyZh() {
       }
       path="/privacy"
       title="隱私權政策"
-      updated="2026.10.11"
+      updated="2026.10.12"
     >
       <Section title="1. 我們蒐集的資料">
         <ul>
@@ -61,11 +61,22 @@ export default function PrivacyZh() {
             內送出的意見或問題回報，以及當時的 App
             版本、平台與系統版本，方便我們排查問題。
           </li>
+          <li>
+            <strong>使用情形與當機紀錄：</strong>
+            你使用了哪些功能（例如開始訓練、記錄路線、分享貼紙，只記錄數量與類型，不含你輸入的內容）、看過哪些畫面、當機與錯誤紀錄，以及裝置型號與系統版本。我們也會錄製操作畫面，以了解大家怎麼使用
+            App；
+            <strong>
+              錄製時所有文字、照片與系統選擇畫面都會先在你的手機上遮蔽
+            </strong>
+            ，不會記錄你的筆記、名稱或照片內容。這些資料以你的帳號 ID
+            連結，不包含電子郵件或姓名。你可以隨時在
+            <strong>「我」→「設定」→「分析與畫面錄製」</strong>關閉。
+          </li>
         </ul>
         <p>
           我們<strong>不會</strong>
           蒐集你的位置、聯絡人、廣告識別碼或瀏覽紀錄，App
-          內也沒有第三方分析或廣告工具。
+          內也沒有廣告工具，也不會跨 App 或網站追蹤你。
         </p>
       </Section>
 
@@ -75,6 +86,7 @@ export default function PrivacyZh() {
             提供 App 的核心功能：登入、儲存與同步你的紀錄、顯示統計與進度。
           </li>
           <li>處理你送出的意見回饋與問題回報，並改善 App。</li>
+          <li>了解功能的使用情形、找出操作不順的地方，以及修正當機與錯誤。</li>
           <li>維護服務安全，例如防止濫用。</li>
         </ul>
         <p>我們不會把你的資料用於廣告，也不會出售或出租給任何人。</p>
@@ -99,6 +111,11 @@ export default function PrivacyZh() {
           </li>
           <li>
             <strong>Apple：</strong>「以 Apple 登入」與 App 的發佈。
+          </li>
+          <li>
+            <strong>PostHog：</strong>
+            使用情形分析、遮蔽後的操作畫面錄製與當機紀錄。資料存放在 PostHog
+            位於美國的伺服器。
           </li>
         </ul>
         <p>
