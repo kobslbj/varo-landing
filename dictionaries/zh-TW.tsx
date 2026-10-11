@@ -104,6 +104,11 @@ const zhTW = {
       </>
     ),
   },
+  /** Alt text. These images sit in aria-hidden decoration, so it's read by crawlers, not screen readers. */
+  images: {
+    mascot: "VARO 吉祥物：一顆萊姆綠的 Jug 岩點",
+    climbPhoto: "在岩館抱石的攀岩者",
+  },
   legal: {
     updated: "最後更新：",
   },

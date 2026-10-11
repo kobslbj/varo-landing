@@ -24,7 +24,7 @@ export async function SessionScreen() {
         <Image
           fill
           priority
-          alt=""
+          alt={t.images.climbPhoto}
           className="object-cover"
           sizes="300px"
           src={session.photos[0]}
@@ -83,7 +83,7 @@ export async function FinishScreen() {
           />
         ))}
         <Image
-          alt=""
+          alt={t.images.mascot}
           className="blink absolute left-1/2 top-0 w-[92px] -translate-x-1/2"
           height={512}
           sizes="96px"
