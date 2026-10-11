@@ -32,8 +32,8 @@ export const siteConfig: SiteConfig = {
   siteUrl: process.env.NEXT_PUBLIC_SITE_URL ?? "http://localhost:3000",
   appStoreUrl: null,
   partnerEmail: process.env.NEXT_PUBLIC_PARTNER_EMAIL ?? null,
-  contactEmail: null,
-  privacyUrl: null,
+  contactEmail: "support@getvaro.app",
+  privacyUrl: "/privacy",
   termsUrl: null,
   screenshots: [],
 };

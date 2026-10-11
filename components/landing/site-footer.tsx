@@ -1,3 +1,5 @@
+import Link from "next/link";
+
 import { Container } from "./ui";
 
 import { siteConfig } from "@/config/site";
@@ -18,7 +20,17 @@ export function SiteFooter() {
           </a>{" "}
           from Taiwan <TaiwanFlag />
         </p>
-        <p className="font-display tracking-[0.06em]">{siteConfig.tagline}</p>
+        <nav className="flex items-center gap-5">
+          <Link className="transition-colors hover:text-cream" href="/support">
+            支援
+          </Link>
+          <Link className="transition-colors hover:text-cream" href="/privacy">
+            隱私權政策
+          </Link>
+          <span className="hidden font-display tracking-[0.06em] md:inline">
+            {siteConfig.tagline}
+          </span>
+        </nav>
       </div>
     </Container>
   );
