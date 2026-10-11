@@ -3,6 +3,7 @@ import type { Metadata, Viewport } from "next";
 
 import { Inter, Russo_One } from "next/font/google";
 import clsx from "clsx";
+import { Analytics } from "@vercel/analytics/next";
 
 import { siteConfig } from "@/config/site";
 import { alternates, getI18n, locales } from "@/lib/i18n";
@@ -67,7 +68,10 @@ export default async function RootLayout({ children }: LayoutProps<"/[lang]">) {
       data-theme="dark"
       lang={t.htmlLang}
     >
-      <body className="min-h-dvh font-sans antialiased">{children}</body>
+      <body className="min-h-dvh font-sans antialiased">
+        {children}
+        <Analytics />
+      </body>
     </html>
   );
 }
