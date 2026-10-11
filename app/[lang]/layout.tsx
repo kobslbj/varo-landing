@@ -7,6 +7,7 @@ import { Analytics } from "@vercel/analytics/next";
 
 import { siteConfig } from "@/config/site";
 import { alternates, getI18n, locales } from "@/lib/i18n";
+import { JsonLd, siteGraph } from "@/lib/seo";
 
 const inter = Inter({
   subsets: ["latin"],
@@ -60,7 +61,7 @@ export const viewport: Viewport = {
 };
 
 export default async function RootLayout({ children }: LayoutProps<"/[lang]">) {
-  const { t } = await getI18n();
+  const { locale, t } = await getI18n();
 
   return (
     <html
@@ -69,6 +70,7 @@ export default async function RootLayout({ children }: LayoutProps<"/[lang]">) {
       lang={t.htmlLang}
     >
       <body className="min-h-dvh font-sans antialiased">
+        <JsonLd graph={siteGraph(locale, t.meta.description)} />
         {children}
         <Analytics />
       </body>

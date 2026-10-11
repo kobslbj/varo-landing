@@ -1,28 +1,40 @@
 import type { Metadata } from "next";
 
-import SupportEn, { meta as metaEn } from "./content.en";
-import SupportZh, { meta as metaZh } from "./content.zh-TW";
+import SupportEn, { faq as faqEn, meta as metaEn } from "./content.en";
+import SupportZh, { faq as faqZh, meta as metaZh } from "./content.zh-TW";
 
-import { alternates, getI18n } from "@/lib/i18n";
+import { getI18n } from "@/lib/i18n";
+import { faqQuestions, JsonLd, pageMetadata, webPage } from "@/lib/seo";
 
 // A legal/support text reads better translated as a whole than as dictionary keys.
 const content = {
-  "zh-TW": { Body: SupportZh, meta: metaZh },
-  en: { Body: SupportEn, meta: metaEn },
+  "zh-TW": { Body: SupportZh, meta: metaZh, faq: faqZh },
+  en: { Body: SupportEn, meta: metaEn, faq: faqEn },
 };
 
 export async function generateMetadata(): Promise<Metadata> {
   const { locale } = await getI18n();
 
-  return {
-    ...content[locale].meta,
-    alternates: alternates(locale, "/support"),
-  };
+  return pageMetadata("/support", content[locale].meta);
 }
 
 export default async function SupportPage() {
   const { locale } = await getI18n();
-  const { Body } = content[locale];
+  const { Body, faq, meta } = content[locale];
 
-  return <Body />;
+  return (
+    <>
+      <JsonLd
+        graph={[
+          webPage(locale, "/support", {
+            type: "FAQPage",
+            name: meta.title,
+            description: meta.description,
+            mainEntity: faqQuestions(faq),
+          }),
+        ]}
+      />
+      <Body />
+    </>
+  );
 }

@@ -5,15 +5,13 @@ import Image from "next/image";
 import { SiteFooter } from "@/components/landing/site-footer";
 import { SiteHeader } from "@/components/landing/site-header";
 import { Container } from "@/components/landing/ui";
-import { alternates, getI18n } from "@/lib/i18n";
+import { getI18n } from "@/lib/i18n";
+import { JsonLd, pageMetadata, webPage } from "@/lib/seo";
 
 export async function generateMetadata(): Promise<Metadata> {
-  const { locale, t } = await getI18n();
+  const { t } = await getI18n();
 
-  return {
-    ...t.philosophy.meta,
-    alternates: alternates(locale, "/philosophy"),
-  };
+  return pageMetadata("/philosophy", t.philosophy.meta);
 }
 
 /** One letter per hold on the route, bottom of the wall to the top. Copy lives in the dictionary. */
@@ -49,11 +47,19 @@ const keyword = (word: string) => (
 );
 
 export default async function PhilosophyPage() {
-  const { t } = await getI18n();
+  const { locale, t } = await getI18n();
   const copy = t.philosophy;
 
   return (
     <>
+      <JsonLd
+        graph={[
+          webPage(locale, "/philosophy", {
+            name: copy.meta.title,
+            description: copy.meta.description,
+          }),
+        ]}
+      />
       <SiteHeader path="/philosophy" />
       <main className="relative overflow-hidden">
         {/* Bolt-hole grid */}
