@@ -6,7 +6,7 @@ const en: Dictionary = {
   meta: {
     title: "VARO | Bouldering Log App",
     description:
-      "Varo is a climbing log app built for boulderers in Taiwan. Record every session and attempt, track the projects you’re working on, and look back to see how far you’ve come.",
+      "Varo is a climbing log app for boulderers. Record every session and attempt, track the projects you’re working on, and look back to see how far you’ve come.",
     keywords: ["bouldering", "climbing", "climbing log", "Taiwan", "Varo"],
   },
   nav: {
