@@ -2,7 +2,7 @@ const zhTW = {
   htmlLang: "zh-Hant-TW",
   ogLocale: "zh_TW",
   meta: {
-    title: "VARO：抱石紀錄",
+    title: "VARO｜抱石紀錄 App，為台灣攀岩者打造",
     description:
       "Varo 是為台灣抱石者打造的攀岩紀錄 App。記下每次攀爬與嘗試、追蹤正在挑戰的 Project，回頭看見自己的進步。",
     keywords: [
