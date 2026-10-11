@@ -95,6 +95,10 @@ const en: Dictionary = {
       </>
     ),
   },
+  images: {
+    mascot: "The VARO mascot, a lime-green jug hold",
+    climbPhoto: "A climber bouldering at an indoor gym",
+  },
   legal: {
     updated: "Last updated: ",
   },

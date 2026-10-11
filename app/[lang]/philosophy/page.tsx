@@ -127,7 +127,7 @@ export default async function PhilosophyPage() {
                   {s.letter === "O" ? (
                     <Image
                       aria-hidden
-                      alt=""
+                      alt={t.images.mascot}
                       className="bob absolute -top-[62%] left-1/2 w-[70%] -translate-x-1/2"
                       height={512}
                       sizes="80px"

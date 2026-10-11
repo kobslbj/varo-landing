@@ -89,7 +89,7 @@ export async function Hero() {
             <Image
               aria-hidden
               priority
-              alt=""
+              alt={t.images.mascot}
               className="bob absolute -left-[12%] -top-[13%] z-30 w-[34%]"
               height={512}
               sizes="120px"
