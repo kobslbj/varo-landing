@@ -13,7 +13,11 @@ export function proxy(request: NextRequest) {
     (l) => pathname === `/${l}` || pathname.startsWith(`/${l}/`),
   );
 
-  if (prefix === defaultLocale) {
+  // Metadata images (og:image etc.) are linked at /zh-TW/...; serve them as is.
+  if (
+    prefix === defaultLocale &&
+    !/\/(opengraph|twitter)-image/.test(pathname)
+  ) {
     const url = request.nextUrl.clone();
 
     url.pathname = pathname.slice(prefix.length + 1) || "/";
