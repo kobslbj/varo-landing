@@ -58,7 +58,10 @@ export default function PrivacyEn() {
           </li>
           <li>
             <strong>Photos and videos:</strong> only files you pick from your
-            library to add to a log or set as your profile photo are uploaded.
+            library to add to a log or set as your profile photo are used.
+            Photos are uploaded to the cloud.{" "}
+            <strong>Videos stay on your phone</strong>: we only upload a
+            thumbnail and details such as length, so your logs display properly.
             VARO never reads or uploads anything else in your library.
           </li>
           <li>
@@ -95,10 +98,10 @@ export default function PrivacyEn() {
       <Section title="3. Who can see your data">
         <p>
           Your logs, photos and videos are{" "}
-          <strong>visible only to you by default</strong>. Photos and videos are
-          kept in private storage and can only be read through short-lived
-          signed links. Your profile photo and nickname may be visible to other
-          users.
+          <strong>visible only to you by default</strong>. Uploaded photos and
+          video thumbnails are kept in private storage and can only be read
+          through short-lived signed links. Your profile photo and nickname may
+          be visible to other users.
         </p>
         <p>
           When you use the share feature, the image is sent through your
@@ -132,9 +135,10 @@ export default function PrivacyEn() {
           We keep your data for as long as your account exists. You can
           permanently delete your account at any time in the app under{" "}
           <strong>Me → Settings → Delete Account</strong>. Your profile, logs,
-          photos and videos are deleted along with it and cannot be recovered,
-          and we revoke VARO’s Sign in with Apple authorization. Feedback you
-          sent is kept, but is no longer linked to your account.
+          photos, video thumbnails and the videos VARO keeps on this phone are
+          deleted along with it and cannot be recovered, and we revoke VARO’s
+          Sign in with Apple authorization. Feedback you sent is kept, but is no
+          longer linked to your account.
         </p>
         <p>
           If you can’t sign in to the app, email{" "}

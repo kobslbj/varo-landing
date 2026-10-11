@@ -48,13 +48,23 @@ export default function SupportEn() {
 
       <Section title="Can other people see my logs?">
         <p>
-          By default, only you can. Photos and videos are kept in private
-          storage, and others only see what you choose to share. See the{" "}
-          <Link href="/en/privacy">Privacy Policy</Link> for details.
+          By default, only you can. Photos are kept in private storage, videos
+          stay on your phone, and others only see what you choose to share. See
+          the <Link href="/en/privacy">Privacy Policy</Link> for details.
         </p>
       </Section>
 
-      <Section title="A photo or video failed to upload">
+      <Section title="Where are my videos? Will I lose them on a new phone?">
+        <p>
+          Videos stay on your phone and are never uploaded; VARO only keeps a
+          thumbnail and details such as length. If you delete the app, the
+          videos can no longer be played. When you move to a new phone with an
+          iCloud backup or Quick Start, they usually come along. Cloud backup is
+          planned.
+        </p>
+      </Section>
+
+      <Section title="A photo failed to upload">
         <p>
           Routes with a failed upload show a red retry badge; tap it to upload
           again. Files are kept on your phone first, so uploads also resume
@@ -73,9 +83,9 @@ export default function SupportEn() {
       <Section title="How do I delete my account?">
         <p>
           In the app, go to <strong>Me → Settings → Delete Account</strong>.
-          Your profile, logs, photos and videos are permanently deleted and
-          cannot be recovered, and VARO’s Sign in with Apple authorization is
-          revoked. If you can’t sign in, email{" "}
+          Your profile, logs, photos and the videos VARO keeps on this phone are
+          permanently deleted and cannot be recovered, and VARO’s Sign in with
+          Apple authorization is revoked. If you can’t sign in, email{" "}
           <a href={`mailto:${email}`}>{email}</a> and we’ll take care of it.
         </p>
       </Section>
