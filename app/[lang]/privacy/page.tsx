@@ -3,7 +3,8 @@ import type { Metadata } from "next";
 import PrivacyEn, { meta as metaEn } from "./content.en";
 import PrivacyZh, { meta as metaZh } from "./content.zh-TW";
 
-import { alternates, getI18n } from "@/lib/i18n";
+import { getI18n } from "@/lib/i18n";
+import { JsonLd, pageMetadata, webPage } from "@/lib/seo";
 
 // A legal/support text reads better translated as a whole than as dictionary keys.
 const content = {
@@ -14,15 +15,24 @@ const content = {
 export async function generateMetadata(): Promise<Metadata> {
   const { locale } = await getI18n();
 
-  return {
-    ...content[locale].meta,
-    alternates: alternates(locale, "/privacy"),
-  };
+  return pageMetadata("/privacy", content[locale].meta);
 }
 
 export default async function PrivacyPage() {
   const { locale } = await getI18n();
-  const { Body } = content[locale];
+  const { Body, meta } = content[locale];
 
-  return <Body />;
+  return (
+    <>
+      <JsonLd
+        graph={[
+          webPage(locale, "/privacy", {
+            name: meta.title,
+            description: meta.description,
+          }),
+        ]}
+      />
+      <Body />
+    </>
+  );
 }

@@ -22,7 +22,7 @@ export function proxy(request: NextRequest) {
 
     url.pathname = pathname.slice(prefix.length + 1) || "/";
 
-    return NextResponse.redirect(url);
+    return NextResponse.redirect(url, 308);
   }
   if (prefix) return;
 

@@ -29,6 +29,7 @@ export async function SiteHeader({ path }: { path: string }) {
             alt="VARO"
             className="h-[20px] w-auto sm:h-[22px]"
             height={172}
+            sizes="128px"
             src="/brand/varo-wordmark-white.png"
             width={1000}
           />
