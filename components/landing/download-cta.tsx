@@ -10,7 +10,7 @@ export async function DownloadCta({
   source,
   className,
 }: {
-  source: "hero" | "closing";
+  source: "hero" | "closing" | "gyms";
   className?: string;
 }) {
   const { locale, t } = await getI18n();

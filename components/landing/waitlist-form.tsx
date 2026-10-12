@@ -45,7 +45,7 @@ export function WaitlistForm({
   copy: Omit<Dictionary["waitlist"], "count">;
   locale: Locale;
   /** Which form on the site, stored with the signup. */
-  source: "hero" | "closing";
+  source: "hero" | "closing" | "gyms";
   /** e.g. "已有 42 位岩友加入"; hidden when the count is unknown or 0. */
   countLabel: string | null;
   className?: string;
@@ -81,7 +81,7 @@ export function WaitlistForm({
     <div className={clsx("w-full max-w-[30rem]", className)}>
       {done ? (
         <p
-          className="flex min-h-[60px] items-center gap-2.5 rounded-xl border border-lime/40 bg-lime/10 px-5 text-[16px] font-semibold text-lime"
+          className="flex min-h-[60px] items-center gap-2.5 rounded-xl border border-line bg-ink-2 px-5 text-[16px] font-semibold text-cream"
           role="status"
         >
           <span
@@ -97,10 +97,8 @@ export function WaitlistForm({
           noValidate
           action={action}
           className={clsx(
-            "flex h-[60px] items-center gap-2 rounded-xl border bg-ink-2 p-1.5 pl-4 transition-[border-color,box-shadow] duration-200",
-            failed
-              ? "border-hold-red/70"
-              : "border-line focus-within:border-lime/70 focus-within:shadow-[0_0_0_4px_rgba(212,255,90,0.12)]",
+            "flex h-[60px] items-center gap-2 rounded-xl border bg-ink-2 p-1.5 pl-4 transition-[border-color] duration-200",
+            failed ? "border-hold-red" : "border-line focus-within:border-lime",
           )}
         >
           <svg

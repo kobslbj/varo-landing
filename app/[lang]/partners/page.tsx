@@ -118,7 +118,7 @@ export default async function PartnersPage() {
             <h2 className={clsx("text-[32px] sm:text-[40px]", heading)}>
               {copy.plan.heading}
             </h2>
-            <span className="rounded-full border border-lime/40 px-2.5 py-1 text-[13px] font-semibold text-lime">
+            <span className="rounded-full bg-lime px-2.5 py-1 text-[13px] font-semibold text-ink">
               {copy.plan.badge}
             </span>
           </div>

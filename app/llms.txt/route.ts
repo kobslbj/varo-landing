@@ -2,6 +2,7 @@ import { faq as faqEn } from "../[lang]/support/content.en";
 import { faq as faqZh } from "../[lang]/support/content.zh-TW";
 
 import { siteConfig } from "@/config/site";
+import { cities } from "@/lib/gyms/cities";
 import en from "@/dictionaries/en";
 import zhTW from "@/dictionaries/zh-TW";
 import { absoluteUrl, nodeText } from "@/lib/seo";
@@ -32,6 +33,8 @@ ${zhTW.meta.description}
 Each page is in Traditional Chinese at the unprefixed URL and in English under /en.
 
 - Home: [中文](${absoluteUrl("/")}) · [English](${absoluteUrl("/en")})
+- Bouldering gyms in Taiwan, a map and list with addresses, hours, prices and booking (compiled from public information; hours and prices mostly unconfirmed with the gyms): [中文](${absoluteUrl("/gyms")}) · [English](${absoluteUrl("/en/gyms")})
+- Bouldering gyms by city: ${cities.map((c) => `[${c.name}](${absoluteUrl(`/gyms/${c.slug}`)})`).join(" · ")}
 - Philosophy, the meaning of the name: [中文](${absoluteUrl("/philosophy")}) · [English](${absoluteUrl("/en/philosophy")}) — ${en.philosophy.meta.description}
 - For gyms, recruiting the first partner gyms (gym features are planned, not built yet): [中文](${absoluteUrl("/partners")}) · [English](${absoluteUrl("/en/partners")}) — ${en.partners.meta.description}
 - Support & FAQ: [中文](${absoluteUrl("/support")}) · [English](${absoluteUrl("/en/support")}) — frequently asked questions and contact

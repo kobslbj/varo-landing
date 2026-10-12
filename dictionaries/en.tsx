@@ -45,6 +45,130 @@ const en: Dictionary = {
       },
     },
   },
+  gyms: {
+    meta: {
+      title: (n, year) =>
+        `Bouldering & climbing gyms in Taiwan (${year}): map of ${n} gyms | VARO`,
+      description: (n) =>
+        `${n} gyms where you can boulder in Taiwan, from Taipei to Kaohsiung: addresses, opening hours, prices and booking, on one map.`,
+    },
+    nav: "Gym map",
+    title: "Bouldering gyms in Taiwan",
+    lead: (n, cities) =>
+      `${n} gyms where you can boulder, across ${cities} cities and counties. Every hold on the map is a gym; pick a city to see that area.`,
+    all: "All",
+    mapLabel: "Map of bouldering gyms in Taiwan",
+    kinds: {
+      boulder: "Bouldering",
+      mixed: "Bouldering + ropes",
+      rope: "Mostly roped",
+      kids: "Kids / small wall",
+      outdoor: "Outdoor / semi-outdoor",
+    },
+    unconfirmed: "Not confirmed open",
+    unconfirmedHint: "Hollow hold: not confirmed open",
+    weekday: "Weekday",
+    weekend: "Weekend",
+    shoes: "Shoes",
+    currency: "NT$",
+    directions: "Directions",
+    website: "Website",
+    call: "Call",
+    more: "Hours and details (in Chinese)",
+    hours: "Hours",
+    courses: "Intro sessions & courses",
+    facilities: "Facilities",
+    booking: "Booking",
+    address: "Address",
+    notes: "Before you go",
+    showAll: "Show all cities",
+    caveat: {
+      title: "Check before you go",
+      body: (date) =>
+        `This list is compiled from public information, last checked ${date}. Most hours and prices haven’t been confirmed with the gyms, so check the gym’s own page before you go.`,
+      report: "Spotted a mistake, or run one of these gyms?",
+      reportLink: "Email us",
+      reportSubject: "VARO gym listing correction",
+    },
+    closing: {
+      title: ["Found a gym to try?", "Log every attempt."],
+    },
+    date: (iso) =>
+      new Date(`${iso}T00:00:00`).toLocaleDateString("en", {
+        year: "numeric",
+        month: "long",
+        day: "numeric",
+      }),
+    cities: {
+      台北市: "Taipei",
+      新北市: "New Taipei",
+      桃園市: "Taoyuan",
+      新竹市: "Hsinchu City",
+      新竹縣: "Hsinchu County",
+      台中市: "Taichung",
+      彰化縣: "Changhua",
+      南投縣: "Nantou",
+      雲林縣: "Yunlin",
+      嘉義市: "Chiayi City",
+      台南市: "Tainan",
+      高雄市: "Kaohsiung",
+      宜蘭縣: "Yilan",
+      花蓮縣: "Hualien",
+      台東縣: "Taitung",
+    },
+  },
+  gymsCity: {
+    meta: {
+      title: (f) =>
+        `Bouldering & climbing gyms in ${f.city} (${f.year}): ${f.n} gyms | VARO`,
+      description: (f) =>
+        `${f.n} gyms where you can boulder in ${f.city}, with a map, opening hours, booking${f.priced.length ? " and prices" : ""}.`,
+    },
+    title: (city) => `Bouldering gyms in ${city}`,
+    lead: (f, kind) =>
+      `${f.city} has ${f.n} ${f.n === 1 ? "gym" : "gyms"} where you can boulder: ${f.kinds.map((k) => `${k.n} ${kind(k.kind).toLowerCase()}`).join(", ")}.`,
+    faqTitle: "Questions",
+    faq: {
+      count: (f) => ({
+        q: `How many bouldering gyms are there in ${f.city}?`,
+        a: `We list ${f.n}:`,
+        items: f.names,
+      }),
+      price: (f) =>
+        f.priced.length
+          ? {
+              q: `How much does bouldering cost in ${f.city}?`,
+              a: "These gyms publish prices. For the others, check their own pages:",
+              items: f.priced.map(
+                (p) =>
+                  `${p.name}: ${[
+                    p.weekday && `NT$${p.weekday} on weekdays`,
+                    p.weekend && `NT$${p.weekend} on weekends`,
+                    p.shoes && `shoe rental NT$${p.shoes}`,
+                    p.notes,
+                  ]
+                    .filter(Boolean)
+                    .join(", ")} (source: ${p.source})`,
+              ),
+            }
+          : {
+              q: `How much does bouldering cost in ${f.city}?`,
+              a: "We haven’t found confirmed current prices. Check each gym’s own page.",
+            },
+      beginners: (f) => ({
+        q: `Which gyms in ${f.city} have intro sessions or classes?`,
+        a: "These gyms mention intro sessions or classes. Ask the gym for current times:",
+        items: f.beginners.map((b) => `${b.name}: ${b.courses}`),
+      }),
+      kids: (f) => ({
+        q: `Which gyms in ${f.city} are good for kids?`,
+        a: "These gyms mention kids’ classes or a kids’ wall. Ask before you go:",
+        items: f.kids,
+      }),
+    },
+    otherCities: "Bouldering gyms in other cities",
+    allGyms: "See the map of all gyms",
+  },
   partners: {
     meta: {
       title: "For gyms | VARO is looking for its first partner gyms",
