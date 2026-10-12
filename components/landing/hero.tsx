@@ -1,13 +1,13 @@
 import Image from "next/image";
 
+import { DownloadCta } from "./download-cta";
 import { FloatingRoute } from "./holds";
 import { Phone3D } from "./phone-3d";
 import { FinishScreen, SessionScreen } from "./screens";
-import { SiteFooter } from "./site-footer";
 import { Container, CtaLink, DemoLabel } from "./ui";
 import { session } from "./data";
 
-import { partnerHref, siteConfig } from "@/config/site";
+import { partnerHref } from "@/config/site";
 import { getI18n } from "@/lib/i18n";
 
 export async function Hero() {
@@ -54,17 +54,7 @@ export async function Hero() {
             className="rise mt-9 flex flex-col gap-3 sm:flex-row sm:items-center"
             style={{ ["--rise-delay" as string]: "160ms" }}
           >
-            {siteConfig.appStoreUrl ? (
-              <CtaLink href={siteConfig.appStoreUrl}>
-                <AppleIcon />
-                {t.hero.download}
-              </CtaLink>
-            ) : (
-              <span className="inline-flex h-13 items-center gap-2 self-start rounded-lg bg-cream px-6 text-[16px] font-semibold text-ink">
-                <AppleIcon />
-                {t.hero.comingSoon}
-              </span>
-            )}
+            <DownloadCta />
             {partner ? (
               <CtaLink href={partner} variant="outline">
                 {t.nav.partner}
@@ -109,21 +99,6 @@ export async function Hero() {
           </div>
         </div>
       </Container>
-
-      <SiteFooter />
     </section>
-  );
-}
-
-function AppleIcon() {
-  return (
-    <svg
-      aria-hidden
-      className="size-[18px]"
-      fill="currentColor"
-      viewBox="0 0 17 20"
-    >
-      <path d="M14.1 10.6c0-2.6 2.1-3.8 2.2-3.9-1.2-1.8-3.1-2-3.7-2-1.6-.2-3.1.9-3.9.9-.8 0-2.1-.9-3.4-.9-1.7 0-3.3 1-4.2 2.6-1.8 3.1-.5 7.7 1.3 10.2.8 1.2 1.8 2.6 3.1 2.6 1.3-.1 1.7-.8 3.3-.8 1.5 0 1.9.8 3.3.8 1.4 0 2.2-1.2 3-2.5 1-1.4 1.3-2.8 1.4-2.9-.1 0-2.6-1-2.4-4.1ZM11.6 3c.7-.8 1.2-2 1-3.1-1 0-2.2.7-2.9 1.5-.6.7-1.2 1.9-1 3 1.1.1 2.2-.6 2.9-1.4Z" />
-    </svg>
   );
 }
