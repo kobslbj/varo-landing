@@ -3,6 +3,8 @@ import { join } from "node:path";
 
 import { ImageResponse } from "next/og";
 
+import { subtitle } from "./og-copy.mjs";
+
 import { hasLocale, locales } from "@/lib/i18n/config";
 
 // Lives under [lang] so the og:image tag is attached to every page (root-level
@@ -15,27 +17,18 @@ export function generateStaticParams() {
   return locales.map((lang) => ({ lang }));
 }
 
-const subtitle = {
-  "zh-TW": "為台灣抱石而生的紀錄與社群 App",
-  en: "Bouldering log & community · Made in Taiwan",
-};
-
 async function dataUri(path: string) {
   const file = await readFile(join(process.cwd(), "public", path));
 
   return `data:image/png;base64,${file.toString("base64")}`;
 }
 
-/** A Google Fonts file subset to just `text`, so CJK fonts stay tiny. Runs at build time. */
-async function googleFont(family: string, weight: number, text: string) {
-  const css = await fetch(
-    `https://fonts.googleapis.com/css2?family=${family}:wght@${weight}&text=${encodeURIComponent(text)}`,
-  ).then((res) => res.text());
-  const url = css.match(/src: url\((.+?)\) format/)?.[1];
-
-  if (!url) throw new Error(`Couldn't load font ${family}`);
-
-  return fetch(url).then((res) => res.arrayBuffer());
+/**
+ * Font files subset to the image's text, read from disk so the build never
+ * depends on reaching Google Fonts. Regenerate with `node scripts/og-fonts.mjs`.
+ */
+async function font(file: string) {
+  return readFile(join(process.cwd(), "assets/og", file));
 }
 
 export default async function OpengraphImage({
@@ -45,13 +38,12 @@ export default async function OpengraphImage({
 }) {
   const { lang } = await params;
   const sub = subtitle[hasLocale(lang) ? lang : "zh-TW"];
-  const headline = "Every attempt counts.";
 
   const [wordmark, mascot, display, body] = await Promise.all([
     dataUri("brand/varo-wordmark-white.png"),
     dataUri("mascot/jug-lime.png"),
-    googleFont("Russo+One", 400, headline),
-    googleFont("Noto+Sans+TC", 700, sub),
+    font("russo-one-subset.ttf"),
+    font("noto-sans-tc-700-subset.ttf"),
   ]);
 
   // Centered and stacked: chat apps (Instagram DMs) crop the card to a square
