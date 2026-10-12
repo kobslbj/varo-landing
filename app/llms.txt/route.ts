@@ -33,6 +33,7 @@ Each page is in Traditional Chinese at the unprefixed URL and in English under /
 
 - Home: [中文](${absoluteUrl("/")}) · [English](${absoluteUrl("/en")})
 - Philosophy, the meaning of the name: [中文](${absoluteUrl("/philosophy")}) · [English](${absoluteUrl("/en/philosophy")}) — ${en.philosophy.meta.description}
+- For gyms, recruiting the first partner gyms (gym features are planned, not built yet): [中文](${absoluteUrl("/partners")}) · [English](${absoluteUrl("/en/partners")}) — ${en.partners.meta.description}
 - Support & FAQ: [中文](${absoluteUrl("/support")}) · [English](${absoluteUrl("/en/support")}) — frequently asked questions and contact
 - Privacy Policy: [中文](${absoluteUrl("/privacy")}) · [English](${absoluteUrl("/en/privacy")}) — what data VARO collects and how to delete it
 

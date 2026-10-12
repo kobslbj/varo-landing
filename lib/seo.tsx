@@ -47,6 +47,7 @@ export async function pageMetadata(
 export const sitePages = [
   { path: "/", priority: 1 },
   { path: "/philosophy", priority: 0.6 },
+  { path: "/partners", priority: 0.5 },
   { path: "/support", priority: 0.5 },
   { path: "/privacy", priority: 0.3 },
 ];

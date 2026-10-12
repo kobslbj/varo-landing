@@ -1,19 +1,17 @@
 import Image from "next/image";
 import Link from "next/link";
 
-import { partnerHref } from "@/config/site";
 import { getI18n, localizePath } from "@/lib/i18n";
 
 const navLink =
-  "flex h-11 items-center rounded-lg px-3.5 text-[15px] font-medium text-mute transition-colors hover:text-cream";
+  "flex h-11 items-center whitespace-nowrap rounded-lg px-2 text-[14px] font-medium text-mute transition-colors hover:text-cream sm:px-3.5 sm:text-[15px]";
 
 /**
- * Wordmark on the left; 理念, 場館合作 (when an inbox is set) and the language
+ * Wordmark on the left; 理念, 場館合作 and the language
  * switch on the right. `path` is the current page, unprefixed, e.g. "/privacy".
  */
 export async function SiteHeader({ path }: { path: string }) {
   const { locale, t, href } = await getI18n();
-  const partner = partnerHref(t.partnerSubject);
   const other = locale === "en" ? "zh-TW" : "en";
 
   return (
@@ -38,11 +36,9 @@ export async function SiteHeader({ path }: { path: string }) {
           <Link className={navLink} href={href("/philosophy")}>
             {t.nav.philosophy}
           </Link>
-          {partner ? (
-            <a className={navLink} href={partner}>
-              {t.nav.partner}
-            </a>
-          ) : null}
+          <Link className={navLink} href={href("/partners")}>
+            {t.nav.partner}
+          </Link>
           <Link
             aria-label={t.nav.switchAria}
             className={navLink}

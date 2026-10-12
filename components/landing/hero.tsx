@@ -4,15 +4,13 @@ import { DownloadCta } from "./download-cta";
 import { FloatingRoute } from "./holds";
 import { Phone3D } from "./phone-3d";
 import { FinishScreen, SessionScreen } from "./screens";
-import { Container, CtaLink, DemoLabel } from "./ui";
+import { Container, DemoLabel } from "./ui";
 import { session } from "./data";
 
-import { partnerHref } from "@/config/site";
 import { getI18n } from "@/lib/i18n";
 
 export async function Hero() {
-  const { t } = await getI18n();
-  const partner = partnerHref(t.partnerSubject);
+  const { t, href } = await getI18n();
 
   return (
     <section className="relative flex min-h-dvh flex-col overflow-hidden">
@@ -51,15 +49,16 @@ export async function Hero() {
           </p>
 
           <div
-            className="rise mt-9 flex flex-col gap-3 sm:flex-row sm:items-center"
+            className="rise mt-9"
             style={{ ["--rise-delay" as string]: "160ms" }}
           >
-            <DownloadCta />
-            {partner ? (
-              <CtaLink href={partner} variant="outline">
-                {t.nav.partner}
-              </CtaLink>
-            ) : null}
+            <DownloadCta source="hero" />
+            <a
+              className="mt-5 inline-flex items-center gap-1.5 text-[15px] font-medium text-mute underline decoration-line underline-offset-4 transition-colors hover:text-lime hover:decoration-lime"
+              href={href("/partners")}
+            >
+              {t.hero.partnerLink}
+            </a>
           </div>
         </div>
 

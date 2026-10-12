@@ -22,6 +22,86 @@ const zhTW = {
     switchAria: "Switch to English",
   },
   partnerSubject: "Varo 場館合作",
+  /** Shown instead of the App Store button until the app is out. */
+  waitlist: {
+    label: "Email",
+    placeholder: "你的 email",
+    button: "上架通知我",
+    sending: "送出中…",
+    count: (n: number) => `已有 ${n.toLocaleString("zh-TW")} 位岩友加入`,
+    joined: "已加入！上架時第一個通知你。",
+    already: "這個 email 已經在名單上了，上架時會通知你。",
+    invalid: "請輸入有效的 email。",
+    error: "送出失敗，請稍後再試一次。",
+  },
+  /** The /partners page: recruiting the first gyms, nothing gym-side is built yet. */
+  partners: {
+    meta: {
+      title: "場館合作｜VARO 招募首批合作岩館",
+      description:
+        "VARO 想幫岩館整理路線與換線資訊，讓岩友在 App 裡就知道牆上換了什麼。我們正在找第一批合作場館，一起決定這個功能該長什麼樣子。",
+    },
+    eyebrow: "場館合作 · 招募首批岩館",
+    title: ["讓岩友知道，", "牆上換了什麼。"],
+    intro:
+      "VARO 是給抱石者的攀爬紀錄 App。下一步，我們想幫岩館把路線和換線資訊整理好，直接送到岩友手上。這個功能還在規劃，我們想先聽聽岩館的想法。",
+    cta: "我有興趣",
+    problem: {
+      heading: "現在的狀況",
+      items: [
+        {
+          title: "換線消息 24 小時就消失",
+          body: "換線公告多半發在 IG 限動，沒追蹤、沒剛好滑到，岩友就錯過了。",
+        },
+        {
+          title: "岩友不知道哪面牆換了",
+          body: "到了現場才發現整面牆是新線，或是想挑戰的那條已經拆掉。",
+        },
+        {
+          title: "路線資訊沒有地方集中",
+          body: "難度、顏色、在哪面牆，每次都要到現場看、或是問櫃台。",
+        },
+      ],
+    },
+    plan: {
+      heading: "我們想做的",
+      badge: "規劃中",
+      items: [
+        {
+          title: "路線資訊整理",
+          body: "把場館的路線（難度、岩點顏色、牆面）放進 VARO。岩友記錄時直接選，不用自己輸入。",
+        },
+        {
+          title: "換線公告",
+          body: "哪面牆、哪天換線，岩友在 App 裡就看得到，也能收到通知。",
+        },
+      ],
+    },
+    pilot: {
+      heading: "成為首批合作場館",
+      items: [
+        "一起決定功能該怎麼設計，符合場館實際的換線流程",
+        "你的場館會是第一批在 VARO 上線的岩館",
+        "不需要任何承諾，先聊聊就好",
+      ],
+    },
+    contact: {
+      heading: "有興趣？寫信給我們",
+      body: "按下按鈕會開啟一封寫好問題的信，填幾行就好。我們會親自回覆。",
+      button: "寫信給 VARO",
+      or: "或直接寄到",
+    },
+    /** Pre-filled email body: the questions we'd ask on a first call. */
+    mailBody: [
+      "你好，我想了解 VARO 的場館合作。",
+      "",
+      "場館名稱：",
+      "所在城市：",
+      "目前怎麼公告換線（IG、FB、現場公告…）：",
+      "大約多久換一次線：",
+      "聯絡人與電話（選填）：",
+    ].join("\n"),
+  },
   footer: {
     support: "支援",
     privacy: "隱私權政策",
@@ -33,6 +113,7 @@ const zhTW = {
     body: "從第一次摸線到終於完攀，與岩友分享值得記住的每一刻。",
     download: "在 App Store 下載",
     comingSoon: "即將登陸 App Store",
+    partnerLink: "經營岩館？了解場館合作 →",
     demo: "介面示意",
     finishLabel: "Varo 完成訓練畫面示意",
     sessionLabel: (gym: string, routes: number) =>
