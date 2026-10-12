@@ -1,3 +1,6 @@
+import type { CityFacts } from "@/lib/gyms/city-facts";
+import type { GymKind } from "@/lib/gyms/types";
+
 const zhTW = {
   htmlLang: "zh-Hant-TW",
   ogLocale: "zh_TW",
@@ -45,6 +48,135 @@ const zhTW = {
       invalid: { title: "Email 格式不正確", body: "檢查一下再送出吧。" },
       error: { title: "送出失敗", body: "可能是網路不穩，請稍後再試一次。" },
     },
+  },
+  /** The /gyms page. Gym details stay in Chinese, as published by the gyms. */
+  gyms: {
+    meta: {
+      title: (n: number, year: number) =>
+        `全台抱石館・攀岩館地圖（${year}）｜${n} 間地址、營業時間與價格｜VARO`,
+      description: (n: number) =>
+        `全台 ${n} 間可以抱石的岩館：台北、新北、桃園、新竹、台中、台南、高雄、宜蘭等地的地址、營業時間、價格與預約方式，一張地圖看完。`,
+    },
+    nav: "岩館",
+    title: "全台抱石館",
+    lead: (n: number, cities: number) =>
+      `${n} 間可以抱石的岩館，分布在 ${cities} 個縣市。地圖上每顆岩點都是一間館，點縣市就能看那一區。`,
+    all: "全部",
+    mapLabel: "台灣抱石館地圖",
+    kinds: {
+      boulder: "抱石館",
+      mixed: "抱石＋上攀",
+      rope: "上攀為主",
+      kids: "兒童／小型抱石",
+      outdoor: "戶外／半戶外",
+    },
+    unconfirmed: "營運狀態待確認",
+    unconfirmedHint: "空心岩點：營運狀態待確認",
+    weekday: "平日",
+    weekend: "假日",
+    shoes: "岩鞋",
+    currency: "$",
+    directions: "導航",
+    website: "官網",
+    call: "電話",
+    more: "營業時間與更多資訊",
+    hours: "營業時間",
+    courses: "體驗與課程",
+    facilities: "設施",
+    booking: "預約方式",
+    address: "地址",
+    notes: "出發前留意",
+    showAll: "看全部縣市",
+    caveat: {
+      title: "出發前先確認",
+      body: (date: string) =>
+        `這份清單整理自公開資訊，最後查核於 ${date}。營業時間和價格大多還沒跟場館確認，出發前請先看場館的官方公告。`,
+      report: "資料有誤，或你經營其中一間岩館？",
+      reportLink: "寫信告訴我們",
+      reportSubject: "VARO 岩館資料更正",
+    },
+    closing: {
+      title: ["找到想去的館了？", "每一次嘗試都記下來。"],
+    },
+    date: (iso: string) => {
+      const [y, m, d] = iso.split("-").map(Number);
+
+      return `${y} 年 ${m} 月 ${d} 日`;
+    },
+    cities: {
+      台北市: "台北市",
+      新北市: "新北市",
+      桃園市: "桃園市",
+      新竹市: "新竹市",
+      新竹縣: "新竹縣",
+      台中市: "台中市",
+      彰化縣: "彰化縣",
+      南投縣: "南投縣",
+      雲林縣: "雲林縣",
+      嘉義市: "嘉義市",
+      台南市: "台南市",
+      高雄市: "高雄市",
+      宜蘭縣: "宜蘭縣",
+      花蓮縣: "花蓮縣",
+      台東縣: "台東縣",
+    } as Record<string, string>,
+  },
+  /** /gyms/[city]: every sentence is built from the data, so nothing is claimed that the research didn't find. */
+  gymsCity: {
+    meta: {
+      title: (f: CityFacts) =>
+        `${f.city}抱石館・攀岩館一覽（${f.year}）｜${f.n} 間地址、營業時間${f.priced.length ? "與價格" : "與預約方式"}｜VARO`,
+      description: (f: CityFacts) =>
+        `${f.city} ${f.n} 間可以抱石的岩館：${f.names.slice(0, 4).join("、")}${f.n > 4 ? "等" : ""}。附地圖、營業時間、預約方式${f.priced.length ? "與價格" : ""}。`,
+    },
+    title: (city: string) => `${city}抱石館・攀岩館`,
+    lead: (f: CityFacts, kind: (k: GymKind) => string) =>
+      `${f.city}有 ${f.n} 間可以抱石的岩館，${f.kinds.map((k) => `${k.n} 間${kind(k.kind)}`).join("、")}，分布在${f.districts.join("、")}。`,
+    faqTitle: "常見問題",
+    /** Each answer is a lead sentence plus, where there's a list, one item per gym. */
+    faq: {
+      count: (f: CityFacts) => ({
+        q: `${f.city}有幾間抱石館？`,
+        a: `目前整理到 ${f.n} 間可以抱石的岩館：`,
+        items: f.names,
+      }),
+      price: (f: CityFacts) =>
+        f.priced.length
+          ? {
+              q: `${f.city}抱石一次多少錢？`,
+              a: "有公開價目的岩館如下，其他岩館請以官方公告為準：",
+              items: f.priced.map(
+                (p) =>
+                  `${p.name}：${[
+                    p.weekday && `平日 ${p.weekday} 元`,
+                    p.weekend && `假日 ${p.weekend} 元`,
+                    p.shoes && `岩鞋租借 ${p.shoes} 元`,
+                    p.notes,
+                  ]
+                    .filter(Boolean)
+                    .join("、")}（${p.source}）`,
+              ),
+            }
+          : {
+              q: `${f.city}抱石一次多少錢？`,
+              a: "目前沒有取得可確認的現行價目，各館價格請以官方公告為準。",
+            },
+      beginners: (f: CityFacts) => ({
+        q: `${f.city}哪些岩館有新手體驗或課程？`,
+        a: "以下岩館有提到新手體驗或課程，實際開課時間請洽場館：",
+        items: f.beginners.map((b) => `${b.name}：${b.courses}`),
+      }),
+      kids: (f: CityFacts) => ({
+        q: `${f.city}哪些岩館可以帶小孩？`,
+        a: "以下岩館有兒童或親子相關的課程或場地，出發前建議先詢問：",
+        items: f.kids,
+      }),
+    } as Record<
+      "count" | "price" | "beginners" | "kids",
+      (f: CityFacts) => { q: string; a: string; items?: string[] }
+    >,
+    otherCities: "其他縣市的抱石館",
+    allGyms: "看全台抱石館地圖",
   },
   /** The /partners page: recruiting the first gyms, nothing gym-side is built yet. */
   partners: {

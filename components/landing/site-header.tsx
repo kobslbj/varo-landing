@@ -1,13 +1,14 @@
+import clsx from "clsx";
 import Image from "next/image";
 import Link from "next/link";
 
 import { getI18n, localizePath } from "@/lib/i18n";
 
 const navLink =
-  "flex h-11 items-center whitespace-nowrap rounded-lg px-2 text-[14px] font-medium text-mute transition-colors hover:text-cream sm:px-3.5 sm:text-[15px]";
+  "flex h-11 items-center whitespace-nowrap rounded-lg px-2 text-[14px] font-medium text-mute transition-colors hover:text-cream max-[359px]:px-1.5 max-[359px]:text-[13px] sm:px-3.5 sm:text-[15px]";
 
 /**
- * Wordmark on the left; 理念, 場館合作 and the language
+ * Wordmark on the left; 岩館, 理念, 場館合作 and the language
  * switch on the right. `path` is the current page, unprefixed, e.g. "/privacy".
  */
 export async function SiteHeader({ path }: { path: string }) {
@@ -19,13 +20,13 @@ export async function SiteHeader({ path }: { path: string }) {
       <div className="mx-auto flex h-16 w-full max-w-[1240px] items-center justify-between px-4 sm:h-20 sm:px-6 lg:px-8">
         <Link
           aria-label="VARO"
-          className="flex h-11 items-center"
+          className="flex h-11 shrink-0 items-center"
           href={href("/")}
         >
           <Image
             priority
             alt="VARO"
-            className="h-[20px] w-auto sm:h-[22px]"
+            className="h-[20px] w-auto max-[359px]:h-[16px] sm:h-[22px]"
             height={172}
             sizes="128px"
             src="/brand/varo-wordmark-white.png"
@@ -33,7 +34,18 @@ export async function SiteHeader({ path }: { path: string }) {
           />
         </Link>
         <nav className="flex items-center gap-1">
-          <Link className={navLink} href={href("/philosophy")}>
+          <Link className={navLink} href={href("/gyms")}>
+            {t.gyms.nav}
+          </Link>
+          {/* Four links don't fit beside the logo on narrow phones; 理念 can wait.
+              The English labels are longer, so they need more room. */}
+          <Link
+            className={clsx(
+              navLink,
+              locale === "en" ? "max-[479px]:hidden" : "max-[399px]:hidden",
+            )}
+            href={href("/philosophy")}
+          >
             {t.nav.philosophy}
           </Link>
           <Link className={navLink} href={href("/partners")}>

@@ -5,6 +5,7 @@ import { isValidElement } from "react";
 
 import { alt, size } from "@/app/[lang]/opengraph-image";
 import { siteConfig } from "@/config/site";
+import { cities } from "@/lib/gyms/cities";
 import { alternates, getI18n, localizePath, type Locale } from "@/lib/i18n";
 
 // Setting `openGraph` on a page drops the inherited opengraph-image, so it's re-attached here.
@@ -46,6 +47,8 @@ export async function pageMetadata(
 /** Indexable pages (unprefixed paths), for the sitemap. */
 export const sitePages = [
   { path: "/", priority: 1 },
+  { path: "/gyms", priority: 0.8 },
+  ...cities.map((c) => ({ path: `/gyms/${c.slug}`, priority: 0.7 })),
   { path: "/philosophy", priority: 0.6 },
   { path: "/partners", priority: 0.5 },
   { path: "/support", priority: 0.5 },
