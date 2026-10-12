@@ -1,4 +1,6 @@
+import { Features } from "@/components/landing/features";
 import { Hero } from "@/components/landing/hero";
+import { SiteFooter } from "@/components/landing/site-footer";
 import { SiteHeader } from "@/components/landing/site-header";
 import { getI18n } from "@/lib/i18n";
 import { appEntity, JsonLd, webPage } from "@/lib/seo";
@@ -20,7 +22,9 @@ export default async function Home() {
       <SiteHeader path="/" />
       <main>
         <Hero />
+        <Features />
       </main>
+      <SiteFooter />
     </>
   );
 }
