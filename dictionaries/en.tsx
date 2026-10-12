@@ -16,6 +16,84 @@ const en: Dictionary = {
     switchAria: "切換為中文",
   },
   partnerSubject: "Varo gym partnership",
+  waitlist: {
+    label: "Email",
+    placeholder: "Your email",
+    button: "Notify me",
+    sending: "Sending…",
+    count: (n) =>
+      `${n.toLocaleString("en")} ${n === 1 ? "climber has" : "climbers have"} joined`,
+    joined: "You’re on the list! You’ll be the first to know.",
+    already: "This email is already on the list. We’ll let you know.",
+    invalid: "Please enter a valid email.",
+    error: "Something went wrong. Please try again.",
+  },
+  partners: {
+    meta: {
+      title: "For gyms | VARO is looking for its first partner gyms",
+      description:
+        "VARO wants to help climbing gyms organise their routes and resets, so climbers see what’s new on the wall right in the app. We’re looking for our first partner gyms to shape it with us.",
+    },
+    eyebrow: "For gyms · Founding partners",
+    title: ["Let climbers know", "what’s new on the wall."],
+    intro:
+      "VARO is a logging app for boulderers. Next, we want to help gyms keep their routes and resets organised and in climbers’ hands. It’s still being planned, and we want to hear from gyms first.",
+    cta: "I’m interested",
+    problem: {
+      heading: "How it works today",
+      items: [
+        {
+          title: "Reset news disappears in 24 hours",
+          body: "Resets are usually announced in an Instagram story. Miss it, and climbers miss the news.",
+        },
+        {
+          title: "Climbers don’t know which wall changed",
+          body: "They find out at the gym that a whole wall is new, or that the problem they were projecting is gone.",
+        },
+        {
+          title: "Route info isn’t in one place",
+          body: "Grade, color, which wall: you have to see it in person or ask the front desk.",
+        },
+      ],
+    },
+    plan: {
+      heading: "What we want to build",
+      badge: "Planned",
+      items: [
+        {
+          title: "Your routes, organised",
+          body: "Your gym’s problems (grade, hold color, wall) live in VARO. Climbers pick them when they log instead of typing them in.",
+        },
+        {
+          title: "Reset announcements",
+          body: "Which wall resets and when, right in the app, with a notification for climbers.",
+        },
+      ],
+    },
+    pilot: {
+      heading: "Become a founding partner",
+      items: [
+        "Shape how it works, so it fits the way your gym actually resets",
+        "Be one of the first gyms live on VARO",
+        "No commitment. Let’s just talk",
+      ],
+    },
+    contact: {
+      heading: "Interested? Email us",
+      body: "The button opens an email with a few questions already in it. Fill in a couple of lines and we’ll reply personally.",
+      button: "Email VARO",
+      or: "or write to",
+    },
+    mailBody: [
+      "Hi, I’d like to hear more about partnering with VARO.",
+      "",
+      "Gym name:",
+      "City:",
+      "How you announce resets today (Instagram, Facebook, in the gym…):",
+      "How often you reset:",
+      "Contact name and phone (optional):",
+    ].join("\n"),
+  },
   footer: {
     support: "Support",
     privacy: "Privacy",
@@ -27,6 +105,7 @@ const en: Dictionary = {
     body: "From your first look at a problem to the day you finally send it, share the moments worth remembering with your crew.",
     download: "Download on the App Store",
     comingSoon: "Coming soon to the App Store",
+    partnerLink: "Run a climbing gym? Partner with us →",
     demo: "Illustration",
     finishLabel: "Illustration of the Varo session-complete screen",
     sessionLabel: (gym, routes) =>

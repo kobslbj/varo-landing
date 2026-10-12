@@ -1,22 +1,41 @@
 import { CtaLink } from "./ui";
+import { WaitlistForm } from "./waitlist-form";
 
 import { siteConfig } from "@/config/site";
 import { getI18n } from "@/lib/i18n";
+import { getWaitlistCount } from "@/lib/waitlist-count";
 
-/** App Store button, or a "coming soon" pill until the listing is live. */
-export async function DownloadCta() {
-  const { t } = await getI18n();
+/** App Store button, or the launch waitlist until the listing is live. */
+export async function DownloadCta({
+  source,
+  className,
+}: {
+  source: "hero" | "closing";
+  className?: string;
+}) {
+  const { locale, t } = await getI18n();
 
-  return siteConfig.appStoreUrl ? (
-    <CtaLink href={siteConfig.appStoreUrl}>
-      <AppleIcon />
-      {t.hero.download}
-    </CtaLink>
-  ) : (
-    <span className="inline-flex h-13 items-center gap-2 self-start rounded-lg bg-cream px-6 text-[16px] font-semibold text-ink">
-      <AppleIcon />
-      {t.hero.comingSoon}
-    </span>
+  if (siteConfig.appStoreUrl) {
+    return (
+      <CtaLink href={siteConfig.appStoreUrl}>
+        <AppleIcon />
+        {t.hero.download}
+      </CtaLink>
+    );
+  }
+
+  // Functions can't cross to the client component, so the count line is built here.
+  const { count: countLine, ...copy } = t.waitlist;
+  const count = await getWaitlistCount();
+
+  return (
+    <WaitlistForm
+      className={className}
+      copy={copy}
+      countLabel={count ? countLine(count) : null}
+      locale={locale}
+      source={source}
+    />
   );
 }
 

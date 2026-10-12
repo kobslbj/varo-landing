@@ -131,8 +131,8 @@ async function Closing() {
       <p className="mt-6 max-w-[30rem] text-[17px] leading-[1.8] text-mute sm:text-[18px]">
         {copy.body}
       </p>
-      <div className="mt-9 flex justify-center">
-        <DownloadCta />
+      <div className="mt-9 flex w-full justify-center">
+        <DownloadCta className="text-left" source="closing" />
       </div>
     </Container>
   );

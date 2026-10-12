@@ -14,7 +14,7 @@ export interface SiteConfig {
   siteUrl: string;
   /** Public App Store listing. The download button is hidden until this is set. */
   appStoreUrl: string | null;
-  /** Inbox for gym partnership enquiries. The 場館合作 CTA is hidden until this is set. */
+  /** Inbox for gym partnership enquiries, used by the /partners page. */
   partnerEmail: string | null;
   contactEmail: string | null;
   privacyUrl: string | null;
@@ -31,15 +31,17 @@ export const siteConfig: SiteConfig = {
   tagline: "Venture · Attempt · Resilience · Overcome",
   siteUrl: process.env.NEXT_PUBLIC_SITE_URL ?? "https://getvaro.app",
   appStoreUrl: null,
-  partnerEmail: process.env.NEXT_PUBLIC_PARTNER_EMAIL ?? null,
+  partnerEmail: process.env.NEXT_PUBLIC_PARTNER_EMAIL ?? "support@getvaro.app",
   contactEmail: "support@getvaro.app",
   privacyUrl: "/privacy",
   termsUrl: null,
   screenshots: [],
 };
 
-/** Mailto for gym enquiries, or null when no inbox is set. */
-export const partnerHref = (subject: string) =>
+/** Mailto for gym enquiries, with an optional pre-filled body, or null when no inbox is set. */
+export const partnerHref = (subject: string, body?: string) =>
   siteConfig.partnerEmail
-    ? `mailto:${siteConfig.partnerEmail}?subject=${encodeURIComponent(subject)}`
+    ? `mailto:${siteConfig.partnerEmail}?subject=${encodeURIComponent(subject)}${
+        body ? `&body=${encodeURIComponent(body)}` : ""
+      }`
     : null;
