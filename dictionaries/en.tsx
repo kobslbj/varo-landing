@@ -26,7 +26,24 @@ const en: Dictionary = {
     joined: "You’re on the list! You’ll be the first to know.",
     already: "This email is already on the list. We’ll let you know.",
     invalid: "Please enter a valid email.",
-    error: "Something went wrong. Please try again.",
+    toast: {
+      joined: {
+        title: "You’re on the waitlist!",
+        body: "You’ll be the first to know when VARO is out.",
+      },
+      already: {
+        title: "You’re already on the list",
+        body: "We’ll email you at launch, no need to sign up again.",
+      },
+      invalid: {
+        title: "That email doesn’t look right",
+        body: "Check it and try again.",
+      },
+      error: {
+        title: "Couldn’t sign you up",
+        body: "The connection may be unstable. Please try again in a moment.",
+      },
+    },
   },
   partners: {
     meta: {

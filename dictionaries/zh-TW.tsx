@@ -32,7 +32,19 @@ const zhTW = {
     joined: "已加入！上架時第一個通知你。",
     already: "這個 email 已經在名單上了，上架時會通知你。",
     invalid: "請輸入有效的 email。",
-    error: "送出失敗，請稍後再試一次。",
+    /** Toasts after pressing the button. */
+    toast: {
+      joined: {
+        title: "已加入等候名單！",
+        body: "VARO 上架時，第一個通知你。",
+      },
+      already: {
+        title: "你已經在名單上了",
+        body: "上架時會寄信通知你，不用再登記一次。",
+      },
+      invalid: { title: "Email 格式不正確", body: "檢查一下再送出吧。" },
+      error: { title: "送出失敗", body: "可能是網路不穩，請稍後再試一次。" },
+    },
   },
   /** The /partners page: recruiting the first gyms, nothing gym-side is built yet. */
   partners: {
