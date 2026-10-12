@@ -5,6 +5,7 @@ import { Inter, Russo_One } from "next/font/google";
 import clsx from "clsx";
 import { Analytics } from "@vercel/analytics/next";
 
+import { Toaster } from "@/components/toaster";
 import { siteConfig } from "@/config/site";
 import { alternates, getI18n, locales } from "@/lib/i18n";
 import { JsonLd, siteGraph } from "@/lib/seo";
@@ -72,6 +73,7 @@ export default async function RootLayout({ children }: LayoutProps<"/[lang]">) {
       <body className="min-h-dvh font-sans antialiased">
         <JsonLd graph={siteGraph(locale, t.meta.description)} />
         {children}
+        <Toaster />
         <Analytics />
       </body>
     </html>

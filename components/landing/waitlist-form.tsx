@@ -2,21 +2,38 @@
 
 import type { Dictionary, Locale } from "@/lib/i18n";
 
-import { useActionState, useEffect, useId } from "react";
+import { useActionState, useId } from "react";
 import clsx from "clsx";
+import { toast } from "@heroui/react";
 import { track } from "@vercel/analytics";
 
 import { holdColors } from "./ui";
 
-import { joinWaitlist } from "@/lib/waitlist";
+import { joinWaitlist, type WaitlistState } from "@/lib/waitlist";
 
-/** Little holds stacked like avatars next to the signup count. */
-const COUNT_HOLDS = [holdColors.red, holdColors.yellow, holdColors.blue];
+/** Little holds stacked like avatars next to the signup count: lopsided, with a bolt hole. */
+const COUNT_HOLDS = [
+  {
+    color: holdColors.red,
+    radius: "46% 54% 38% 62% / 52% 44% 56% 48%",
+    rot: -14,
+  },
+  {
+    color: holdColors.yellow,
+    radius: "58% 42% 50% 50% / 40% 58% 42% 60%",
+    rot: 18,
+  },
+  {
+    color: holdColors.blue,
+    radius: "40% 60% 56% 44% / 56% 46% 54% 44%",
+    rot: -6,
+  },
+];
 
 /**
  * Email field and button in one box, shown while the app isn't on the App
- * Store yet. The browser's own validation bubble is off (`noValidate`); the
- * server checks the address and the message shows under the field instead.
+ * Store yet. Every result gets a toast; a bad address is also explained under
+ * the field. The browser's own validation bubble is off (`noValidate`).
  */
 export function WaitlistForm({
   copy,
@@ -33,15 +50,32 @@ export function WaitlistForm({
   countLabel: string | null;
   className?: string;
 }) {
-  const [state, action, pending] = useActionState(joinWaitlist, undefined);
+  // Toast right when the server answers, once per submit.
+  const [state, action, pending] = useActionState(
+    async (prev: WaitlistState, form: FormData) => {
+      const next = await joinWaitlist(prev, form);
+
+      if (next && next.status !== "idle") {
+        const { title, body } = copy.toast[next.status];
+        const show =
+          next.status === "joined"
+            ? toast.success
+            : next.status === "already"
+              ? toast.info
+              : toast.danger;
+
+        show(title, { description: body });
+        if (next.status === "joined") track("waitlist_join", { source });
+      }
+
+      return next;
+    },
+    undefined,
+  );
   const id = useId();
   const status = state?.status ?? "idle";
   const done = status === "joined" || status === "already";
   const failed = status === "invalid" || status === "error";
-
-  useEffect(() => {
-    if (status === "joined") track("waitlist_join", { source });
-  }, [status, source]);
 
   return (
     <div className={clsx("w-full max-w-[30rem]", className)}>
@@ -88,7 +122,7 @@ export function WaitlistForm({
           {/* Autofill paints its own blue background; an inset shadow in the box colour covers it. */}
           <input
             key={state?.email}
-            aria-describedby={failed ? `${id}-msg` : undefined}
+            aria-describedby={status === "invalid" ? `${id}-msg` : undefined}
             aria-invalid={failed || undefined}
             autoComplete="email"
             className="h-full min-w-0 flex-1 bg-transparent text-[16px] text-cream caret-lime outline-none placeholder:text-[#6f6e6a] focus-visible:outline-none autofill:shadow-[inset_0_0_0_1000px_var(--color-ink-2)] autofill:[-webkit-text-fill-color:var(--color-cream)]"
@@ -120,26 +154,32 @@ export function WaitlistForm({
         </form>
       )}
 
-      {failed ? (
+      {status === "invalid" ? (
         <p
           className="mt-3 text-[14px] leading-[1.6] text-hold-red"
           id={`${id}-msg`}
           role="alert"
         >
-          {status === "invalid" ? copy.invalid : copy.error}
+          {copy.invalid}
         </p>
       ) : countLabel ? (
         <p className="mt-3.5 flex items-center gap-2.5 text-[14px] text-mute">
           <span aria-hidden className="flex">
-            {COUNT_HOLDS.map((color, i) => (
+            {COUNT_HOLDS.map((hold, i) => (
               <span
-                key={color}
+                key={hold.color}
                 className={clsx(
-                  "size-[18px] rounded-full border-2 border-ink",
-                  i > 0 && "-ml-1.5",
+                  "grid h-[18px] w-[22px] place-items-center ring-2 ring-ink",
+                  i > 0 && "-ml-1",
                 )}
-                style={{ backgroundColor: color }}
-              />
+                style={{
+                  backgroundColor: hold.color,
+                  borderRadius: hold.radius,
+                  transform: `rotate(${hold.rot}deg)`,
+                }}
+              >
+                <span className="size-[3px] rounded-full bg-black/35" />
+              </span>
             ))}
           </span>
           <span>{countLabel}</span>
