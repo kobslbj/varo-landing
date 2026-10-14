@@ -23,7 +23,13 @@ export async function SiteFooter() {
           </a>{" "}
           from Taiwan <TaiwanFlag label={t.footer.flag} />
         </p>
-        <nav className="flex items-center gap-5">
+        <nav className="flex flex-wrap items-center gap-5">
+          <Link
+            className="transition-colors hover:text-cream"
+            href={href("/agents")}
+          >
+            For agents
+          </Link>
           <Link
             className="transition-colors hover:text-cream"
             href={href("/support")}

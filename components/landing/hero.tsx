@@ -1,4 +1,5 @@
 import Image from "next/image";
+import Link from "next/link";
 
 import { DownloadCta } from "./download-cta";
 import { FloatingRoute } from "./holds";
@@ -8,6 +9,7 @@ import { Container, DemoLabel } from "./ui";
 import { session } from "./data";
 
 import { getI18n } from "@/lib/i18n";
+import { siteConfig } from "@/config/site";
 
 export async function Hero() {
   const { t, href } = await getI18n();
@@ -28,11 +30,8 @@ export async function Hero() {
       <Container className="relative grid flex-1 content-center items-center gap-6 pb-10 pt-28 lg:grid-cols-12 lg:gap-6 lg:pt-24">
         {/* Copy */}
         <div className="lg:col-span-6">
-          <p className="rise text-[14px] font-semibold tracking-[0.04em] text-lime sm:text-[15px]">
-            {t.hero.eyebrow}
-          </p>
           <h1
-            className="rise mt-5 font-display text-[46px] leading-[1.04] tracking-[-0.01em] sm:text-[64px] lg:text-[68px] xl:text-[76px]"
+            className="rise font-display text-[46px] leading-[1.04] tracking-[-0.01em] sm:text-[64px] lg:text-[68px] xl:text-[76px]"
             style={{ ["--rise-delay" as string]: "60ms" }}
           >
             Every attempt
@@ -52,7 +51,16 @@ export async function Hero() {
             className="rise mt-9"
             style={{ ["--rise-delay" as string]: "160ms" }}
           >
+            {!siteConfig.appStoreUrl && (
+              <p className="mb-4 text-[14px] text-mute">{t.hero.comingSoon}</p>
+            )}
             <DownloadCta source="hero" />
+            <Link
+              className="mt-5 mr-6 inline-flex text-[15px] font-medium text-cream underline decoration-line underline-offset-4 hover:text-lime"
+              href={href("/gyms")}
+            >
+              {t.gyms.title}
+            </Link>
             <a
               className="mt-5 inline-flex items-center gap-1.5 text-[15px] font-medium text-mute underline decoration-line underline-offset-4 transition-colors hover:text-lime hover:decoration-lime"
               href={href("/partners")}

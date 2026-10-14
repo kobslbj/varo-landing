@@ -1,3 +1,5 @@
+import type { Gym } from "./types";
+
 import { gyms } from "./data";
 
 /**
@@ -49,3 +51,6 @@ export const cityPath = (name: string) =>
   `/gyms/${cities.find((c) => c.name === name)?.slug ?? ""}`;
 
 export const gymsIn = (name: string) => gyms.filter((g) => g.city === name);
+
+/** Stable detail URL, shared by the directory, sitemap and agent index. */
+export const gymPath = (gym: Gym) => `${cityPath(gym.city)}/${gym.id}`;

@@ -8,7 +8,7 @@ import { GymExplorer } from "./gym-explorer";
 import { DownloadCta } from "@/components/landing/download-cta";
 import { Container } from "@/components/landing/ui";
 import { siteConfig } from "@/config/site";
-import { cityOrder as allCities, cityPath } from "@/lib/gyms/cities";
+import { cityOrder as allCities, cityPath, gymPath } from "@/lib/gyms/cities";
 import { checkedAt } from "@/lib/gyms/data";
 import { getI18n } from "@/lib/i18n";
 
@@ -58,6 +58,9 @@ export async function GymsMap({
       )}
       cityOrder={cityOrder}
       copy={copy}
+      gymHrefs={Object.fromEntries(
+        gyms.map((gym) => [gym.id, href(gymPath(gym))]),
+      )}
       gyms={gyms}
     />
   );

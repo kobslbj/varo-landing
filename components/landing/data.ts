@@ -85,6 +85,11 @@ export const photoCredits = [
     name: "Nathan Cima",
     href: "https://images.unsplash.com/photo-1696105538782-7815474f28e0",
   },
+  {
+    // /shots/partners-wall.jpg, the wall on the partners page (cropped square).
+    name: "Se. Tsuchiya",
+    href: "https://images.unsplash.com/photo-1659666287295-7da26c3f80d4",
+  },
 ];
 
 /** The progress preview: this week's counts and sessions per week, oldest first. */

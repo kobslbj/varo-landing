@@ -11,10 +11,10 @@ import {
 import { SiteFooter } from "@/components/landing/site-footer";
 import { SiteHeader } from "@/components/landing/site-header";
 import { Container } from "@/components/landing/ui";
-import { cityOrder } from "@/lib/gyms/cities";
+import { cityOrder, gymPath } from "@/lib/gyms/cities";
 import { checkedAt, gyms } from "@/lib/gyms/data";
 import { getI18n } from "@/lib/i18n";
-import { JsonLd, pageMetadata, webPage } from "@/lib/seo";
+import { absoluteUrl, JsonLd, pageMetadata, webPage } from "@/lib/seo";
 
 const CITY_ORDER = cityOrder;
 
@@ -29,7 +29,7 @@ export async function generateMetadata(): Promise<Metadata> {
 }
 
 export default async function GymsPage() {
-  const { locale, t } = await getI18n();
+  const { locale, t, href } = await getI18n();
   const copy = t.gyms;
   const heading = gymsHeading(locale);
 
@@ -49,6 +49,8 @@ export default async function GymsPage() {
                 position: i + 1,
                 item: {
                   "@type": "ExerciseGym",
+                  "@id": `${absoluteUrl(href(gymPath(g)))}#gym`,
+                  url: absoluteUrl(href(gymPath(g))),
                   name: g.name,
                   ...(g.address
                     ? {
@@ -70,7 +72,7 @@ export default async function GymsPage() {
                       }
                     : {}),
                   ...(g.phone ? { telephone: g.phone } : {}),
-                  ...(g.website ? { url: g.website } : {}),
+                  ...(g.website ? { sameAs: [g.website] } : {}),
                 },
               })),
             },

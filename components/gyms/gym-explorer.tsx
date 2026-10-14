@@ -80,6 +80,7 @@ export function GymExplorer({
   gyms,
   cityOrder,
   cityHrefs,
+  gymHrefs,
   copy,
 }: {
   gyms: Gym[];
@@ -87,6 +88,7 @@ export function GymExplorer({
   cityOrder: string[];
   /** Each city's own page, by city name. */
   cityHrefs: Record<string, string>;
+  gymHrefs: Record<string, string>;
   copy: ExplorerCopy;
 }) {
   const single = cityOrder.length === 1 ? cityOrder[0] : null;
@@ -305,6 +307,7 @@ export function GymExplorer({
                     active={g.id === active}
                     copy={copy}
                     gym={g}
+                    href={gymHrefs[g.id]}
                     onHover={setActive}
                   />
                 ))}
@@ -502,11 +505,13 @@ function Chip({
 
 function GymRow({
   gym,
+  href,
   active,
   copy,
   onHover,
 }: {
   gym: Gym;
+  href: string;
   active: boolean;
   copy: ExplorerCopy;
   onHover: (id: string | null) => void;
@@ -533,7 +538,12 @@ function GymRow({
         />
         <div className="min-w-0 flex-1">
           <h3 className="text-[18px] font-bold leading-snug" lang="zh-Hant">
-            {gym.name}
+            <Link
+              className="underline decoration-line underline-offset-4 hover:text-lime"
+              href={href}
+            >
+              {gym.name}
+            </Link>
           </h3>
           <p className="mt-1 flex flex-wrap items-center gap-x-3 gap-y-1 text-[14px] text-mute">
             <span lang="zh-Hant">{gym.district}</span>

@@ -22,8 +22,8 @@ const FEATURES: {
   screen: ReactNode;
 }[] = [
   { key: "log", screen: <LogScreen /> },
-  { key: "progress", screen: <ProgressScreen /> },
   { key: "project", screen: <ProjectScreen /> },
+  { key: "progress", screen: <ProgressScreen /> },
   { key: "share", screen: <ShareScreen /> },
 ];
 
@@ -102,13 +102,11 @@ export async function Features() {
           </Container>
         );
       })}
-
-      <Closing />
     </section>
   );
 }
 
-async function Closing() {
+export async function Closing() {
   const { locale, t } = await getI18n();
   const copy = t.features.closing;
 
