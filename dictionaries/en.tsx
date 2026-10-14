@@ -171,17 +171,20 @@ const en: Dictionary = {
   },
   partners: {
     meta: {
-      title: "For gyms | VARO is looking for its first partner gyms",
+      title: "For gyms | Reset a wall, and climbers know right away | VARO",
       description:
-        "VARO wants to help climbing gyms organise their routes and resets, so climbers see what’s new on the wall right in the app. We’re looking for our first partner gyms to shape it with us.",
+        "Setters snap a photo and tap a grade, and the new problem is in VARO for climbers to log at the wall. The setter tool’s first version is ready, and we’re looking for our first partner gyms to try it.",
     },
     eyebrow: "For gyms · Founding partners",
-    title: ["Let climbers know", "what’s new on the wall."],
+    title: ["Reset a wall,", "and climbers know."],
     intro:
-      "VARO is a logging app for boulderers. Next, we want to help gyms keep their routes and resets organised and in climbers’ hands. It’s still being planned, and we want to hear from gyms first.",
+      "Setters snap a photo and tap a grade, and the new problem is in VARO. Climbers log it with one tap at the wall, and every unfinished project is a reason to come back.",
+    status:
+      "The setter tool’s first version is ready, and the VARO app is coming soon to the App Store. We’re looking for our first gyms to try it on a real reset.",
     cta: "I’m interested",
+    howLink: "See how it works",
     problem: {
-      heading: "How it works today",
+      heading: "How resets reach climbers today",
       items: [
         {
           title: "Reset news disappears in 24 hours",
@@ -197,24 +200,108 @@ const en: Dictionary = {
         },
       ],
     },
-    plan: {
-      heading: "What we want to build",
-      badge: "Planned",
-      items: [
+    how: {
+      heading: "How it works",
+      intro:
+        "Setters and climbers share the same route data. A setter adds a problem once, and climbers never have to type it in.",
+      demo: "Illustration",
+      setter: "Setter",
+      climber: "Climber",
+      steps: [
         {
-          title: "Your routes, organised",
-          body: "Your gym’s problems (grade, hold color, wall) live in VARO. Climbers pick them when they log instead of typing them in.",
+          title: "Pick the zone you just reset and shoot the new problems",
+          body: "Open the web tool on a phone, pick the zone, and take a photo. Nothing to install; any phone works.",
         },
         {
-          title: "Reset announcements",
-          body: "Which wall resets and when, right in the app, with a notification for climbers.",
+          title: "Tap the color and grade, then the next one",
+          body: "The color carries over from the last problem, so most take a single tap on the grade. It saves and the camera opens again. No typing with chalky hands.",
+        },
+        {
+          title: "Climbers log it with one tap at the wall",
+          body: "The new problem shows up on the wall photo in VARO. Climbers tap it and pick one more go, sent or flash.",
+        },
+      ],
+      mock: {
+        zone: "Zone B · New",
+        route: "Blue · V3",
+        buttons: ["Go ＋1", "Sent", "Flash"],
+      },
+    },
+    value: {
+      heading: "What your gym gets",
+      now: {
+        label: "In the first version",
+        items: [
+          {
+            title: "Every reset is an announcement",
+            body: "Upload the photos and the new problems are in the app. No story that disappears in 24 hours: climbers open VARO and see which zone changed.",
+          },
+          {
+            title: "No extra paperwork",
+            body: "No spreadsheets, no going back to a computer. Bad gym wifi is fine: photos wait on the phone and upload once it’s back online.",
+          },
+          {
+            title: "A reason to come back",
+            body: "Every project a climber logs at your gym stays in the app, a reminder that it isn’t sent yet.",
+          },
+        ],
+      },
+      planned: {
+        label: "Planned",
+        items: [
+          {
+            title: "Reset notifications",
+            body: "When you reset, the climbers who come to your gym get a notification.",
+          },
+          {
+            title: "Route feedback",
+            body: "Which problems get the most attempts and how climbers rate the grades. Counted only from climbers who log in VARO, never showing anyone’s individual log.",
+          },
+        ],
+      },
+    },
+    setup: {
+      heading: "Getting started",
+      steps: [
+        {
+          title: "We talk",
+          body: "How often you reset and how your walls are split into zones.",
+        },
+        {
+          title: "We set you up",
+          body: "We create your zones and accounts for your setters.",
+        },
+        {
+          title: "Use it on your next reset",
+          body: "Open the link, sign in, and shoot each zone as you finish it.",
+        },
+      ],
+    },
+    faq: {
+      heading: "Questions from gyms",
+      items: [
+        {
+          q: "Do we need to install an app or buy hardware?",
+          a: "No. The setter tool is a mobile web page; setters open it on their own phones.",
+        },
+        {
+          q: "What if the wifi in the gym is bad?",
+          a: "Photos are kept on the phone and upload automatically once it’s back online. Setters keep shooting without waiting.",
+        },
+        {
+          q: "Who can change our routes?",
+          a: "Only your gym’s staff accounts. There’s no public sign-up; we set up every account by hand.",
+        },
+        {
+          q: "Can the gym see climbers’ logs?",
+          a: "No. Logs are private by default; other people only see what a climber chooses to share.",
         },
       ],
     },
     pilot: {
       heading: "Become a founding partner",
       items: [
-        "Shape how it works, so it fits the way your gym actually resets",
+        "Try the first version on a real reset; your feedback decides what we build next",
         "Be one of the first gyms live on VARO",
         "No commitment. Let’s just talk",
       ],
@@ -230,6 +317,7 @@ const en: Dictionary = {
       "",
       "Gym name:",
       "City:",
+      "Roughly how many zones your walls are split into:",
       "How you announce resets today (Instagram, Facebook, in the gym…):",
       "How often you reset:",
       "Contact name and phone (optional):",
@@ -241,9 +329,8 @@ const en: Dictionary = {
     flag: "Flag of Taiwan",
   },
   hero: {
-    eyebrow: "The bouldering log & community app, made in Taiwan",
-    lead: "Log every attempt. Watch yourself progress.",
-    body: "From your first look at a problem to the day you finally send it, share the moments worth remembering with your crew.",
+    lead: "An iOS bouldering log for climbers in Taiwan.",
+    body: "Record attempts and sends, track the projects you’re working on, and look back on your progress.",
     download: "Download on the App Store",
     comingSoon: "Coming soon to the App Store",
     partnerLink: "Run a climbing gym? Partner with us →",

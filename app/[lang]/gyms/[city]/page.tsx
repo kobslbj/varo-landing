@@ -18,6 +18,7 @@ import {
   cityBySlug,
   cityPath,
   gymsIn,
+  gymPath,
   shortName,
 } from "@/lib/gyms/cities";
 import { cityFacts } from "@/lib/gyms/city-facts";
@@ -123,6 +124,8 @@ export default async function CityGymsPage({ params }: Props) {
                 position: i + 1,
                 item: {
                   "@type": "ExerciseGym",
+                  "@id": `${absoluteUrl(href(gymPath(g)))}#gym`,
+                  url: absoluteUrl(href(gymPath(g))),
                   name: g.name,
                   ...(g.address
                     ? {
@@ -144,7 +147,7 @@ export default async function CityGymsPage({ params }: Props) {
                       }
                     : {}),
                   ...(g.phone ? { telephone: g.phone } : {}),
-                  ...(g.website ? { url: g.website } : {}),
+                  ...(g.website ? { sameAs: [g.website] } : {}),
                 },
               })),
             },
