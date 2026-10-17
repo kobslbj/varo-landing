@@ -1,13 +1,15 @@
 import type { Metadata } from "next";
 import type { ReactNode } from "react";
 
-import { isValidElement } from "react";
-
 import { alt, size } from "@/app/[lang]/opengraph-image";
 import { siteConfig } from "@/config/site";
+import { articlePath, articles } from "@/lib/articles";
 import { cities, gymPath } from "@/lib/gyms/cities";
 import { gyms } from "@/lib/gyms/data";
 import { alternates, getI18n, localizePath, type Locale } from "@/lib/i18n";
+import { nodeText } from "@/lib/node-text";
+
+export { nodeText };
 
 // Setting `openGraph` on a page drops the inherited opengraph-image, so it's re-attached here.
 const ogImage = { width: size.width, height: size.height, alt };
@@ -45,9 +47,19 @@ export async function pageMetadata(
   };
 }
 
-/** Indexable pages (unprefixed paths), for the sitemap. */
-export const sitePages = [
+/** Indexable pages (unprefixed paths), for the sitemap. `locales` limits a page to some languages. */
+export const sitePages: {
+  path: string;
+  priority: number;
+  locales?: Locale[];
+}[] = [
   { path: "/", priority: 1 },
+  { path: "/articles", priority: 0.7 },
+  ...articles.map((a) => ({
+    path: articlePath(a),
+    priority: 0.7,
+    locales: ["zh-TW"] as Locale[],
+  })),
   { path: "/gyms", priority: 0.8 },
   ...cities.map((c) => ({ path: `/gyms/${c.slug}`, priority: 0.7 })),
   ...gyms.map((g) => ({ path: gymPath(g), priority: 0.6 })),
@@ -161,33 +173,6 @@ export const faqQuestions = (items: { q: string; a: ReactNode }[]) =>
     name: q,
     acceptedAnswer: { "@type": "Answer", text: nodeText(a) },
   }));
-
-const BLOCK = new Set(["p", "li", "ul", "ol", "div", "section", "h2", "h3"]);
-
-/** Plain text of a JSX tree, so structured data reuses the copy on the page. */
-export function nodeText(node: ReactNode): string {
-  return rawText(node)
-    .replace(/[ \t]*\n[ \t\n]*/g, "\n")
-    .replace(/[ \t]+/g, " ")
-    .trim();
-}
-
-/** Text with inline whitespace kept and a newline around blocks and `<br>`. */
-function rawText(node: ReactNode): string {
-  if (node == null || typeof node === "boolean") return "";
-  if (typeof node === "string" || typeof node === "number") return `${node}`;
-  if (Array.isArray(node)) return node.map(rawText).join("");
-  if (isValidElement<{ children?: ReactNode }>(node)) {
-    if (node.type === "br") return "\n";
-    const text = rawText(node.props.children);
-
-    return typeof node.type === "string" && BLOCK.has(node.type)
-      ? `\n${text}\n`
-      : text;
-  }
-
-  return "";
-}
 
 /** Renders a schema.org graph as a JSON-LD script tag. */
 export function JsonLd({ graph }: { graph: object[] }) {

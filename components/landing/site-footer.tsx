@@ -26,6 +26,12 @@ export async function SiteFooter() {
         <nav className="flex flex-wrap items-center gap-5">
           <Link
             className="transition-colors hover:text-cream"
+            href={href("/articles")}
+          >
+            {t.nav.articles}
+          </Link>
+          <Link
+            className="transition-colors hover:text-cream"
             href={href("/agents")}
           >
             For agents

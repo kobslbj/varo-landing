@@ -18,6 +18,7 @@ const zhTW = {
     ],
   },
   nav: {
+    articles: "文章",
     philosophy: "理念",
     partner: "場館合作",
     /** Link to the other language. */
@@ -25,6 +26,38 @@ const zhTW = {
     switchAria: "Switch to English",
   },
   partnerSubject: "Varo 場館合作",
+  /** The /articles index and the chrome around each article. */
+  articles: {
+    meta: {
+      title: "抱石新手指南與攀岩文章｜VARO",
+      description:
+        "第一次抱石怎麼玩、抱石跟上攀差在哪？VARO 整理給台灣岩友的抱石入門文章：從準備、入場、規矩到怎麼選第一次的攀岩體驗。",
+    },
+    eyebrow: "文章",
+    title: "抱石，從第一次開始",
+    lead: "給剛開始抱石的你：去岩館前該知道的事、牆上的規矩，以及怎麼一次比一次爬得更好。",
+    heading: "VARO 抱石新手指南",
+    slogan: ["每一次嘗試，", "都算數。"] as [string, string],
+    chat: [
+      { me: false, text: "週五下班要不要去抱石？" },
+      { me: true, text: "我沒爬過欸，會不會很難" },
+      { me: false, text: "第一次從最簡單的開始，鞋子現場租就好" },
+      { me: true, text: "好，衝！" },
+    ],
+    tags: ["#第一次抱石", "#抱石新手"] as [string, string],
+    featured: "先讀這篇",
+    closing: {
+      title: "讀完了，就揪朋友去爬吧。",
+      body: "全台抱石館的地址、營業時間和價格，一張地圖看完。",
+      cta: "打開岩館地圖",
+    },
+    categories: { basics: "入門", routes: "路線知識" },
+    readMinutes: (n: number) => `${n} 分鐘閱讀`,
+    updated: "更新",
+    published: "發布",
+    readMore: "閱讀全文",
+    onlyChinese: null as string | null,
+  },
   /** Shown instead of the App Store button until the app is out. */
   waitlist: {
     label: "Email",
