@@ -1,7 +1,65 @@
 import type { Article } from "../types";
 
 import { A, Callout, CompareTable, Steps } from "@/components/articles/blocks";
-import { GripTypes, HoldTypes } from "@/components/articles/diagrams";
+import {
+  GripTypes,
+  type HoldPhoto,
+  HoldTypes,
+} from "@/components/articles/diagrams";
+
+const BY_SA_3 = {
+  license: "CC BY-SA 3.0",
+  licenseUrl: "https://creativecommons.org/licenses/by-sa/3.0/",
+};
+
+/** Photos from Wikimedia Commons, credited as their licences require. */
+const photos: Record<string, HoldPhoto> = {
+  edge: {
+    src: "/articles/holds/edge.jpg",
+    alt: "手指從上方扣住岩牆上一顆藍色岩點的邊緣",
+    author: "ThomasP",
+    ...BY_SA_3,
+    sourceUrl: "https://commons.wikimedia.org/wiki/File:Thomasp_obergriff.jpg",
+  },
+  crimp: {
+    src: "/articles/holds/crimp.jpg",
+    alt: "手指彎曲，指尖摳在岩石上一道很窄的小邊",
+    author: "Anna reg",
+    license: "CC BY-SA 3.0 AT",
+    licenseUrl: "https://creativecommons.org/licenses/by-sa/3.0/at/",
+    sourceUrl: "https://commons.wikimedia.org/wiki/File:Leistenklettern.jpg",
+  },
+  sloper: {
+    src: "/articles/holds/sloper.jpg",
+    alt: "手掌張開，整片貼在一顆圓圓的灰色大岩點上",
+    author: "ThomasP",
+    ...BY_SA_3,
+    sourceUrl:
+      "https://commons.wikimedia.org/wiki/File:Thomasp_auflegegriff.jpg",
+  },
+  pinch: {
+    src: "/articles/holds/pinch.jpg",
+    alt: "拇指和其他手指從兩側夾住一顆藍色岩點",
+    author: "ThomasP",
+    ...BY_SA_3,
+    sourceUrl:
+      "https://commons.wikimedia.org/wiki/File:Thomasp_zangengriff.jpg",
+  },
+  undercling: {
+    src: "/articles/holds/undercling.jpg",
+    alt: "攀岩者手心朝上從下方抓住岩點，紅色箭頭標出往上的受力方向",
+    author: "ThomasP",
+    ...BY_SA_3,
+    sourceUrl: "https://commons.wikimedia.org/wiki/File:Thomasp_untergriff.jpg",
+  },
+  sidepull: {
+    src: "/articles/holds/sidepull.jpg",
+    alt: "攀岩者身體往一側傾，手從側面拉住岩點，紅色箭頭標出受力方向",
+    author: "ThomasP",
+    ...BY_SA_3,
+    sourceUrl: "https://commons.wikimedia.org/wiki/File:Thomasp_seitgriff.jpg",
+  },
+};
 
 export const boulderingHolds: Article = {
   slug: "bouldering-holds",
@@ -76,6 +134,7 @@ export const boulderingHolds: Article = {
                 zh: "邊緣點",
                 how: "上面有一道平的邊，手指放上去往下拉。",
                 tip: "邊夠寬時可以開掌抓，比較省手指。",
+                photo: photos.edge,
               },
               {
                 kind: "crimp",
@@ -83,6 +142,7 @@ export const boulderingHolds: Article = {
                 zh: "小點、摳點",
                 how: "很窄的邊，只放得下指尖，通常用半摳抓。",
                 tip: "手指負擔大，前幾個月別在小點上硬拉。",
+                photo: photos.crimp,
               },
               {
                 kind: "sloper",
@@ -90,6 +150,7 @@ export const boulderingHolds: Article = {
                 zh: "圓點、摩擦點",
                 how: "圓圓的沒有邊，手掌和手指整片貼住，靠摩擦抓。",
                 tip: "身體要待在點的下方，手臂打直；一往上拉就容易滑掉。",
+                photo: photos.sloper,
               },
               {
                 kind: "pinch",
@@ -97,6 +158,7 @@ export const boulderingHolds: Article = {
                 zh: "捏點",
                 how: "拇指和其他手指從兩側夾住，像捏住一本書。",
                 tip: "拇指要出力；比摳小邊對手指溫和。",
+                photo: photos.pinch,
               },
               {
                 kind: "pocket",
@@ -111,6 +173,7 @@ export const boulderingHolds: Article = {
                 zh: "反抓",
                 how: "好抓的面朝下，手心朝上從下面抓住，往上拉。",
                 tip: "腳要踩高、身體往後靠，才拉得住；站得越低越難用。",
+                photo: photos.undercling,
               },
               {
                 kind: "sidepull",
@@ -118,6 +181,7 @@ export const boulderingHolds: Article = {
                 zh: "側拉",
                 how: "好抓的面朝側邊，手從側面勾住，往身體方向拉。",
                 tip: "身體往點的反方向傾，腳踩住對抗，才不會被甩開。",
+                photo: photos.sidepull,
               },
               {
                 kind: "gaston",
@@ -304,6 +368,10 @@ export const boulderingHolds: Article = {
       label:
         "BMC Sports Science, Medicine and Rehabilitation（2022）：攀岩手指受傷與抓法回顧",
       url: "https://doi.org/10.1186/s13102-022-00539-6",
+    },
+    {
+      label: "Wikimedia Commons：Climbing holds（岩點照片來源，作者與授權見各照片）",
+      url: "https://commons.wikimedia.org/wiki/Category:Climbing_holds",
     },
     {
       label: "Advnture：9 rock climbing holds you need to know",

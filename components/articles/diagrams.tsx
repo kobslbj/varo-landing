@@ -1,5 +1,7 @@
 import type { ReactNode } from "react";
 
+import Image from "next/image";
+
 import { holdColors } from "@/components/landing/ui";
 import { BLOBS } from "@/lib/gyms/hold-style";
 
@@ -684,7 +686,21 @@ export const HOLD_ART: Record<HoldKind, ReactNode> = {
   ),
 };
 
-/** Cards of hold types: picture, how to hold it, what to watch. */
+/** A real photo of a hold in use, with the credit its licence asks for. */
+export type HoldPhoto = {
+  src: string;
+  alt: string;
+  author: string;
+  license: string;
+  licenseUrl: string;
+  /** The file's page on Wikimedia Commons. */
+  sourceUrl: string;
+};
+
+/**
+ * Cards of hold types: a photo of the hold in use where we have one (with the
+ * drawing as a small inset showing the pull), otherwise the drawing itself.
+ */
 export function HoldTypes({
   holds,
 }: {
@@ -694,25 +710,47 @@ export function HoldTypes({
     zh: string;
     how: string;
     tip: string;
+    photo?: HoldPhoto;
   }[];
 }) {
   return (
-    <Figure caption="示意圖：從正面看岩點。綠線是手抓、用力的那一面，箭頭是用力的方向。實際岩點形狀千變萬化，常常同時屬於好幾種。">
-      <ul className="grid gap-3 sm:grid-cols-2">
+    <Figure caption="照片下方註明作者與授權（照片經裁切）。插畫是從正面看岩點：綠線是手抓、用力的那一面，箭頭是用力方向。實際岩點形狀千變萬化，常常同時屬於好幾種。">
+      <ul className="grid grid-cols-2 gap-3">
         {holds.map((h) => (
           <li
             key={h.kind}
-            className="grid grid-cols-[96px_1fr] gap-4 overflow-hidden rounded-[20px] border border-line bg-ink-2 p-3 pr-4 sm:grid-cols-[110px_1fr]"
+            className="flex flex-col overflow-hidden rounded-[20px] border border-line bg-ink-2"
             id={`hold-${h.kind}`}
           >
-            <svg
-              aria-hidden
-              className="block w-full self-start rounded-[14px] bg-[#16181a]"
-              viewBox="0 0 120 100"
-            >
-              {HOLD_ART[h.kind]}
-            </svg>
-            <div className="py-1">
+            <div className="relative aspect-[4/3] bg-[#16181a]">
+              {h.photo ? (
+                <>
+                  <Image
+                    fill
+                    alt={h.photo.alt}
+                    className="object-cover"
+                    sizes="(min-width: 768px) 340px, 50vw"
+                    src={h.photo.src}
+                  />
+                  <svg
+                    aria-hidden
+                    className="absolute bottom-2 right-2 w-[34%] rounded-[12px] bg-[#16181a]/90"
+                    viewBox="0 0 120 100"
+                  >
+                    {HOLD_ART[h.kind]}
+                  </svg>
+                </>
+              ) : (
+                <svg
+                  aria-hidden
+                  className="absolute inset-0 size-full"
+                  viewBox="-10 -5 140 110"
+                >
+                  {HOLD_ART[h.kind]}
+                </svg>
+              )}
+            </div>
+            <div className="flex flex-1 flex-col px-3.5 pb-3.5 pt-3 sm:px-4 sm:pb-4">
               <p className="text-[16px] font-extrabold text-cream">
                 {h.zh}
                 <span className="ml-1.5 font-display text-[13px] font-normal text-mute">
@@ -725,6 +763,28 @@ export function HoldTypes({
               <p className="mt-1.5 text-[13px] leading-[1.6] text-mute">
                 {h.tip}
               </p>
+              {h.photo && (
+                <p className="mt-auto pt-2.5 text-[11px] leading-[1.5] text-mute/80">
+                  照片：
+                  <a
+                    className="underline decoration-line underline-offset-2 hover:text-lime"
+                    href={h.photo.sourceUrl}
+                    rel="noopener noreferrer"
+                    target="_blank"
+                  >
+                    {h.photo.author}
+                  </a>
+                  ，
+                  <a
+                    className="underline decoration-line underline-offset-2 hover:text-lime"
+                    href={h.photo.licenseUrl}
+                    rel="noopener license noreferrer"
+                    target="_blank"
+                  >
+                    {h.photo.license}
+                  </a>
+                </p>
+              )}
             </div>
           </li>
         ))}
