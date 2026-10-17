@@ -46,7 +46,11 @@ export default async function ArticlesPage() {
                 position: i + 1,
                 name: a.title,
                 url: absoluteUrl(articlePath(a)),
-                image: absoluteUrl(a.cover.src),
+                image: absoluteUrl(
+                  "src" in a.cover
+                    ? a.cover.src
+                    : `${articlePath(a)}/opengraph-image`,
+                ),
               })),
             },
           }),

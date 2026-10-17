@@ -28,10 +28,8 @@ export const howToReadBoulderingRoutes: Article = {
     "讀線",
   ],
   cover: {
-    src: "/shots/climb-5.jpg",
-    alt: "從上方俯瞰，攀岩者在黃色圓形地形上，周圍是紅、藍、綠色岩點",
-    width: 900,
-    height: 1125,
+    art: "routes",
+    alt: "插畫：一面岩牆上的藍色路線，起點和終點貼著白色膠帶，萊姆綠虛線連起每一顆點",
   },
   publishedAt: "2026-10-17",
   updatedAt: "2026-10-17",

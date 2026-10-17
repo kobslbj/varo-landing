@@ -538,10 +538,8 @@ export const boulderingTerms: Article = {
     "dyno",
   ],
   cover: {
-    src: "/shots/climb-1.jpg",
-    alt: "攀岩者戴著頭巾，在灰色岩牆上踩著黃色岩點橫移",
-    width: 900,
-    height: 1125,
+    art: "terms",
+    alt: "插畫：岩友的聊天泡泡，寫著「這條 beta 是？」「先 flag 再並手」「我的 project 卡在 crux」「Send！」",
   },
   publishedAt: "2026-10-17",
   updatedAt: "2026-10-17",

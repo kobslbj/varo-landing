@@ -5,6 +5,7 @@ import Link from "next/link";
 import { notFound } from "next/navigation";
 
 import { ArticleCard } from "@/components/articles/article-card";
+import { ArticleCover } from "@/components/articles/cover-art";
 import { GymMapThumb } from "@/components/gyms/map-thumb";
 import { HoldMark, termId, TitleLines } from "@/components/articles/blocks";
 import { Toc } from "@/components/articles/toc";
@@ -148,7 +149,7 @@ export default async function ArticlePage({ params }: Props) {
             url,
             mainEntityOfPage: { "@id": url },
             image: [
-              absoluteUrl(a.cover.src),
+              ...("src" in a.cover ? [absoluteUrl(a.cover.src)] : []),
               absoluteUrl(`${path}/opengraph-image`),
             ],
             datePublished: a.publishedAt,
@@ -252,13 +253,10 @@ export default async function ArticlePage({ params }: Props) {
               </div>
             </div>
             <div className="relative aspect-[16/10] overflow-hidden rounded-[28px] bg-ink-2 lg:aspect-[4/5] lg:rotate-[2deg]">
-              <Image
-                fill
+              <ArticleCover
                 priority
-                alt={a.cover.alt}
-                className="object-cover"
+                cover={a.cover}
                 sizes="(min-width: 1280px) 352px, (min-width: 1024px) 320px, 100vw"
-                src={a.cover.src}
               />
             </div>
           </header>

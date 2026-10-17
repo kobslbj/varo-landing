@@ -21,10 +21,8 @@ export const boulderingHolds: Article = {
     "半摳",
   ],
   cover: {
-    src: "/shots/climb-3.jpg",
-    alt: "攀岩者在仰角牆上伸手抓住橘色岩點",
-    width: 900,
-    height: 1125,
+    art: "holds",
+    alt: "插畫：九種岩點排成三乘三的型錄，綠線標出抓的面、箭頭標出用力方向",
   },
   publishedAt: "2026-10-17",
   updatedAt: "2026-10-17",

@@ -1,8 +1,8 @@
 import clsx from "clsx";
-import Image from "next/image";
 import Link from "next/link";
 
 import { TitleLines } from "./blocks";
+import { ArticleCover } from "./cover-art";
 
 import { type Article, readingMinutes } from "@/lib/articles";
 import { getI18n } from "@/lib/i18n";
@@ -43,16 +43,14 @@ export async function ArticleCard({
             : "aspect-[4/3]",
         )}
       >
-        <Image
-          fill
-          alt={a.cover.alt}
-          className="object-cover transition-transform duration-500 group-hover:scale-[1.04] motion-reduce:transition-none"
+        <ArticleCover
+          className="transition-transform duration-500 group-hover:scale-[1.04] motion-reduce:transition-none"
+          cover={a.cover}
           sizes={
             featured
               ? "(min-width: 768px) 520px, 100vw"
               : "(min-width: 1024px) 400px, (min-width: 640px) 50vw, 100vw"
           }
-          src={a.cover.src}
         />
         <span className="absolute left-4 top-4 -rotate-[4deg] rounded-full bg-lime px-3.5 py-1.5 text-[13px] font-extrabold text-ink">
           {label ?? copy.categories[a.category]}

@@ -22,10 +22,8 @@ export const boulderingGrades: Article = {
     "抱石色票",
   ],
   cover: {
-    src: "/shots/partners-wall.jpg",
-    alt: "一面牆上布滿紅、黃、藍、紫、橘等各色岩點",
-    width: 1000,
-    height: 1000,
+    art: "grades",
+    alt: "插畫：六顆不同顏色的岩點站在階梯上，從 V0 一路往上到 V5",
   },
   publishedAt: "2026-10-17",
   updatedAt: "2026-10-17",

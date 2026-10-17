@@ -2,6 +2,12 @@ import type { ReactNode } from "react";
 
 export type ArticleCategory = "basics" | "routes";
 
+export type CoverArtKind = "routes" | "grades" | "terms" | "holds";
+
+export type ArticleCover =
+  | { src: string; alt: string; width: number; height: number }
+  | { art: CoverArtKind; alt: string };
+
 export interface ArticleSection {
   /** Anchor for the table of contents, e.g. "before-you-go". */
   id: string;
@@ -21,8 +27,8 @@ export interface Article {
   /** Meta description and the lede under the H1, 80–120 characters. */
   description: string;
   keywords: string[];
-  /** A photo from /public, shown on the article and its card. */
-  cover: { src: string; alt: string; width: number; height: number };
+  /** A photo from /public, or one of the drawn covers in components/articles/cover-art.tsx. */
+  cover: ArticleCover;
   /** ISO dates. */
   publishedAt: string;
   updatedAt: string;

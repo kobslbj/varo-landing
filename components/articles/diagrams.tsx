@@ -30,7 +30,7 @@ function Figure({
 }
 
 /** A hold on the drawing, at (x, y) with radius r in viewBox units. */
-function Hold({
+export function Hold({
   x,
   y,
   r,
@@ -72,7 +72,15 @@ function Marker({ x, y, n }: { x: number; y: number; n: number }) {
 }
 
 /** Start/top tape: a short strip of white tape under a hold. */
-function Tape({ x, y, rot = 0 }: { x: number; y: number; rot?: number }) {
+export function Tape({
+  x,
+  y,
+  rot = 0,
+}: {
+  x: number;
+  y: number;
+  rot?: number;
+}) {
   return (
     <rect
       fill="#F5F3EE"
@@ -572,7 +580,7 @@ export type HoldKind =
   | "volume";
 
 /** Each hold seen from the front, the usable surface in lime and the pull as an arrow. */
-const HOLD_ART: Record<HoldKind, ReactNode> = {
+export const HOLD_ART: Record<HoldKind, ReactNode> = {
   jug: (
     <>
       <path
