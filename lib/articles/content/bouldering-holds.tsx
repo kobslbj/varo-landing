@@ -370,7 +370,8 @@ export const boulderingHolds: Article = {
       url: "https://doi.org/10.1186/s13102-022-00539-6",
     },
     {
-      label: "Wikimedia Commons：Climbing holds（岩點照片來源，作者與授權見各照片）",
+      label:
+        "Wikimedia Commons：Climbing holds（岩點照片來源，作者與授權見各照片）",
       url: "https://commons.wikimedia.org/wiki/Category:Climbing_holds",
     },
     {
