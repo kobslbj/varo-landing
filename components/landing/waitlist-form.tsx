@@ -45,7 +45,7 @@ export function WaitlistForm({
   copy: Omit<Dictionary["waitlist"], "count">;
   locale: Locale;
   /** Which form on the site, stored with the signup. */
-  source: "hero" | "closing" | "gyms";
+  source: "hero" | "closing" | "gyms" | "articles";
   /** e.g. "已有 42 位岩友加入"; hidden when the count is unknown or 0. */
   countLabel: string | null;
   className?: string;

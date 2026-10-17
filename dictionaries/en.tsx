@@ -10,12 +10,49 @@ const en: Dictionary = {
     keywords: ["bouldering", "climbing", "climbing log", "Taiwan", "Varo"],
   },
   nav: {
+    articles: "Guides",
     philosophy: "Philosophy",
     partner: "For gyms",
     switchLabel: "中文",
     switchAria: "切換為中文",
   },
   partnerSubject: "Varo gym partnership",
+  articles: {
+    meta: {
+      title: "Bouldering guides for beginners｜VARO",
+      description:
+        "Beginner bouldering guides from VARO: what to expect on your first visit to a climbing gym in Taiwan, and how bouldering differs from rope climbing.",
+    },
+    eyebrow: "Guides",
+    title: "Bouldering, from your first visit",
+    lead: "What to know before your first gym session, the etiquette on the wall, and how to keep getting better.",
+    heading: "VARO bouldering guides",
+    slogan: ["Every attempt", "counts."] as [string, string],
+    chat: [
+      { me: false, text: "Bouldering after work on Friday?" },
+      { me: true, text: "I've never climbed. Is it hard?" },
+      {
+        me: false,
+        text: "You start on the easy ones. Shoes are for rent there",
+      },
+      { me: true, text: "OK, I'm in!" },
+    ],
+    tags: ["#firstclimb", "#bouldering"] as [string, string],
+    featured: "Start here",
+    closing: {
+      title: "Done reading? Bring a friend and go climb.",
+      body: "Addresses, hours and prices for bouldering gyms across Taiwan, on one map.",
+      cta: "Open the gym map",
+    },
+    categories: { basics: "Basics", routes: "Reading routes" },
+    readMinutes: (n: number) => `${n} min read`,
+    updated: "Updated",
+    published: "Published",
+    readMore: "Read",
+    onlyChinese:
+      "Our guides are written in Traditional Chinese for climbers in Taiwan. Your browser can translate them." as
+        string | null,
+  },
   waitlist: {
     label: "Email",
     placeholder: "Your email",

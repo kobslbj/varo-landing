@@ -8,7 +8,7 @@ const navLink =
   "flex h-11 items-center whitespace-nowrap rounded-lg px-2 text-[14px] font-medium text-mute transition-colors hover:text-cream max-[359px]:px-1.5 max-[359px]:text-[13px] sm:px-3.5 sm:text-[15px]";
 
 /**
- * Wordmark on the left; 岩館, 理念, 場館合作 and the language
+ * Wordmark on the left; 岩館, 文章, 理念, 場館合作 and the language
  * switch on the right. `path` is the current page, unprefixed, e.g. "/privacy".
  */
 export async function SiteHeader({ path }: { path: string }) {
@@ -37,12 +37,21 @@ export async function SiteHeader({ path }: { path: string }) {
           <Link className={navLink} href={href("/gyms")}>
             {t.gyms.nav}
           </Link>
-          {/* Four links don't fit beside the logo on narrow phones; 理念 can wait.
-              The English labels are longer, so they need more room. */}
+          {/* Not every link fits beside the logo on narrow phones: 理念 goes
+              first, then 文章. The English labels are longer, so they need more room. */}
           <Link
             className={clsx(
               navLink,
-              locale === "en" ? "max-[479px]:hidden" : "max-[399px]:hidden",
+              locale === "en" ? "max-[419px]:hidden" : "max-[359px]:hidden",
+            )}
+            href={href("/articles")}
+          >
+            {t.nav.articles}
+          </Link>
+          <Link
+            className={clsx(
+              navLink,
+              locale === "en" ? "max-[639px]:hidden" : "max-[479px]:hidden",
             )}
             href={href("/philosophy")}
           >

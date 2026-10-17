@@ -2,6 +2,7 @@ import type { ExplorerCopy } from "./gym-explorer";
 import type { Gym } from "@/lib/gyms/types";
 
 import clsx from "clsx";
+import Link from "next/link";
 
 import { GymExplorer } from "./gym-explorer";
 
@@ -109,6 +110,18 @@ export async function GymsClosing() {
       <div className="mt-9 flex w-full justify-center">
         <DownloadCta className="text-left" source="gyms" />
       </div>
+      {/* The guides are Chinese only. */}
+      {locale === "zh-TW" && (
+        <p className="mt-10 text-[15px] text-mute">
+          第一次去岩館？先看{" "}
+          <Link
+            className="font-semibold text-cream underline decoration-lime underline-offset-4 hover:text-lime"
+            href="/articles/first-time-bouldering-guide"
+          >
+            第一次抱石新手指南
+          </Link>
+        </p>
+      )}
     </Container>
   );
 }

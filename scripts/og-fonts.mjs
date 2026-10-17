@@ -4,11 +4,13 @@
  * disk so it never depends on the network.
  *
  * Re-run after changing the headline or subtitles in
- * app/[lang]/opengraph-image.tsx:  node scripts/og-fonts.mjs
+ * app/[lang]/opengraph-image.tsx or an article title in og-articles.mjs:
+ *   node scripts/og-fonts.mjs
  */
 import { writeFile } from "node:fs/promises";
 
 import { headline, subtitle } from "../app/[lang]/og-copy.mjs";
+import { articleOg } from "../app/[lang]/og-articles.mjs";
 
 async function subset(family, weight, text, out) {
   const css = await fetch(
@@ -27,6 +29,10 @@ await subset("Russo+One", 400, headline, "assets/og/russo-one-subset.ttf");
 await subset(
   "Noto+Sans+TC",
   700,
-  Object.values(subtitle).join(""),
+  [
+    ...Object.values(subtitle),
+    ...Object.values(articleOg).flatMap((a) => [a.eyebrow, ...a.lines]),
+    "VARO 文章",
+  ].join(""),
   "assets/og/noto-sans-tc-700-subset.ttf",
 );
