@@ -249,7 +249,7 @@ const en: Dictionary = {
     intro:
       "Setters snap a photo and tap a grade, and the new problem is in VARO. Climbers log it with one tap at the wall, and every unfinished project is a reason to come back.",
     status:
-      "The setter tool’s first version is ready, and the VARO app is coming soon to the App Store. We’re looking for our first gyms to try it on a real reset.",
+      "The setter tool’s first version is ready, and the VARO app is out on the App Store. We’re looking for our first gyms to try it on a real reset.",
     cta: "I’m interested",
     howLink: "See how it works",
     problem: {
