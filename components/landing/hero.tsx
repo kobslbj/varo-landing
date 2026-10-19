@@ -55,18 +55,20 @@ export async function Hero() {
               <p className="mb-4 text-[14px] text-mute">{t.hero.comingSoon}</p>
             )}
             <DownloadCta source="hero" />
-            <Link
-              className="mt-5 mr-6 inline-flex text-[15px] font-medium text-cream underline decoration-line underline-offset-4 hover:text-lime"
-              href={href("/gyms")}
-            >
-              {t.gyms.title}
-            </Link>
-            <a
-              className="mt-5 inline-flex items-center gap-1.5 text-[15px] font-medium text-mute underline decoration-line underline-offset-4 transition-colors hover:text-lime hover:decoration-lime"
-              href={href("/partners")}
-            >
-              {t.hero.partnerLink}
-            </a>
+            <div className="mt-5 flex flex-wrap gap-x-6 gap-y-3">
+              <Link
+                className="inline-flex text-[15px] font-medium text-cream underline decoration-line underline-offset-4 hover:text-lime"
+                href={href("/gyms")}
+              >
+                {t.gyms.title}
+              </Link>
+              <a
+                className="inline-flex items-center gap-1.5 text-[15px] font-medium text-mute underline decoration-line underline-offset-4 transition-colors hover:text-lime hover:decoration-lime"
+                href={href("/partners")}
+              >
+                {t.hero.partnerLink}
+              </a>
+            </div>
           </div>
         </div>
 
