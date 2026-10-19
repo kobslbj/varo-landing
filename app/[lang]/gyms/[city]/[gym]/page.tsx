@@ -38,15 +38,18 @@ async function load(params: Props["params"]) {
   if (!gym) notFound();
   const i18n = await getI18n();
   const en = i18n.locale === "en";
+  const cityEn = i18n.t.gyms.cities[gym.city] ?? gym.city;
 
   return {
     ...i18n,
     gym,
     en,
     path: gymPath(gym),
-    title: `${gym.name}｜${en ? "Hours, prices & visitor information" : "營業時間、價格與場館資訊"}｜VARO`,
+    title: en
+      ? `${gym.name} | Climbing gym in ${cityEn}: hours, prices & directions | VARO`
+      : `${gym.name}｜營業時間、價格與場館資訊｜VARO`,
     description: en
-      ? `Visitor information for ${gym.name} in ${gym.city}: address, published hours, prices and official contact links. Confirm current details with the gym before visiting.`
+      ? `Visiting ${gym.name}, a climbing gym in ${cityEn}, Taiwan: address, opening hours${gym.price ? ", day-pass prices" : ""} and official contact links. Confirm current details with the gym before you go.`
       : `${gym.name}位於${gym.city}${gym.district}。查看地址、已收錄的營業時間與價格、課程及官方聯絡入口；出發前請向場館確認最新資訊。`,
   };
 }
