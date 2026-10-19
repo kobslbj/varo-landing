@@ -239,6 +239,8 @@ const zhTW = {
     officialLinks: "官方聯絡入口",
     officialNote: "以上供查詢最新公告，不表示每項資料都取自這些頁面。",
     moreInArea: "查看同縣市其他岩館",
+    /** "台北市士林區"; the Chinese pages show the full city name. */
+    place: (city: string, district: string) => `${city}${district}`,
   },
   /** The /partners page: recruiting the first gyms, nothing gym-side is built yet. */
   partners: {

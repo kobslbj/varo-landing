@@ -86,7 +86,7 @@ const ko: Dictionary = {
     directions: "길찾기",
     website: "웹사이트",
     call: "전화",
-    more: "영업시간과 자세한 정보 (중국어)",
+    more: "영업시간과 자세한 정보",
     hours: "영업시간",
     courses: "체험 강습·수업",
     facilities: "시설",
@@ -200,6 +200,7 @@ const ko: Dictionary = {
     officialNote:
       "최신 공지를 확인하기 위한 링크이며, 위 정보가 모두 이 페이지에서 나왔다는 뜻은 아닙니다.",
     moreInArea: "이 지역의 다른 클라이밍장",
+    place: (city, district) => `${city} ${district}`,
   },
   footer: {
     support: "고객 지원",

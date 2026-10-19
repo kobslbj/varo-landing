@@ -12,6 +12,7 @@ import { Container } from "@/components/landing/ui";
 import { siteConfig } from "@/config/site";
 import { cityOrder as allCities, cityPath, gymPath } from "@/lib/gyms/cities";
 import { checkedAt } from "@/lib/gyms/data";
+import { gymTextLang, localizeGym } from "@/lib/gyms/localize";
 import { getI18n } from "@/lib/i18n";
 
 /** Russo One (Latin only) for English headings; CJK gets the heavy sans. */
@@ -26,10 +27,11 @@ export async function GymsMap({
   gyms: Gym[];
   cityOrder: string[];
 }) {
-  const { t, href } = await getI18n();
+  const { locale, t, href } = await getI18n();
   const c = t.gyms;
   // Only plain strings cross to the client component.
   const copy: ExplorerCopy = {
+    textLang: gymTextLang(locale),
     all: c.all,
     mapLabel: c.mapLabel,
     kinds: c.kinds,
@@ -63,7 +65,7 @@ export async function GymsMap({
       gymHrefs={Object.fromEntries(
         gyms.map((gym) => [gym.id, href(gymPath(gym))]),
       )}
-      gyms={gyms}
+      gyms={gyms.map((g) => localizeGym(g, locale))}
     />
   );
 }

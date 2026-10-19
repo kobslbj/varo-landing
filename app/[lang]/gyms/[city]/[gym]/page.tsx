@@ -17,6 +17,7 @@ import {
   gymsIn,
 } from "@/lib/gyms/cities";
 import { checkedAt } from "@/lib/gyms/data";
+import { gymTextLang, localizeGym } from "@/lib/gyms/localize";
 import { getI18n } from "@/lib/i18n";
 import { absoluteUrl, JsonLd, pageMetadata, webPage } from "@/lib/seo";
 
@@ -33,10 +34,11 @@ type Props = { params: Promise<{ city: string; gym: string }> };
 async function load(params: Props["params"]) {
   const { city: slug, gym: id } = await params;
   const city = cityBySlug(slug);
-  const gym = city && gymsIn(city.name).find((g) => g.id === id);
+  const raw = city && gymsIn(city.name).find((g) => g.id === id);
 
-  if (!gym) notFound();
+  if (!raw) notFound();
   const i18n = await getI18n();
+  const gym = localizeGym(raw, i18n.locale);
   const g = i18n.t.gymPage;
   const cityName = i18n.t.gyms.cities[gym.city] ?? gym.city;
 
@@ -49,7 +51,7 @@ async function load(params: Props["params"]) {
       name: gym.name,
       city: cityName,
       cityZh: gym.city,
-      district: gym.district,
+      district: raw.district,
       priced: Boolean(gym.price),
     }),
   };
@@ -73,6 +75,7 @@ export default async function GymPage({ params }: Props) {
   } = await load(params);
   const c = t.gyms;
   const p = t.gymPage;
+  const textLang = gymTextLang(locale);
   const missing = p.missing;
   const official = Array.from(
     new Set(
@@ -225,9 +228,8 @@ export default async function GymPage({ params }: Props) {
           </h1>
           <p className="mt-5 text-[17px] text-mute">
             {c.kinds[g.kind]} ·{" "}
-            <span lang="zh-Hant">
-              {g.city}
-              {g.district}
+            <span lang={textLang}>
+              {p.place(c.cities[g.city] ?? g.city, g.district)}
             </span>
           </p>
           {!g.confirmed && (
@@ -265,7 +267,7 @@ export default async function GymPage({ params }: Props) {
                   <dt className="font-semibold">{label}</dt>
                   <dd
                     className="min-w-0 text-[16px] leading-[1.85] text-cream/90"
-                    lang="zh-Hant"
+                    lang={label === c.address ? "zh-Hant" : textLang}
                   >
                     {body}
                   </dd>

@@ -113,7 +113,7 @@ const copy: Partial<Record<Locale, Copy>> = {
     },
     language: {
       q: "Is the gym information in English?",
-      a: "Gym names, addresses and hours are shown in Chinese, as the gyms publish them. That’s what you’ll want anyway: paste the address into Google Maps or show it to a taxi driver, or tap Directions on any gym page.",
+      a: "Yes: hours, prices, classes and notes are translated. Gym names and addresses stay in Chinese, as they appear on signs. Paste the address into Google Maps or show it to a taxi driver, or tap Directions on any gym page.",
     },
     outdoor: {
       q: "What about outdoor climbing in Taiwan?",
@@ -154,7 +154,7 @@ const copy: Partial<Record<Locale, Copy>> = {
     },
     language: {
       q: "ジムの情報は日本語で載っていますか？",
-      a: "ジム名・住所・営業時間は、ジムが公開している中国語のまま掲載しています。漢字なのでだいたい読めますし、住所はそのままGoogleマップに貼り付けたりタクシーの運転手に見せたりできます。各ジムのページの「行き方」ボタンも使えます。",
+      a: "はい。営業時間・料金・スクール・注意事項は日本語に翻訳しています。ジム名と住所は看板と同じ中国語のまま掲載しているので、住所はそのままGoogleマップに貼り付けたりタクシーの運転手に見せたりできます。各ジムのページの「行き方」ボタンも使えます。",
     },
     outdoor: {
       q: "台湾で外岩はできますか？",
@@ -195,7 +195,7 @@ const copy: Partial<Record<Locale, Copy>> = {
     },
     language: {
       q: "클라이밍장 정보가 한국어로 되어 있나요?",
-      a: "클라이밍장 이름, 주소, 영업시간은 클라이밍장이 공개한 중국어 그대로 보여 줍니다. 주소를 그대로 Google 지도에 붙여 넣거나 택시 기사에게 보여 주면 되고, 각 클라이밍장 페이지의 ‘길찾기’ 버튼도 쓸 수 있습니다.",
+      a: "네. 영업시간, 요금, 수업, 주의 사항은 한국어로 번역했습니다. 클라이밍장 이름과 주소는 간판과 같은 중국어 그대로 두었으니, 주소를 Google 지도에 붙여 넣거나 택시 기사에게 보여 주면 됩니다. 각 클라이밍장 페이지의 ‘길찾기’ 버튼도 쓸 수 있습니다.",
     },
     outdoor: {
       q: "대만에서 자연 암벽 등반도 할 수 있나요?",

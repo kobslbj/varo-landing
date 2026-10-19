@@ -86,7 +86,7 @@ const ja: Dictionary = {
     directions: "行き方",
     website: "ウェブサイト",
     call: "電話",
-    more: "営業時間と詳細（中国語）",
+    more: "営業時間と詳細",
     hours: "営業時間",
     courses: "体験会・スクール",
     facilities: "設備",
@@ -201,6 +201,7 @@ const ja: Dictionary = {
     officialNote:
       "最新のお知らせを確認するためのリンクです。上記のすべての情報がこれらのページから取られたという意味ではありません。",
     moreInArea: "このエリアのほかのジム",
+    place: (city, district) => `${city} ${district}`,
   },
   footer: {
     support: "サポート",

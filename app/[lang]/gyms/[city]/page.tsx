@@ -22,6 +22,7 @@ import {
   shortName,
 } from "@/lib/gyms/cities";
 import { cityFacts } from "@/lib/gyms/city-facts";
+import { localizeGym } from "@/lib/gyms/localize";
 import { checkedAt } from "@/lib/gyms/data";
 import { getI18n, type Dictionary } from "@/lib/i18n";
 import {
@@ -58,7 +59,7 @@ async function load(params: Props["params"]) {
     city,
     list,
     path: `/gyms/${city.slug}`,
-    facts: cityFacts(name, list, checkedAt),
+    facts: cityFacts(name, list, checkedAt, (g) => localizeGym(g, i18n.locale)),
   };
 }
 

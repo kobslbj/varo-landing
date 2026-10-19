@@ -23,6 +23,8 @@ const FULL: ViewBox = [0, 0, MAP_WIDTH, MAP_HEIGHT];
 const HOLD_R = 12;
 
 export interface ExplorerCopy {
+  /** `lang` of the gyms' research text. */
+  textLang: string;
   all: string;
   mapLabel: string;
   kinds: Record<GymKind, string>;
@@ -521,7 +523,7 @@ function GymRow({
             </Link>
           </h3>
           <p className="mt-1 flex flex-wrap items-center gap-x-3 gap-y-1 text-[14px] text-mute">
-            <span lang="zh-Hant">{gym.district}</span>
+            <span lang={copy.textLang}>{gym.district}</span>
             <span style={{ color: KIND_COLORS[gym.kind] }}>
               {copy.kinds[gym.kind]}
             </span>
@@ -550,12 +552,12 @@ function GymRow({
               </dl>
               {/* Hourly, time-slot or intro prices, as the gym words them */}
               {p.notes ? (
-                <p className="mt-1 text-[14px] text-cream" lang="zh-Hant">
+                <p className="mt-1 text-[14px] text-cream" lang={copy.textLang}>
                   {p.notes}
                 </p>
               ) : null}
               {/* Where the price comes from, e.g. 官方分店頁可讀價目 */}
-              <p className="mt-1 text-[12px] text-mute" lang="zh-Hant">
+              <p className="mt-1 text-[12px] text-mute" lang={copy.textLang}>
                 {p.source}
               </p>
             </>
@@ -593,7 +595,7 @@ function GymRow({
             </summary>
             <dl className="mt-3 grid gap-x-6 gap-y-3 text-[14px] leading-[1.65] sm:grid-cols-[auto_1fr]">
               {gym.hours ? (
-                <Detail label={copy.hours}>
+                <Detail label={copy.hours} lang={copy.textLang}>
                   {gym.hours.map((line) => (
                     <span key={line} className="block tabular">
                       {line}
@@ -607,19 +609,27 @@ function GymRow({
                 </Detail>
               ) : null}
               {gym.courses ? (
-                <Detail label={copy.courses}>{gym.courses}</Detail>
+                <Detail label={copy.courses} lang={copy.textLang}>
+                  {gym.courses}
+                </Detail>
               ) : null}
               {gym.facilities ? (
-                <Detail label={copy.facilities}>{gym.facilities}</Detail>
+                <Detail label={copy.facilities} lang={copy.textLang}>
+                  {gym.facilities}
+                </Detail>
               ) : null}
               {gym.booking ? (
-                <Detail label={copy.booking}>{gym.booking}</Detail>
+                <Detail label={copy.booking} lang={copy.textLang}>
+                  {gym.booking}
+                </Detail>
               ) : null}
               {gym.address ? (
-                <Detail label={copy.address}>{gym.address}</Detail>
+                <Detail label={copy.address} lang="zh-Hant">
+                  {gym.address}
+                </Detail>
               ) : null}
               {gym.notes ? (
-                <Detail label={copy.notes}>
+                <Detail label={copy.notes} lang={copy.textLang}>
                   <span className="text-hold-orange">{gym.notes}</span>
                 </Detail>
               ) : null}
@@ -633,15 +643,17 @@ function GymRow({
 
 function Detail({
   label,
+  lang,
   children,
 }: {
   label: string;
+  lang: string;
   children: React.ReactNode;
 }) {
   return (
     <>
       <dt className="text-mute">{label}</dt>
-      <dd className="text-cream/90" lang="zh-Hant">
+      <dd className="text-cream/90" lang={lang}>
         {children}
       </dd>
     </>

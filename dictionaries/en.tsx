@@ -121,7 +121,7 @@ const en: Dictionary = {
     directions: "Directions",
     website: "Website",
     call: "Call",
-    more: "Hours and details (in Chinese)",
+    more: "Hours and details",
     hours: "Hours",
     courses: "Intro sessions & courses",
     facilities: "Facilities",
@@ -236,6 +236,7 @@ const en: Dictionary = {
     officialNote:
       "These links are for checking current announcements; they are not a claim that every detail above came from these pages.",
     moreInArea: "More gyms in this area",
+    place: (city, district) => `${district}, ${city}`,
   },
   partners: {
     meta: {
