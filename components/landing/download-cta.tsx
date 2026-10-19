@@ -2,7 +2,7 @@ import { CtaLink } from "./ui";
 import { WaitlistForm } from "./waitlist-form";
 
 import { siteConfig } from "@/config/site";
-import { getI18n } from "@/lib/i18n";
+import { getI18n, siteLocales } from "@/lib/i18n";
 import { getWaitlistCount } from "@/lib/waitlist-count";
 
 /** App Store button, or the launch waitlist until the listing is live. */
@@ -33,7 +33,8 @@ export async function DownloadCta({
       className={className}
       copy={copy}
       countLabel={count ? countLine(count) : null}
-      locale={locale}
+      // Launch emails are written in Chinese and English only.
+      locale={siteLocales.includes(locale) ? locale : "en"}
       source={source}
     />
   );

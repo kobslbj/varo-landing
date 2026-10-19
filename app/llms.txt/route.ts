@@ -34,11 +34,11 @@ ${zhTW.meta.description}
 
 ## Pages
 
-Each page is in Traditional Chinese at the unprefixed URL and in English under /en.
+Each page is in Traditional Chinese at the unprefixed URL and in English under /en. The gym directory (/gyms and everything under it) is also in Japanese under /ja and Korean under /ko.
 
 - Home: [中文](${absoluteUrl("/")}) · [English](${absoluteUrl("/en")})
 - For agents, source limitations and gym index: [中文](${absoluteUrl("/agents")}) · [English](${absoluteUrl("/en/agents")})
-- Bouldering gyms in Taiwan, a map and list with addresses, hours, prices and booking (compiled from public information; hours and prices mostly unconfirmed with the gyms): [中文](${absoluteUrl("/gyms")}) · [English](${absoluteUrl("/en/gyms")})
+- Bouldering gyms in Taiwan, a map and list with addresses, hours, prices and booking (compiled from public information; hours and prices mostly unconfirmed with the gyms): [中文](${absoluteUrl("/gyms")}) · [English](${absoluteUrl("/en/gyms")}) · [日本語](${absoluteUrl("/ja/gyms")}) · [한국어](${absoluteUrl("/ko/gyms")})
 - Bouldering gyms by city: ${cities.map((c) => `[${c.name}](${absoluteUrl(`/gyms/${c.slug}`)})`).join(" · ")}
 - Guides for beginners (Traditional Chinese only): [文章](${absoluteUrl("/articles")}) — ${articles.map((a) => `[${a.title}](${absoluteUrl(articlePath(a))})`).join(" · ")}
 - Philosophy, the meaning of the name: [中文](${absoluteUrl("/philosophy")}) · [English](${absoluteUrl("/en/philosophy")}) — ${en.philosophy.meta.description}
@@ -52,7 +52,7 @@ ${qa(productFaq("en"))}
 
 ## Climbing in Taiwan as a visitor
 
-${visitorFaq((city) => en.gyms.cities[city] ?? city)
+${visitorFaq("en", (city) => en.gyms.cities[city] ?? city)
   .map(({ q, a }) => `### ${q}\n\n${a}`)
   .join("\n\n")}
 

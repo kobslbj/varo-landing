@@ -5,7 +5,7 @@ import { ImageResponse } from "next/og";
 
 import { subtitle } from "./og-copy.mjs";
 
-import { hasLocale, locales } from "@/lib/i18n/config";
+import { siteLocales } from "@/lib/i18n/config";
 
 // Lives under [lang] so the og:image tag is attached to every page (root-level
 // metadata files sit outside the [lang] root layout and get dropped).
@@ -14,7 +14,7 @@ export const size = { width: 1200, height: 630 };
 export const contentType = "image/png";
 
 export function generateStaticParams() {
-  return locales.map((lang) => ({ lang }));
+  return siteLocales.map((lang) => ({ lang }));
 }
 
 async function dataUri(path: string) {
@@ -37,7 +37,7 @@ export default async function OpengraphImage({
   params: Promise<{ lang: string }>;
 }) {
   const { lang } = await params;
-  const sub = subtitle[hasLocale(lang) ? lang : "zh-TW"];
+  const sub = subtitle[lang === "en" ? "en" : "zh-TW"];
 
   const [wordmark, mascot, display, body] = await Promise.all([
     dataUri("brand/varo-wordmark-white.png"),

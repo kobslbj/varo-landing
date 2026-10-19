@@ -120,6 +120,9 @@ const zhTW = {
     address: "地址",
     notes: "出發前留意",
     showAll: "看全部縣市",
+    breadcrumb: "麵包屑導覽",
+    /** Heading of the travellers' FAQ; not shown in Chinese. */
+    visitorTitle: "",
     caveat: {
       title: "出發前先確認",
       body: (date: string) =>
@@ -210,6 +213,34 @@ const zhTW = {
     >,
     otherCities: "其他縣市的抱石館",
     allGyms: "看全台抱石館地圖",
+    /** How a FAQ answer runs its list into one sentence for structured data. */
+    listSep: "；",
+    listEnd: "。",
+  },
+  /** A single gym's page. */
+  gymPage: {
+    title: (name: string, _city: string) =>
+      `${name}｜營業時間、價格與場館資訊｜VARO`,
+    description: (g: {
+      name: string;
+      city: string;
+      cityZh: string;
+      district: string;
+      priced: boolean;
+    }) =>
+      `${g.name}位於${g.cityZh}${g.district}。查看地址、已收錄的營業時間與價格、課程及官方聯絡入口；出發前請向場館確認最新資訊。`,
+    missing: "尚未收錄，請向場館確認。",
+    prices: "已收錄價格（新台幣）",
+    sourceNote: "來源說明：",
+    sourcesTitle: "資料來源與更新狀態",
+    checked: "資料集查核日期：",
+    sourcesBody:
+      "這是整份名錄的查核日期，不代表本館每項資料都已獲官方確認。營業時間與價格可能變動，各欄附有已知的來源說明；未收錄不代表場館沒有提供。",
+    officialLinks: "官方聯絡入口",
+    officialNote: "以上供查詢最新公告，不表示每項資料都取自這些頁面。",
+    moreInArea: "查看同縣市其他岩館",
+    /** "台北市士林區"; the Chinese pages show the full city name. */
+    place: (city: string, district: string) => `${city}${district}`,
   },
   /** The /partners page: recruiting the first gyms, nothing gym-side is built yet. */
   partners: {

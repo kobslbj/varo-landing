@@ -26,10 +26,12 @@ export interface CityFacts {
 
 const KIND_ORDER: GymKind[] = ["boulder", "mixed", "rope", "kids", "outdoor"];
 
+/** `show` turns a gym into the page's language; filters read the Chinese data. */
 export function cityFacts(
   city: string,
   list: Gym[],
   checkedAt: string,
+  show: (g: Gym) => Gym = (g) => g,
 ): CityFacts {
   const districts = new Map<string, number>();
 
@@ -50,13 +52,13 @@ export function cityFacts(
       .map(([d]) => d),
     priced: list
       .filter((g) => g.price)
-      .map((g) => ({ name: g.name, ...g.price! })),
+      .map((g) => ({ name: g.name, ...show(g).price! })),
     beginners: list
       .filter((g) => g.courses && /體驗|新手|初學|入門/.test(g.courses))
       // The research text often ends in a full stop; the page adds its own.
       .map((g) => ({
         name: g.name,
-        courses: g.courses!.replace(/[。.]+$/, ""),
+        courses: show(g).courses!.replace(/[。.]+$/, ""),
       })),
     kids: list
       .filter(

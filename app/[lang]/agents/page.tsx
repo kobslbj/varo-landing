@@ -3,7 +3,7 @@ import Link from "next/link";
 import { LegalPage, Section } from "@/components/landing/legal-page";
 import { cities, gymPath, gymsIn } from "@/lib/gyms/cities";
 import { checkedAt } from "@/lib/gyms/data";
-import { getI18n } from "@/lib/i18n";
+import { getI18n, siteLocale } from "@/lib/i18n";
 import { productFaq } from "@/lib/product-faq";
 import { JsonLd, pageMetadata, webPage } from "@/lib/seo";
 
@@ -67,12 +67,12 @@ const copy = {
 export async function generateMetadata() {
   const { locale } = await getI18n();
 
-  return pageMetadata("/agents", copy[locale]);
+  return pageMetadata("/agents", copy[siteLocale(locale)]);
 }
 
 export default async function AgentsPage() {
   const { locale, t, href } = await getI18n();
-  const c = copy[locale];
+  const c = copy[siteLocale(locale)];
 
   return (
     <>

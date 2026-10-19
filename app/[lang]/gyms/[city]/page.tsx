@@ -22,6 +22,7 @@ import {
   shortName,
 } from "@/lib/gyms/cities";
 import { cityFacts } from "@/lib/gyms/city-facts";
+import { localizeGym } from "@/lib/gyms/localize";
 import { checkedAt } from "@/lib/gyms/data";
 import { getI18n, type Dictionary } from "@/lib/i18n";
 import {
@@ -48,9 +49,9 @@ async function load(params: Props["params"]) {
   const i18n = await getI18n();
   // Chinese headings use the searched-for short name (台北), English the city's name.
   const name =
-    i18n.locale === "en"
-      ? (i18n.t.gyms.cities[city.name] ?? city.name)
-      : shortName(city.name);
+    i18n.locale === "zh-TW"
+      ? shortName(city.name)
+      : (i18n.t.gyms.cities[city.name] ?? city.name);
   const list = gymsIn(city.name);
 
   return {
@@ -58,7 +59,7 @@ async function load(params: Props["params"]) {
     city,
     list,
     path: `/gyms/${city.slug}`,
-    facts: cityFacts(name, list, checkedAt),
+    facts: cityFacts(name, list, checkedAt, (g) => localizeGym(g, i18n.locale)),
   };
 }
 
@@ -159,9 +160,7 @@ export default async function CityGymsPage({ params }: Props) {
             mainEntity: faqQuestions(
               faq.map(({ q, a, items }) => ({
                 q,
-                a: items
-                  ? `${a}${items.join(locale === "en" ? "; " : "；")}${locale === "en" ? "." : "。"}`
-                  : a,
+                a: items ? `${a}${items.join(copy.listSep)}${copy.listEnd}` : a,
               })),
             ),
           },
