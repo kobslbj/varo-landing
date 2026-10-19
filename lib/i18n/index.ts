@@ -3,14 +3,19 @@ import type { Metadata } from "next";
 import { notFound } from "next/navigation";
 import { lang } from "next/root-params";
 
-import { hasLocale, localizePath, locales, type Locale } from "./config";
+import { hasLocale, localesFor, localizePath, type Locale } from "./config";
 
 import en from "@/dictionaries/en";
+import ja from "@/dictionaries/ja";
+import ko from "@/dictionaries/ko";
 import zhTW from "@/dictionaries/zh-TW";
 
 export * from "./config";
 
-const dictionaries = { "zh-TW": zhTW, en } satisfies Record<Locale, unknown>;
+const dictionaries = { "zh-TW": zhTW, en, ja, ko } satisfies Record<
+  Locale,
+  unknown
+>;
 
 export type Dictionary = typeof zhTW;
 
@@ -35,7 +40,9 @@ export function alternates(
   return {
     canonical: localizePath(locale, path),
     languages: {
-      ...Object.fromEntries(locales.map((l) => [l, localizePath(l, path)])),
+      ...Object.fromEntries(
+        localesFor(path).map((l) => [l, localizePath(l, path)]),
+      ),
       "x-default": path,
     },
   };

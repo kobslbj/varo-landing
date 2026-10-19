@@ -40,8 +40,7 @@ export default async function GymsPage() {
   const { locale, t, href } = await getI18n();
   const copy = t.gyms;
   const heading = gymsHeading(locale);
-  const visitors =
-    locale === "en" ? visitorFaq((city) => copy.cities[city] ?? city) : [];
+  const visitors = visitorFaq(locale, (city) => copy.cities[city] ?? city);
 
   return (
     <>

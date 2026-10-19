@@ -129,6 +129,8 @@ const en: Dictionary = {
     address: "Address",
     notes: "Before you go",
     showAll: "Show all cities",
+    breadcrumb: "Breadcrumb",
+    visitorTitle: "Climbing in Taiwan as a visitor",
     caveat: {
       title: "Check before you go",
       body: (date) =>
@@ -215,6 +217,25 @@ const en: Dictionary = {
     },
     otherCities: "Bouldering gyms in other cities",
     allGyms: "See the map of all gyms",
+    listSep: "; ",
+    listEnd: ".",
+  },
+  gymPage: {
+    title: (name, city) =>
+      `${name} | Climbing gym in ${city}: hours, prices & directions | VARO`,
+    description: (g) =>
+      `Visiting ${g.name}, a climbing gym in ${g.city}, Taiwan: address, opening hours${g.priced ? ", day-pass prices" : ""} and official contact links. Confirm current details with the gym before you go.`,
+    missing: "Not recorded. Please contact the gym.",
+    prices: "Published prices (TWD)",
+    sourceNote: "Source note: ",
+    sourcesTitle: "Sources & freshness",
+    checked: "Dataset checked: ",
+    sourcesBody:
+      "This is the directory’s review date, not confirmation of every detail by this gym. Hours and prices may change; source notes above describe what is known. Missing information does not mean a service is unavailable.",
+    officialLinks: "Official contact links",
+    officialNote:
+      "These links are for checking current announcements; they are not a claim that every detail above came from these pages.",
+    moreInArea: "More gyms in this area",
   },
   partners: {
     meta: {

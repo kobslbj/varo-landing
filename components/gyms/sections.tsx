@@ -14,7 +14,7 @@ import { cityOrder as allCities, cityPath, gymPath } from "@/lib/gyms/cities";
 import { checkedAt } from "@/lib/gyms/data";
 import { getI18n } from "@/lib/i18n";
 
-/** Russo One for English headings; Chinese gets the heavy sans. */
+/** Russo One (Latin only) for English headings; CJK gets the heavy sans. */
 export const gymsHeading = (locale: string) =>
   locale === "en" ? "font-display leading-[1.04]" : "display-zh";
 
@@ -129,12 +129,12 @@ export async function GymsClosing() {
 
 /** Travellers' questions, English pages only. */
 export async function VisitorFaq({ items }: { items: VisitorQuestion[] }) {
-  const { locale, href } = await getI18n();
+  const { locale, t, href } = await getI18n();
 
   return (
     <Container className="relative pb-20">
       <h2 className={clsx("text-[30px] sm:text-[38px]", gymsHeading(locale))}>
-        Climbing in Taiwan as a visitor
+        {t.gyms.visitorTitle}
       </h2>
       <dl className="mt-8 max-w-[48rem] divide-y divide-line border-y border-line">
         {items.map(({ q, a, links }) => (

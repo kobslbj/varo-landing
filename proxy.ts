@@ -1,6 +1,12 @@
 import { NextResponse, type NextRequest } from "next/server";
 
-import { defaultLocale, locales } from "@/lib/i18n/config";
+import {
+  defaultLocale,
+  fallbackLocale,
+  localesFor,
+  localizePath,
+  locales,
+} from "@/lib/i18n/config";
 
 /**
  * Every route lives under `app/[lang]`. The default locale keeps the
@@ -24,7 +30,24 @@ export function proxy(request: NextRequest) {
 
     return NextResponse.redirect(url, 308);
   }
-  if (prefix) return;
+  if (prefix) {
+    const rest = pathname.slice(prefix.length + 1) || "/";
+
+    // Japanese and Korean only have the gym directory: their home is the map,
+    // and any other page goes to its English version.
+    if (!localesFor(rest).includes(prefix)) {
+      const url = request.nextUrl.clone();
+
+      url.pathname =
+        rest === "/"
+          ? localizePath(prefix, "/gyms")
+          : `/${fallbackLocale}${rest}`;
+
+      return NextResponse.redirect(url, 307);
+    }
+
+    return;
+  }
 
   const url = request.nextUrl.clone();
 

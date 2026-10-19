@@ -6,7 +6,13 @@ import { siteConfig } from "@/config/site";
 import { articlePath, articles } from "@/lib/articles";
 import { cities, gymPath } from "@/lib/gyms/cities";
 import { gyms } from "@/lib/gyms/data";
-import { alternates, getI18n, localizePath, type Locale } from "@/lib/i18n";
+import {
+  alternates,
+  getI18n,
+  localizePath,
+  siteLocales,
+  type Locale,
+} from "@/lib/i18n";
 import { nodeText } from "@/lib/node-text";
 
 export { nodeText };
@@ -24,6 +30,8 @@ export async function pageMetadata(
   { title, description }: { title: string; description: string },
 ): Promise<Metadata> {
   const { locale, t } = await getI18n();
+  // Share images are drawn for the full-site locales only.
+  const imageLocale = siteLocales.includes(locale) ? locale : "en";
 
   return {
     title,
@@ -36,13 +44,13 @@ export async function pageMetadata(
       title,
       description,
       url: localizePath(locale, path),
-      images: [{ url: `/${locale}/opengraph-image`, ...ogImage }],
+      images: [{ url: `/${imageLocale}/opengraph-image`, ...ogImage }],
     },
     twitter: {
       card: "summary_large_image",
       title,
       description,
-      images: [{ url: `/${locale}/twitter-image`, ...ogImage }],
+      images: [{ url: `/${imageLocale}/twitter-image`, ...ogImage }],
     },
   };
 }
@@ -103,13 +111,18 @@ export function siteGraph(locale: Locale, description: string) {
       name: siteConfig.name,
       url: absoluteUrl("/"),
       description,
-      inLanguage: ["zh-Hant-TW", "en"],
+      inLanguage: ["zh-Hant-TW", "en", "ja", "ko"],
       publisher: { "@id": organizationId },
     },
   ];
 }
 
-const htmlLang: Record<Locale, string> = { "zh-TW": "zh-Hant-TW", en: "en" };
+const htmlLang: Record<Locale, string> = {
+  "zh-TW": "zh-Hant-TW",
+  en: "en",
+  ja: "ja",
+  ko: "ko",
+};
 
 /**
  * The page being viewed, one node per locale (its `@id` is its canonical URL).

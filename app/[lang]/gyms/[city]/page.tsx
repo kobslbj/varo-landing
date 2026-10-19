@@ -48,9 +48,9 @@ async function load(params: Props["params"]) {
   const i18n = await getI18n();
   // Chinese headings use the searched-for short name (台北), English the city's name.
   const name =
-    i18n.locale === "en"
-      ? (i18n.t.gyms.cities[city.name] ?? city.name)
-      : shortName(city.name);
+    i18n.locale === "zh-TW"
+      ? shortName(city.name)
+      : (i18n.t.gyms.cities[city.name] ?? city.name);
   const list = gymsIn(city.name);
 
   return {
@@ -159,9 +159,7 @@ export default async function CityGymsPage({ params }: Props) {
             mainEntity: faqQuestions(
               faq.map(({ q, a, items }) => ({
                 q,
-                a: items
-                  ? `${a}${items.join(locale === "en" ? "; " : "；")}${locale === "en" ? "." : "。"}`
-                  : a,
+                a: items ? `${a}${items.join(copy.listSep)}${copy.listEnd}` : a,
               })),
             ),
           },

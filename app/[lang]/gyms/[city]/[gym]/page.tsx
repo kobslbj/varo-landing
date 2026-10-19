@@ -37,20 +37,21 @@ async function load(params: Props["params"]) {
 
   if (!gym) notFound();
   const i18n = await getI18n();
-  const en = i18n.locale === "en";
-  const cityEn = i18n.t.gyms.cities[gym.city] ?? gym.city;
+  const g = i18n.t.gymPage;
+  const cityName = i18n.t.gyms.cities[gym.city] ?? gym.city;
 
   return {
     ...i18n,
     gym,
-    en,
     path: gymPath(gym),
-    title: en
-      ? `${gym.name} | Climbing gym in ${cityEn}: hours, prices & directions | VARO`
-      : `${gym.name}｜營業時間、價格與場館資訊｜VARO`,
-    description: en
-      ? `Visiting ${gym.name}, a climbing gym in ${cityEn}, Taiwan: address, opening hours${gym.price ? ", day-pass prices" : ""} and official contact links. Confirm current details with the gym before you go.`
-      : `${gym.name}位於${gym.city}${gym.district}。查看地址、已收錄的營業時間與價格、課程及官方聯絡入口；出發前請向場館確認最新資訊。`,
+    title: g.title(gym.name, cityName),
+    description: g.description({
+      name: gym.name,
+      city: cityName,
+      cityZh: gym.city,
+      district: gym.district,
+      priced: Boolean(gym.price),
+    }),
   };
 }
 
@@ -63,7 +64,6 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
 export default async function GymPage({ params }: Props) {
   const {
     gym: g,
-    en,
     locale,
     t,
     href,
@@ -72,9 +72,8 @@ export default async function GymPage({ params }: Props) {
     description,
   } = await load(params);
   const c = t.gyms;
-  const missing = en
-    ? "Not recorded. Please contact the gym."
-    : "尚未收錄，請向場館確認。";
+  const p = t.gymPage;
+  const missing = p.missing;
   const official = Array.from(
     new Set(
       [g.website, g.instagram, g.facebook].filter((url): url is string =>
@@ -101,7 +100,7 @@ export default async function GymPage({ params }: Props) {
       ),
     },
     {
-      label: en ? "Published prices (TWD)" : "已收錄價格（新台幣）",
+      label: p.prices,
       body: g.price ? (
         <>
           <ul>
@@ -121,7 +120,7 @@ export default async function GymPage({ params }: Props) {
           </ul>
           {g.price.notes && <p>{g.price.notes}</p>}
           <p className="mt-3 text-[14px] text-mute">
-            {en ? "Source note: " : "來源說明："}
+            {p.sourceNote}
             {g.price.source}
           </p>
         </>
@@ -201,7 +200,7 @@ export default async function GymPage({ params }: Props) {
       <main>
         <Container className="pb-16 pt-32 sm:pt-40">
           <nav
-            aria-label={en ? "Breadcrumb" : "麵包屑導覽"}
+            aria-label={c.breadcrumb}
             className="flex flex-wrap gap-2 text-[15px] text-mute"
           >
             <Link
@@ -274,21 +273,15 @@ export default async function GymPage({ params }: Props) {
               ))}
             </dl>
             <aside className="border-t-2 border-lime pt-5">
-              <h2 className="text-[21px] font-bold">
-                {en ? "Sources & freshness" : "資料來源與更新狀態"}
-              </h2>
+              <h2 className="text-[21px] font-bold">{p.sourcesTitle}</h2>
               <p className="mt-4 text-[14px] text-mute">
-                {en ? "Dataset checked: " : "資料集查核日期："}
+                {p.checked}
                 <time dateTime={checkedAt}>{c.date(checkedAt)}</time>
               </p>
               <p className="mt-4 text-[15px] leading-[1.8] text-mute">
-                {en
-                  ? "This is the directory’s review date, not confirmation of every detail by this gym. Hours and prices may change; source notes above describe what is known. Missing information does not mean a service is unavailable."
-                  : "這是整份名錄的查核日期，不代表本館每項資料都已獲官方確認。營業時間與價格可能變動，各欄附有已知的來源說明；未收錄不代表場館沒有提供。"}
+                {p.sourcesBody}
               </p>
-              <h3 className="mt-6 font-semibold">
-                {en ? "Official contact links" : "官方聯絡入口"}
-              </h3>
+              <h3 className="mt-6 font-semibold">{p.officialLinks}</h3>
               <ul className="mt-3 space-y-3 text-[14px]">
                 {official.map((url) => (
                   <li key={url}>
@@ -307,9 +300,7 @@ export default async function GymPage({ params }: Props) {
                 <p className="mt-3 text-[14px] text-mute">{missing}</p>
               )}
               <p className="mt-4 text-[14px] leading-relaxed text-mute">
-                {en
-                  ? "These links are for checking current announcements; they are not a claim that every detail above came from these pages."
-                  : "以上供查詢最新公告，不表示每項資料都取自這些頁面。"}
+                {p.officialNote}
               </p>
               <a
                 className="mt-6 inline-block text-[15px] font-semibold underline underline-offset-4 hover:text-lime"
@@ -323,7 +314,7 @@ export default async function GymPage({ params }: Props) {
             className="mt-10 inline-block underline underline-offset-4 hover:text-lime"
             href={href(cityPath(g.city))}
           >
-            {en ? "More gyms in this area" : "查看同縣市其他岩館"}
+            {p.moreInArea}
           </Link>
         </Container>
         <GymsClosing />
