@@ -4,6 +4,7 @@ import { faq as faqZh } from "../[lang]/support/content.zh-TW";
 import { siteConfig } from "@/config/site";
 import { cities, gymPath } from "@/lib/gyms/cities";
 import { gyms, checkedAt } from "@/lib/gyms/data";
+import { visitorFaq } from "@/lib/gyms/visitor-faq";
 import { articlePath, articles } from "@/lib/articles";
 import { productFaq } from "@/lib/product-faq";
 import en from "@/dictionaries/en";
@@ -48,6 +49,12 @@ Each page is in Traditional Chinese at the unprefixed URL and in English under /
 ## Product facts & availability
 
 ${qa(productFaq("en"))}
+
+## Climbing in Taiwan as a visitor
+
+${visitorFaq((city) => en.gyms.cities[city] ?? city)
+  .map(({ q, a }) => `### ${q}\n\n${a}`)
+  .join("\n\n")}
 
 ## Gym data and citation guidance
 

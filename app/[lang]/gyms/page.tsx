@@ -7,14 +7,22 @@ import {
   GymsClosing,
   GymsMap,
   gymsHeading,
+  VisitorFaq,
 } from "@/components/gyms/sections";
 import { SiteFooter } from "@/components/landing/site-footer";
 import { SiteHeader } from "@/components/landing/site-header";
 import { Container } from "@/components/landing/ui";
 import { cityOrder, gymPath } from "@/lib/gyms/cities";
 import { checkedAt, gyms } from "@/lib/gyms/data";
+import { visitorFaq } from "@/lib/gyms/visitor-faq";
 import { getI18n } from "@/lib/i18n";
-import { absoluteUrl, JsonLd, pageMetadata, webPage } from "@/lib/seo";
+import {
+  absoluteUrl,
+  faqQuestions,
+  JsonLd,
+  pageMetadata,
+  webPage,
+} from "@/lib/seo";
 
 const CITY_ORDER = cityOrder;
 
@@ -32,6 +40,8 @@ export default async function GymsPage() {
   const { locale, t, href } = await getI18n();
   const copy = t.gyms;
   const heading = gymsHeading(locale);
+  const visitors =
+    locale === "en" ? visitorFaq((city) => copy.cities[city] ?? city) : [];
 
   return (
     <>
@@ -77,6 +87,15 @@ export default async function GymsPage() {
               })),
             },
           }),
+          ...(visitors.length
+            ? [
+                {
+                  "@type": "FAQPage",
+                  "@id": `${absoluteUrl(href("/gyms"))}#visitors`,
+                  mainEntity: faqQuestions(visitors),
+                },
+              ]
+            : []),
         ]}
       />
       <SiteHeader path="/gyms" />
@@ -103,6 +122,7 @@ export default async function GymsPage() {
           <GymsMap cityOrder={CITY_ORDER} gyms={gyms} />
         </Container>
 
+        {visitors.length ? <VisitorFaq items={visitors} /> : null}
         <GymsCaveat />
         <GymsClosing />
       </main>

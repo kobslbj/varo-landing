@@ -7,7 +7,17 @@ const en: Dictionary = {
     title: "VARO | Bouldering Log App",
     description:
       "Varo is a climbing log app for boulderers. Record every session and attempt, track the projects you’re working on, and look back to see how far you’ve come.",
-    keywords: ["bouldering", "climbing", "climbing log", "Taiwan", "Varo"],
+    keywords: [
+      "bouldering",
+      "climbing",
+      "climbing log",
+      "Taiwan",
+      "Varo",
+      "climbing gym Taipei",
+      "bouldering Taipei",
+      "rock climbing Taiwan",
+      "climbing in Taiwan",
+    ],
   },
   nav: {
     articles: "Guides",
@@ -85,14 +95,14 @@ const en: Dictionary = {
   gyms: {
     meta: {
       title: (n, year) =>
-        `Bouldering & climbing gyms in Taiwan (${year}): map of ${n} gyms | VARO`,
+        `Rock climbing & bouldering gyms in Taiwan (${year}): ${n} gyms on a map | VARO`,
       description: (n) =>
-        `${n} gyms where you can boulder in Taiwan, from Taipei to Kaohsiung: addresses, opening hours, prices and booking, on one map.`,
+        `Where to go climbing in Taiwan: ${n} indoor climbing and bouldering gyms in Taipei, Taichung, Kaohsiung and more, with day-pass prices, shoe rental, opening hours and directions. For locals and visitors.`,
     },
     nav: "Gym map",
-    title: "Bouldering gyms in Taiwan",
+    title: "Climbing gyms in Taiwan",
     lead: (n, cities) =>
-      `${n} gyms where you can boulder, across ${cities} cities and counties. Every hold on the map is a gym; pick a city to see that area.`,
+      `${n} indoor climbing and bouldering gyms, across ${cities} cities and counties. Every hold on the map is a gym; pick a city to see that area.`,
     all: "All",
     mapLabel: "Map of bouldering gyms in Taiwan",
     kinds: {
@@ -157,11 +167,11 @@ const en: Dictionary = {
   gymsCity: {
     meta: {
       title: (f) =>
-        `Bouldering & climbing gyms in ${f.city} (${f.year}): ${f.n} gyms | VARO`,
+        `Rock climbing & bouldering gyms in ${f.city} (${f.year}): ${f.n} gyms | VARO`,
       description: (f) =>
-        `${f.n} gyms where you can boulder in ${f.city}, with a map, opening hours, booking${f.priced.length ? " and prices" : ""}.`,
+        `Where to go climbing in ${f.city}: ${f.n} indoor climbing and bouldering ${f.n === 1 ? "gym" : "gyms"}, with a map, opening hours, booking${f.priced.length ? ", day-pass prices and shoe rental" : ""}.`,
     },
-    title: (city) => `Bouldering gyms in ${city}`,
+    title: (city) => `Climbing gyms in ${city}`,
     lead: (f, kind) =>
       `${f.city} has ${f.n} ${f.n === 1 ? "gym" : "gyms"} where you can boulder: ${f.kinds.map((k) => `${k.n} ${kind(k.kind).toLowerCase()}`).join(", ")}.`,
     faqTitle: "Questions",

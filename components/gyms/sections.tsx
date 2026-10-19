@@ -1,5 +1,6 @@
 import type { ExplorerCopy } from "./gym-explorer";
 import type { Gym } from "@/lib/gyms/types";
+import type { VisitorQuestion } from "@/lib/gyms/visitor-faq";
 
 import clsx from "clsx";
 import Link from "next/link";
@@ -122,6 +123,43 @@ export async function GymsClosing() {
           </Link>
         </p>
       )}
+    </Container>
+  );
+}
+
+/** Travellers' questions, English pages only. */
+export async function VisitorFaq({ items }: { items: VisitorQuestion[] }) {
+  const { locale, href } = await getI18n();
+
+  return (
+    <Container className="relative pb-20">
+      <h2 className={clsx("text-[30px] sm:text-[38px]", gymsHeading(locale))}>
+        Climbing in Taiwan as a visitor
+      </h2>
+      <dl className="mt-8 max-w-[48rem] divide-y divide-line border-y border-line">
+        {items.map(({ q, a, links }) => (
+          <div key={q} className="py-6">
+            <dt className="text-[18px] font-bold">{q}</dt>
+            <dd className="mt-2 text-[16px] leading-[1.8] text-mute">
+              <p>{a}</p>
+              {links ? (
+                <ul className="mt-4 flex flex-wrap gap-2">
+                  {links.map((l) => (
+                    <li key={l.path}>
+                      <Link
+                        className="flex h-9 items-center rounded-full border border-line px-4 text-[14px] font-medium text-cream transition-colors hover:border-lime hover:text-lime"
+                        href={href(l.path)}
+                      >
+                        {l.label}
+                      </Link>
+                    </li>
+                  ))}
+                </ul>
+              ) : null}
+            </dd>
+          </div>
+        ))}
+      </dl>
     </Container>
   );
 }
