@@ -30,7 +30,8 @@ export const siteConfig: SiteConfig = {
     "Varo 是為台灣抱石者打造的攀岩紀錄 App。記下每次攀爬與嘗試、追蹤正在挑戰的 Project，回頭看見自己的進步。",
   tagline: "Venture · Attempt · Resilience · Overcome",
   siteUrl: process.env.NEXT_PUBLIC_SITE_URL ?? "https://getvaro.app",
-  appStoreUrl: null,
+  appStoreUrl:
+    "https://apps.apple.com/tw/app/varo-bouldering-climbing/id6821378123",
   partnerEmail: process.env.NEXT_PUBLIC_PARTNER_EMAIL ?? "support@getvaro.app",
   contactEmail: "support@getvaro.app",
   privacyUrl: "/privacy",

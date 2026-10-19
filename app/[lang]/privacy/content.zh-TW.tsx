@@ -21,7 +21,7 @@ export default function PrivacyZh() {
       }
       path="/privacy"
       title="隱私權政策"
-      updated="2026.10.12"
+      updated="2026.10.20"
     >
       <Section title="1. 我們蒐集的資料">
         <ul>
@@ -96,6 +96,10 @@ export default function PrivacyZh() {
         <p>
           當你使用分享功能時，分享的圖片會由你透過系統的分享選單送出，送到哪裡、給誰，由你決定。
         </p>
+        <p>
+          當你把一段攀爬影片<strong>分享為路線 Beta</strong>
+          ，所有使用者都能在那條路線上看到並播放這段影片，以及你的暱稱與頭貼。你可以隨時取消分享，影片就會回到只有你看得到。
+        </p>
       </Section>
 
       <Section title="4. 資料儲存與第三方服務">
@@ -109,8 +113,18 @@ export default function PrivacyZh() {
             <strong>Apple：</strong>「以 Apple 登入」與 App 的發佈。
           </li>
           <li>
+            <strong>Google：</strong>「以 Google 登入」。
+          </li>
+          <li>
             <strong>PostHog：</strong>
             使用情形分析與當機紀錄。資料存放在 PostHog 位於美國的伺服器。
+          </li>
+          <li>
+            <strong>Telegram：</strong>
+            你送出的意見回饋與問題回報（內容、你的使用者名稱、App
+            版本與裝置系統），以及有新帳號註冊的通知（只有登入方式，不含你的
+            email 或個人資料），會傳到 VARO 團隊的 Telegram
+            群組，讓我們能即時處理。
           </li>
         </ul>
         <p>

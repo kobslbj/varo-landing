@@ -24,7 +24,7 @@ export default function PrivacyEn() {
       }
       path="/privacy"
       title="Privacy Policy"
-      updated="2026.10.12"
+      updated="2026.10.20"
     >
       <Section title="1. Data we collect">
         <ul>
@@ -120,6 +120,12 @@ export default function PrivacyEn() {
           When you use the share feature, the image is sent through your
           device’s share sheet, so you decide where it goes and who sees it.
         </p>
+        <p>
+          When you <strong>share a climbing video as a route’s beta</strong>,
+          every user can see and play it on that route, along with your nickname
+          and profile photo. You can stop sharing at any time, and the video
+          goes back to being visible only to you.
+        </p>
       </Section>
 
       <Section title="4. Storage and third-party services">
@@ -137,8 +143,18 @@ export default function PrivacyEn() {
             <strong>Apple:</strong> Sign in with Apple and app distribution.
           </li>
           <li>
+            <strong>Google:</strong> Sign in with Google.
+          </li>
+          <li>
             <strong>PostHog:</strong> usage analytics and crash reports. Data is
             stored on PostHog’s servers in the United States.
+          </li>
+          <li>
+            <strong>Telegram:</strong> feedback and bug reports you send (the
+            text, your username, the app version and your device’s OS), and a
+            notice when a new account signs up (the sign-in method only, never
+            your email or profile), are sent to the VARO team’s Telegram group
+            so we can respond quickly.
           </li>
         </ul>
         <p>
