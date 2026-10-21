@@ -24,16 +24,19 @@ export default function PrivacyEn() {
       }
       path="/privacy"
       title="Privacy Policy"
-      updated="2026.10.20"
+      updated="2026.10.21"
     >
       <Section title="1. Data we collect">
         <ul>
           <li>
-            <strong>Account data:</strong> when you use Sign in with Apple, the
-            user identifier and email address Apple provides (if you choose Hide
-            My Email, we only receive Apple’s relay address), and the name Apple
+            <strong>Account data:</strong> when you use Sign in with Google, the
+            user identifier, email address and name Google provides (the name
+            prefills your nickname); when you use Sign in with Apple, the user
+            identifier and email address Apple provides (if you choose Hide My
+            Email, we only receive Apple’s relay address), and the name Apple
             shares the first time you sign in (if you share it), which we use to
-            prefill your nickname. We never receive your Apple password.
+            prefill your nickname. We never receive your Apple or Google
+            password.
           </li>
           <li>
             <strong>Profile:</strong> your nickname, a system-generated
@@ -58,11 +61,11 @@ export default function PrivacyEn() {
           </li>
           <li>
             <strong>Photos and videos:</strong> only files you pick from your
-            library to add to a log or set as your profile photo are used.
-            Photos are uploaded to the cloud.{" "}
-            <strong>Videos stay on your phone</strong>: we only upload a
-            thumbnail and details such as length, so your logs display properly.
-            VARO never reads or uploads anything else in your library.
+            library or take with the camera to add to a log or set as your
+            profile photo are used. Photos and videos (videos are compressed on
+            your phone first) are uploaded to private cloud storage so your logs
+            show on any device, visible only to you by default. VARO never reads
+            or uploads anything else in your library.
           </li>
           <li>
             <strong>Feedback:</strong> feedback and bug reports you send in the
@@ -112,9 +115,9 @@ export default function PrivacyEn() {
         <p>
           Your logs, photos and videos are{" "}
           <strong>visible only to you by default</strong>. Uploaded photos and
-          video thumbnails are kept in private storage and can only be read
-          through short-lived signed links. Your profile photo and nickname may
-          be visible to other users.
+          videos are kept in private storage and can only be read through
+          short-lived signed links. Your profile photo and nickname may be
+          visible to other users.
         </p>
         <p>
           When you use the share feature, the image is sent through your
@@ -125,6 +128,16 @@ export default function PrivacyEn() {
           every user can see and play it on that route, along with your nickname
           and profile photo. You can stop sharing at any time, and the video
           goes back to being visible only to you.
+        </p>
+        <p>
+          <strong>Statistics for gyms:</strong> gyms that partner with VARO can
+          see usage statistics for their own gym, such as how many climbers
+          logged there and how many sessions they logged in the last 30 days,
+          and how often each route was logged and sent.{" "}
+          <strong>These statistics include logs you keep private.</strong> Gyms
+          never see your name, account, photos, videos, notes or when each log
+          happened; but when very few people log at a gym (for example, only you
+          in a given week), gym staff may be able to tell who it was.
         </p>
       </Section>
 
