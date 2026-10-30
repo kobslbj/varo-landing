@@ -27,9 +27,9 @@ export interface SiteConfig {
 
 export const siteConfig: SiteConfig = {
   name: "VARO",
-  title: "VARO｜抱石紀錄 App，為台灣攀岩者打造",
+  title: "VARO｜抱石紀錄 App，為抱石者打造",
   description:
-    "Varo 是為台灣抱石者打造的攀岩紀錄 App。記下每次攀爬與嘗試、追蹤正在挑戰的 Project，回頭看見自己的進步。",
+    "Varo 是為抱石者打造的攀岩紀錄 App。記下每次攀爬與嘗試、追蹤正在挑戰的 Project，回頭看見自己的進步。",
   tagline: "Venture · Attempt · Resilience · Overcome",
   siteUrl: process.env.NEXT_PUBLIC_SITE_URL ?? "https://getvaro.app",
   appStoreUrl:
