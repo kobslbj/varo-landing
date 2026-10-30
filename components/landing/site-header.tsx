@@ -25,7 +25,14 @@ const navLink =
  * Wordmark on the left; 岩館, 文章, 理念, 場館合作 and the language
  * switch on the right. `path` is the current page, unprefixed, e.g. "/privacy".
  */
-export async function SiteHeader({ path }: { path: string }) {
+export async function SiteHeader({
+  path,
+  overPhoto = false,
+}: {
+  path: string;
+  /** White logo and links, for pages that open on a dark photo. */
+  overPhoto?: boolean;
+}) {
   const { locale, t, href } = await getI18n();
   const other = locale === "en" ? "zh-TW" : "en";
   // Japanese and Korean have only the gym pages; the rest of the nav would
@@ -34,7 +41,12 @@ export async function SiteHeader({ path }: { path: string }) {
   const languages = localesFor(path);
 
   return (
-    <header className="absolute inset-x-0 top-0 z-50">
+    <header
+      className={clsx(
+        "absolute inset-x-0 top-0 z-50",
+        overPhoto && "theme-dark",
+      )}
+    >
       <div className="mx-auto flex h-16 w-full max-w-[1240px] items-center justify-between px-4 sm:h-20 sm:px-6 lg:px-8">
         <Link
           aria-label="VARO"
@@ -47,7 +59,11 @@ export async function SiteHeader({ path }: { path: string }) {
             className="h-[20px] w-auto max-[359px]:h-[16px] sm:h-[22px]"
             height={172}
             sizes="128px"
-            src="/brand/varo-wordmark-white.png"
+            src={
+              overPhoto
+                ? "/brand/varo-wordmark-white.png"
+                : "/brand/varo-wordmark-black.png"
+            }
             width={1000}
           />
         </Link>
@@ -100,8 +116,10 @@ export async function SiteHeader({ path }: { path: string }) {
                     <Link
                       aria-current={l === locale ? "true" : undefined}
                       className={clsx(
-                        "flex h-11 items-center px-4 text-[15px] transition-colors hover:text-lime",
-                        l === locale ? "font-semibold text-lime" : "text-cream",
+                        "flex h-11 items-center px-4 text-[15px] transition-colors hover:text-lime-ink",
+                        l === locale
+                          ? "font-semibold text-lime-ink"
+                          : "text-cream",
                       )}
                       href={localizePath(l, path)}
                       hrefLang={l}

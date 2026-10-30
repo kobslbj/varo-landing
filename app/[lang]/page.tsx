@@ -1,8 +1,12 @@
 import { Features, Closing } from "@/components/landing/features";
 import { Discover } from "@/components/landing/discover";
 import { Hero } from "@/components/landing/hero";
+import { Marquee } from "@/components/landing/marquee";
+import { Spread } from "@/components/landing/spread";
 import { SiteFooter } from "@/components/landing/site-footer";
 import { SiteHeader } from "@/components/landing/site-header";
+import { Sides } from "@/components/landing/sides";
+import { Steps } from "@/components/landing/steps";
 import { getI18n } from "@/lib/i18n";
 import {
   appEntity,
@@ -32,10 +36,14 @@ export default async function Home() {
           },
         ]}
       />
-      <SiteHeader path="/" />
+      <SiteHeader overPhoto path="/" />
       <main>
         <Hero />
+        <Marquee />
+        <Steps />
+        <Spread />
         <Features />
+        <Sides />
         <Discover />
         <Closing />
       </main>

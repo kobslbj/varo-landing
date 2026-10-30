@@ -11,7 +11,7 @@ import { BLOBS } from "@/lib/gyms/hold-style";
  * to screen readers.
  */
 
-const WALL = "#1b1d1f";
+const WALL = "#1a1a1a";
 const VOLUME = "#30343a";
 
 function Figure({
@@ -59,10 +59,10 @@ export function Hold({
 function Marker({ x, y, n }: { x: number; y: number; n: number }) {
   return (
     <g transform={`translate(${x} ${y})`}>
-      <circle fill="#D4FF5A" r="13" stroke={WALL} strokeWidth="3" />
+      <circle fill="#C6FF00" r="13" stroke={WALL} strokeWidth="3" />
       <text
         dominantBaseline="central"
-        fill="#101112"
+        fill="#111111"
         fontSize="15"
         fontWeight="800"
         textAnchor="middle"
@@ -85,7 +85,7 @@ export function Tape({
 }) {
   return (
     <rect
-      fill="#F5F3EE"
+      fill="#F5F5F5"
       height="7"
       rx="1.5"
       transform={`rotate(${rot} ${x} ${y})`}
@@ -101,7 +101,7 @@ function BoltGrid({ id }: { id: string }) {
   return (
     <defs>
       <pattern height="28" id={id} patternUnits="userSpaceOnUse" width="28">
-        <circle cx="14" cy="14" fill="#2c2f33" r="1.6" />
+        <circle cx="14" cy="14" fill="#2e2e2e" r="1.6" />
       </pattern>
     </defs>
   );
@@ -180,7 +180,7 @@ export function RouteAnatomy() {
         <ol className="space-y-4 self-center">
           {legend.map((item, i) => (
             <li key={item.title} className="grid grid-cols-[26px_1fr] gap-3">
-              <span className="grid size-[26px] place-items-center rounded-full bg-lime text-[14px] font-extrabold text-ink">
+              <span className="grid size-[26px] place-items-center rounded-full bg-lime text-[14px] font-extrabold text-night">
                 {i + 1}
               </span>
               <span>
@@ -405,7 +405,7 @@ export function WallAngles() {
                       : `M${bx},${by} L${top.x},${top.y}`
                   }
                   fill="none"
-                  stroke="#F5F3EE"
+                  stroke="#F5F5F5"
                   strokeLinecap="round"
                   strokeLinejoin="round"
                   strokeWidth="6"
@@ -430,11 +430,11 @@ export function WallAngles() {
                     <path
                       d={`M${bx},${by - arcR} A${arcR},${arcR} 0 0 ${w.lean > 0 ? 1 : 0} ${ax},${ay}`}
                       fill="none"
-                      stroke="#D4FF5A"
+                      stroke="#C6FF00"
                       strokeWidth="2.5"
                     />
                     <text
-                      fill="#D4FF5A"
+                      fill="#C6FF00"
                       fontSize="14"
                       fontWeight="800"
                       textAnchor={w.lean > 0 ? "start" : "end"}
@@ -524,7 +524,7 @@ export function GradeLadder() {
   );
 }
 
-const LIME = "#D4FF5A";
+const LIME = "#C6FF00";
 
 /** A pull/push direction arrow in viewBox units. */
 function Arrow({
@@ -767,7 +767,7 @@ export function HoldTypes({
                 <p className="mt-auto pt-2.5 text-[11px] leading-[1.5] text-mute/80">
                   照片：
                   <a
-                    className="underline decoration-line underline-offset-2 hover:text-lime"
+                    className="underline decoration-line underline-offset-2 hover:text-lime-ink"
                     href={h.photo.sourceUrl}
                     rel="noopener noreferrer"
                     target="_blank"
@@ -776,7 +776,7 @@ export function HoldTypes({
                   </a>
                   ，
                   <a
-                    className="underline decoration-line underline-offset-2 hover:text-lime"
+                    className="underline decoration-line underline-offset-2 hover:text-lime-ink"
                     href={h.photo.licenseUrl}
                     rel="noopener license noreferrer"
                     target="_blank"
@@ -843,7 +843,7 @@ export function GripTypes() {
               <path
                 d={g.finger}
                 fill="none"
-                stroke="#F5F3EE"
+                stroke="#F5F5F5"
                 strokeLinecap="round"
                 strokeLinejoin="round"
                 strokeWidth="9"

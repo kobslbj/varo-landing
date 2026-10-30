@@ -2,8 +2,16 @@ import { faq as faqEn } from "../[lang]/support/content.en";
 import { faq as faqZh } from "../[lang]/support/content.zh-TW";
 
 import { siteConfig } from "@/config/site";
-import { cities, gymPath } from "@/lib/gyms/cities";
-import { gyms, checkedAt } from "@/lib/gyms/data";
+import {
+  abroadCities,
+  abroadHubs,
+  allGyms,
+  cities,
+  countryOf,
+  gymPath,
+} from "@/lib/gyms/cities";
+import { checkedAt } from "@/lib/gyms/data";
+import { abroadCheckedAt } from "@/lib/gyms/data-abroad";
 import { visitorFaq } from "@/lib/gyms/visitor-faq";
 import { articlePath, articles } from "@/lib/articles";
 import { productFaq } from "@/lib/product-faq";
@@ -24,7 +32,7 @@ export function GET() {
 
 ${zhTW.meta.description}
 
-- Name: VARO (also written Varo). Tagline: "Every attempt counts." The name stands for ${siteConfig.tagline}.
+- Name: VARO (also written Varo). Tagline: "Made to Overcome." (生來就是為了突破。) The name stands for ${siteConfig.tagline}.
 - What it is: an iOS app for logging indoor bouldering sessions — each climb's grade, hold colour, wall angle, number of attempts and whether it was sent or flashed — plus photos and videos, and the projects you're working on.
 - Who it's for: boulderers in Taiwan. Available in Traditional Chinese and English.
 - Platform: iOS. ${siteConfig.appStoreUrl ? `App Store: ${siteConfig.appStoreUrl}` : "Coming soon to the App Store."}
@@ -40,6 +48,7 @@ Each page is in Traditional Chinese at the unprefixed URL and in English under /
 - For agents, source limitations and gym index: [中文](${absoluteUrl("/agents")}) · [English](${absoluteUrl("/en/agents")})
 - Bouldering gyms in Taiwan, a map and list with addresses, hours, prices and booking (compiled from public information; hours and prices mostly unconfirmed with the gyms): [中文](${absoluteUrl("/gyms")}) · [English](${absoluteUrl("/en/gyms")}) · [日本語](${absoluteUrl("/ja/gyms")}) · [한국어](${absoluteUrl("/ko/gyms")})
 - Bouldering gyms by city: ${cities.map((c) => `[${c.name}](${absoluteUrl(`/gyms/${c.slug}`)})`).join(" · ")}
+- Also in the directory, with shorter records (address, official links and notes; no hours or prices): Hong Kong, Singapore and Malaysia — ${abroadHubs.map((h) => `[All of ${en.gyms.countries[h.country]}](${absoluteUrl(`/en/gyms/${h.slug}`)})`).join(" · ")} · ${abroadCities.map((c) => `[${en.gyms.cities[c.name] ?? c.name}](${absoluteUrl(`/en/gyms/${c.slug}`)})`).join(" · ")}
 - Guides for beginners (Traditional Chinese only): [文章](${absoluteUrl("/articles")}) — ${articles.map((a) => `[${a.title}](${absoluteUrl(articlePath(a))})`).join(" · ")}
 - Philosophy, the meaning of the name: [中文](${absoluteUrl("/philosophy")}) · [English](${absoluteUrl("/en/philosophy")}) — ${en.philosophy.meta.description}
 - For gyms, recruiting the first partner gyms (the setter upload tool has a first version, reset notifications and route feedback are planned): [中文](${absoluteUrl("/partners")}) · [English](${absoluteUrl("/en/partners")}) — ${en.partners.meta.description}
@@ -58,7 +67,7 @@ ${visitorFaq("en", (city) => en.gyms.cities[city] ?? city)
 
 ## Gym data and citation guidance
 
-- Dataset review date: ${checkedAt}. This is a directory-level review date, not verification of each gym or field by its operator.
+- Dataset review date: ${checkedAt} for Taiwan, ${abroadCheckedAt} for Hong Kong, Singapore and Malaysia. This is a directory-level review date, not verification of each gym or field by its operator.
 - Cite the individual gym page. Preserve its source notes, conflicting information and unconfirmed operating status.
 - Missing information means unknown, not free or unavailable. An omitted weekday does not mean the gym is closed.
 - Official contact links are for checking current announcements, not proof that every field came from those pages.
@@ -67,7 +76,7 @@ ${visitorFaq("en", (city) => en.gyms.cities[city] ?? city)
 
 ## Individual gyms
 
-${gyms.map((g) => `- [${g.name}](${absoluteUrl(gymPath(g))}) · [English](${absoluteUrl(`/en${gymPath(g)}`)}) — ${g.city}, ${g.category}${g.confirmed ? "" : "; operating status unconfirmed"}`).join("\n")}
+${allGyms.map((g) => `- [${g.name}](${absoluteUrl(gymPath(g))}) · [English](${absoluteUrl(`/en${gymPath(g)}`)}) — ${g.city}${g.country ? ` (${countryOf(g)})` : ""}, ${g.category}${g.confirmed ? "" : "; operating status unconfirmed"}`).join("\n")}
 
 ## FAQ
 

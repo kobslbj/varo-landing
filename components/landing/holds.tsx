@@ -39,7 +39,7 @@ export const ROUTE = [
     rot: -30,
     r: [10, 16, 12, 18],
   },
-  { x: -14, y: 58, size: 22, color: "#D4FF5A", rot: 12, r: [14, 10, 16, 12] },
+  { x: -14, y: 58, size: 22, color: "#C6FF00", rot: 12, r: [14, 10, 16, 12] },
 ] as const;
 
 export type Hold = (typeof ROUTE)[number];

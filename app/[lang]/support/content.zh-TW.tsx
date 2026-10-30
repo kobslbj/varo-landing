@@ -102,7 +102,7 @@ export default function SupportZh() {
         <>
           <p>遇到問題或有想法？最快的方式是在 App 內回報，或直接寫信給我們。</p>
           <a
-            className="mt-6 inline-flex h-12 items-center rounded-lg bg-lime px-6 text-[16px] font-semibold text-ink transition-colors hover:bg-lime-deep"
+            className="mt-6 inline-flex h-12 items-center rounded-lg bg-lime px-6 text-[16px] font-semibold text-night transition-colors hover:bg-lime-deep"
             href={`mailto:${email}?subject=${encodeURIComponent("VARO 支援")}`}
           >
             寫信給 {email}

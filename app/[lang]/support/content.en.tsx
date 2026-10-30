@@ -107,7 +107,7 @@ export default function SupportEn() {
             the app, or just email us.
           </p>
           <a
-            className="mt-6 inline-flex h-12 items-center rounded-lg bg-lime px-6 text-[16px] font-semibold text-ink transition-colors hover:bg-lime-deep"
+            className="mt-6 inline-flex h-12 items-center rounded-lg bg-lime px-6 text-[16px] font-semibold text-night transition-colors hover:bg-lime-deep"
             href={`mailto:${email}?subject=${encodeURIComponent("VARO support")}`}
           >
             Email {email}

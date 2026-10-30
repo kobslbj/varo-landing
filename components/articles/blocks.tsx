@@ -68,7 +68,7 @@ export function Callout({
         color={t.color}
         shape={tone.length}
       >
-        <span className="font-display text-[20px] leading-none text-ink">
+        <span className="font-display text-[20px] leading-none text-night">
           {t.glyph}
         </span>
       </HoldMark>
@@ -106,7 +106,7 @@ export function Steps({
         >
           <span
             aria-hidden
-            className="relative grid size-10 place-items-center rounded-[46%_54%_42%_58%/52%_44%_56%_48%] font-display text-[17px] text-ink"
+            className="relative grid size-10 place-items-center rounded-[46%_54%_42%_58%/52%_44%_56%_48%] font-display text-[17px] text-night"
             style={{ background: stepColors[i % stepColors.length] }}
           >
             {i + 1}
@@ -280,7 +280,9 @@ export function Glossary({ terms }: { terms: GlossaryTerm[] }) {
             <span className="block text-[17px] font-extrabold text-cream">
               {t.term}
             </span>
-            <span className="mt-0.5 block text-[14px] text-lime">{t.zh}</span>
+            <span className="mt-0.5 block text-[14px] text-lime-ink">
+              {t.zh}
+            </span>
           </dt>
           <dd className="text-[16px] leading-[1.8] text-cream/80">{t.def}</dd>
         </div>
@@ -303,7 +305,7 @@ export function GymTalk({
             className={clsx(
               "max-w-[85%] rounded-[22px] px-4 py-2.5 text-[16px] font-semibold leading-snug",
               i % 2
-                ? "rounded-br-md bg-lime text-ink"
+                ? "rounded-br-md bg-lime text-night"
                 : "rounded-bl-md bg-[#2b2e31] text-cream",
             )}
           >

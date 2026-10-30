@@ -14,8 +14,13 @@ import {
   project,
 } from "@/lib/gyms/taiwan-map";
 import { BLOBS, holdStyle, KIND_COLORS } from "@/lib/gyms/hold-style";
+import { abroadLand } from "@/lib/gyms/abroad-map";
 
 const KIND_ORDER: GymKind[] = ["boulder", "mixed", "rope", "kids", "outdoor"];
+
+/** Lime as a line or text: too light to read on the light map, so a darker green. */
+const outline = (color: string) =>
+  color === KIND_COLORS.boulder ? "#5f8a00" : color;
 
 type ViewBox = [x: number, y: number, w: number, h: number];
 const FULL: ViewBox = [0, 0, MAP_WIDTH, MAP_HEIGHT];
@@ -72,7 +77,7 @@ export function GymExplorer({
   const router = useRouter();
   const [city, setCity] = useState<string | null>(single);
   const [active, setActive] = useState<string | null>(null);
-  const view = useZoom(city);
+  const view = useZoom(city, gyms);
 
   const byCity = useMemo(
     () =>
@@ -113,7 +118,7 @@ export function GymExplorer({
     <div className="grid gap-10 lg:grid-cols-[minmax(0,5fr)_minmax(0,7fr)] lg:gap-14">
       {/* Map */}
       <div className="lg:sticky lg:top-24 lg:self-start">
-        <div className="flex h-[440px] w-full items-center justify-center [container-type:size] sm:h-[560px] lg:h-[calc(100dvh-13rem)] lg:max-h-[760px] lg:min-h-[520px]">
+        <div className="flex h-[440px] w-full items-center justify-center overflow-hidden rounded-[var(--radius-card-lg)] border border-line bg-[#e6ebe9] p-4 [container-type:size] sm:h-[560px] lg:h-[calc(100dvh-13rem)] lg:max-h-[760px] lg:min-h-[520px]">
           {/* Exactly the map's proportions, whichever of width or height runs
               out first, so the SVG and the label share coordinates */}
           <div
@@ -126,6 +131,8 @@ export function GymExplorer({
             <svg
               aria-label={copy.mapLabel}
               className="size-full"
+              // Land outside Taiwan runs past the viewBox to fill the frame.
+              overflow="visible"
               role="group"
               viewBox={view.join(" ")}
             >
@@ -143,13 +150,13 @@ export function GymExplorer({
                       "transition-[fill,stroke] duration-200",
                       has && "cursor-pointer",
                       selected
-                        ? "fill-[#2a2e33] stroke-lime"
+                        ? "fill-[#f3ffd1] stroke-night"
                         : city
                           ? // Zoomed in, the rest sinks into the page, so the frame's cut edge doesn't show.
-                            "fill-ink stroke-[#2c2f33] hover:fill-[#17191b]"
+                            "fill-[#eef1ef] stroke-[#d6dbd8] hover:fill-white"
                           : has
-                            ? "fill-[#202326] stroke-[#3a3e44] hover:fill-[#262a2e]"
-                            : "fill-[#17191b] stroke-[#2c2f33]",
+                            ? "fill-white stroke-[#c9cfcb] hover:fill-[#f6ffe0]"
+                            : "fill-[#f7f8f6] stroke-[#d6dbd8]",
                     )}
                     d={c.d}
                     strokeLinejoin="round"
@@ -158,6 +165,11 @@ export function GymExplorer({
                   />
                 );
               })}
+
+              {/* Land around the cities outside Taiwan; off-screen until zoomed there */}
+              {abroadLand.map((d, i) => (
+                <path key={i} aria-hidden className="fill-white" d={d} />
+              ))}
 
               {gyms.map((g) => {
                 if (g.lat == null || g.lng == null) return null;
@@ -197,14 +209,14 @@ export function GymExplorer({
                       <circle
                         fill="none"
                         r="1.45"
-                        stroke="#F5F3EE"
+                        stroke="#111111"
                         strokeWidth=".16"
                       />
                     ) : null}
                     <path
                       d={blob}
-                      fill={g.confirmed ? color : "#101112"}
-                      stroke={g.confirmed ? "#101112" : color}
+                      fill={g.confirmed ? color : "#ffffff"}
+                      stroke={g.confirmed ? "#111111" : outline(color)}
                       strokeWidth={g.confirmed ? 0.18 : 0.3}
                     />
                     {g.confirmed ? (
@@ -267,7 +279,7 @@ export function GymExplorer({
                   (copy.cities[group.city] ?? group.city)
                 ) : (
                   <Link
-                    className="underline decoration-transparent underline-offset-4 transition-colors hover:text-lime hover:decoration-lime"
+                    className="underline decoration-transparent underline-offset-4 transition-colors hover:text-lime-ink hover:decoration-lime"
                     href={cityHrefs[group.city]}
                   >
                     {copy.cities[group.city] ?? group.city}
@@ -295,7 +307,7 @@ export function GymExplorer({
 
         {city && !single ? (
           <button
-            className="mt-10 text-[15px] font-medium text-mute underline decoration-line underline-offset-4 transition-colors hover:text-lime hover:decoration-lime"
+            className="mt-10 text-[15px] font-medium text-mute underline decoration-line underline-offset-4 transition-colors hover:text-lime-ink hover:decoration-lime"
             type="button"
             onClick={() => pickCity(null)}
           >
@@ -308,14 +320,16 @@ export function GymExplorer({
 }
 
 /** Tweens the map's viewBox to the picked county, or back to all of Taiwan. */
-function useZoom(city: string | null) {
+function useZoom(city: string | null, gyms: Gym[]) {
   // A city's page starts zoomed in, with no animation.
-  const [start] = useState<ViewBox>(() => (city ? countyBox(city) : FULL));
+  const [start] = useState<ViewBox>(() =>
+    city ? countyBox(city, gyms) : FULL,
+  );
   const [view, setView] = useState<ViewBox>(start);
   const current = useRef<ViewBox>(start);
 
   useEffect(() => {
-    const target = city ? countyBox(city) : FULL;
+    const target = city ? countyBox(city, gyms) : FULL;
     const from = current.current;
 
     if (from.every((v, i) => v === target[i])) return;
@@ -345,19 +359,41 @@ function useZoom(city: string | null) {
     frame = requestAnimationFrame(step);
 
     return () => cancelAnimationFrame(frame);
-  }, [city]);
+  }, [city, gyms]);
 
   return view;
 }
 
-/** A county's bounding box, padded and kept at the map's aspect ratio. */
-function countyBox(name: string): ViewBox {
+/**
+ * A county's bounding box, padded and kept at the map's aspect ratio.
+ * Cities outside Taiwan have no outline, so the box fits their gyms instead.
+ */
+function countyBox(name: string, gyms: Gym[]): ViewBox {
   const d = counties.find((c) => c.name === name)?.d;
+  let xs: number[];
+  let ys: number[];
 
-  if (!d) return FULL;
-  const nums = d.match(/-?\d+(\.\d+)?/g)?.map(Number) ?? [];
-  const xs = nums.filter((_, i) => i % 2 === 0);
-  const ys = nums.filter((_, i) => i % 2 === 1);
+  if (d) {
+    const nums = d.match(/-?\d+(\.\d+)?/g)?.map(Number) ?? [];
+
+    xs = nums.filter((_, i) => i % 2 === 0);
+    ys = nums.filter((_, i) => i % 2 === 1);
+  } else {
+    const points = gyms
+      .filter((g) => g.city === name && g.lat != null && g.lng != null)
+      .map((g) => project(g.lng!, g.lat!));
+
+    if (!points.length) return FULL;
+    // At least ~10 km across, so one gym doesn't fill the frame.
+    const MIN = 40;
+    const [cx, cy] = [
+      points.reduce((s, p) => s + p[0], 0) / points.length,
+      points.reduce((s, p) => s + p[1], 0) / points.length,
+    ];
+
+    xs = [...points.map((p) => p[0]), cx - MIN / 2, cx + MIN / 2];
+    ys = [...points.map((p) => p[1]), cy - MIN / 2, cy + MIN / 2];
+  }
   let [x0, x1, y0, y1] = [
     Math.min(...xs),
     Math.max(...xs),
@@ -390,7 +426,7 @@ function MapLabel({ gym, view }: { gym: Gym; view: ViewBox }) {
   return (
     <span
       aria-hidden
-      className="pointer-events-none absolute z-10 -translate-x-1/2 -translate-y-[calc(100%+14px)] whitespace-nowrap rounded-md bg-cream px-2.5 py-1 text-[13px] font-bold text-ink shadow-[0_6px_20px_rgba(0,0,0,.5)]"
+      className="pointer-events-none absolute z-10 -translate-x-1/2 -translate-y-[calc(100%+14px)] whitespace-nowrap rounded-md bg-cream px-2.5 py-1 text-[13px] font-bold text-day shadow-[0_6px_20px_rgba(0,0,0,.5)]"
       style={{ left: `${left}%`, top: `${top}%` }}
     >
       {gym.name}
@@ -408,7 +444,7 @@ function Legend({ copy }: { copy: ExplorerCopy }) {
         </li>
       ))}
       <li className="flex items-center gap-1.5">
-        <HoldGlyph hollow color="#a3a29d" />
+        <HoldGlyph hollow color="#66665f" />
         {copy.unconfirmedHint}
       </li>
     </ul>
@@ -433,8 +469,8 @@ export function HoldGlyph({
       <path
         d={BLOBS[0]}
         fill={hollow ? "none" : color}
-        stroke={hollow ? color : "none"}
-        strokeWidth={0.28}
+        stroke={hollow ? outline(color) : "#111111"}
+        strokeWidth={hollow ? 0.28 : 0.12}
         transform="rotate(-18)"
       />
       {hollow ? null : (
@@ -461,8 +497,8 @@ function Chip({
       className={clsx(
         "flex h-10 shrink-0 items-center gap-2 rounded-full border px-4 text-[15px] font-medium transition-colors",
         on
-          ? "border-lime bg-lime text-ink"
-          : "border-line text-cream hover:border-[#4a4e54]",
+          ? "border-lime bg-lime text-night"
+          : "border-line text-cream hover:border-cream/40",
       )}
       type="button"
       onClick={onClick}
@@ -471,7 +507,7 @@ function Chip({
       <span
         className={clsx(
           "text-[13px] tabular",
-          on ? "text-ink/60" : "text-mute",
+          on ? "text-night/60" : "text-mute",
         )}
       >
         {count}
@@ -516,7 +552,7 @@ function GymRow({
         <div className="min-w-0 flex-1">
           <h3 className="text-[18px] font-bold leading-snug" lang="zh-Hant">
             <Link
-              className="underline decoration-line underline-offset-4 hover:text-lime"
+              className="underline decoration-line underline-offset-4 hover:text-lime-ink"
               href={href}
             >
               {gym.name}
@@ -524,7 +560,7 @@ function GymRow({
           </h3>
           <p className="mt-1 flex flex-wrap items-center gap-x-3 gap-y-1 text-[14px] text-mute">
             <span lang={copy.textLang}>{gym.district}</span>
-            <span style={{ color: KIND_COLORS[gym.kind] }}>
+            <span style={{ color: outline(KIND_COLORS[gym.kind]) }}>
               {copy.kinds[gym.kind]}
             </span>
             {gym.confirmed ? null : (
@@ -674,8 +710,8 @@ function RowLink({
       className={clsx(
         "inline-flex h-9 items-center rounded-lg px-3.5 text-[14px] font-semibold transition-colors",
         primary
-          ? "bg-cream text-ink hover:bg-white"
-          : "border border-line text-cream hover:border-[#4a4e54]",
+          ? "bg-cream text-day hover:bg-cream/85"
+          : "border border-line text-cream hover:border-cream/40",
       )}
       href={href}
       {...(href.startsWith("http")

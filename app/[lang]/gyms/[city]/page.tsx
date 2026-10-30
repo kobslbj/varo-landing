@@ -13,17 +13,24 @@ import {
 import { SiteFooter } from "@/components/landing/site-footer";
 import { SiteHeader } from "@/components/landing/site-header";
 import { Container } from "@/components/landing/ui";
+import { HubPage, hubMetadata } from "@/components/gyms/hub-page";
 import {
-  cities,
+  abroadHubs,
+  allCities,
   cityBySlug,
   cityPath,
+  citiesLike,
   gymsIn,
   gymPath,
+  hubBySlug,
+  hubFor,
+  regionalFor,
   shortName,
 } from "@/lib/gyms/cities";
 import { cityFacts } from "@/lib/gyms/city-facts";
-import { localizeGym } from "@/lib/gyms/localize";
-import { checkedAt } from "@/lib/gyms/data";
+import { localizeDistrict, localizeGym } from "@/lib/gyms/localize";
+import { checkedAt as taiwanCheckedAt } from "@/lib/gyms/data";
+import { abroadCheckedAt } from "@/lib/gyms/data-abroad";
 import { getI18n, type Dictionary } from "@/lib/i18n";
 import {
   absoluteUrl,
@@ -36,7 +43,10 @@ import {
 export const dynamicParams = false;
 
 export function generateStaticParams() {
-  return cities.map((c) => ({ city: c.slug }));
+  return [
+    ...allCities.map((c) => ({ city: c.slug })),
+    ...abroadHubs.map((h) => ({ city: h.slug })),
+  ];
 }
 
 type Props = { params: Promise<{ city: string }> };
@@ -53,22 +63,46 @@ async function load(params: Props["params"]) {
       ? shortName(city.name)
       : (i18n.t.gyms.cities[city.name] ?? city.name);
   const list = gymsIn(city.name);
+  const abroad = city.country !== "TW";
+  const checkedAt = abroad ? abroadCheckedAt : taiwanCheckedAt;
+  const displayName = i18n.t.gyms.cities[city.name] ?? city.name;
+
+  const facts = cityFacts(
+    name,
+    list,
+    checkedAt,
+    (g) => localizeGym(g, i18n.locale),
+    i18n.t.gyms.where(displayName, city.country),
+    (d, country) => localizeDistrict(d, i18n.locale, country),
+  );
+  const meta = abroad ? i18n.t.gymsAbroad.meta : i18n.t.gymsCity.meta;
 
   return {
     ...i18n,
     city,
     list,
     path: `/gyms/${city.slug}`,
-    facts: cityFacts(name, list, checkedAt, (g) => localizeGym(g, i18n.locale)),
+    abroad,
+    checkedAt,
+    hub: hubFor(city.name),
+    displayName,
+    facts,
+    // Metadata and JSON-LD use the same title and description.
+    title: meta.title(facts),
+    description: meta.description(facts),
   };
 }
 
 export async function generateMetadata({ params }: Props): Promise<Metadata> {
-  const { t, path, facts } = await load(params);
+  const hub = hubBySlug((await params).city);
+
+  if (hub) return hubMetadata(hub);
+  const { path, title, description, city } = await load(params);
 
   return pageMetadata(path, {
-    title: t.gymsCity.meta.title(facts),
-    description: t.gymsCity.meta.description(facts),
+    title,
+    description,
+    regional: regionalFor(city.country),
   });
 }
 
@@ -76,7 +110,17 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
 function faqFor(
   copy: Dictionary["gymsCity"],
   facts: ReturnType<typeof cityFacts>,
+  abroad?: Dictionary["gymsAbroad"],
 ) {
+  // Outside Taiwan there are no prices or courses; say where gyms are instead.
+  if (abroad)
+    return [
+      copy.faq.count(facts),
+      abroad.faq.districts(facts),
+      ...(facts.ropes.length ? [abroad.faq.ropes(facts)] : []),
+      abroad.faq.hours(facts),
+    ];
+
   return [
     copy.faq.count(facts),
     copy.faq.price(facts),
@@ -86,19 +130,37 @@ function faqFor(
 }
 
 export default async function CityGymsPage({ params }: Props) {
-  const { locale, t, href, city, list, path, facts } = await load(params);
+  const hubPage = hubBySlug((await params).city);
+
+  if (hubPage) return <HubPage hub={hubPage} />;
+  const {
+    locale,
+    t,
+    href,
+    city,
+    list,
+    path,
+    facts,
+    abroad,
+    checkedAt,
+    hub,
+    title,
+    description,
+    displayName,
+  } = await load(params);
   const copy = t.gymsCity;
-  const faq = faqFor(copy, facts);
+  const faq = faqFor(copy, facts, abroad ? t.gymsAbroad : undefined);
+  const hubName = hub ? t.gyms.countries[hub.country] : null;
   const heading = gymsHeading(locale);
-  const others = cities.filter((c) => c.name !== city.name);
+  const others = citiesLike(city.name).filter((c) => c.name !== city.name);
 
   return (
     <>
       <JsonLd
         graph={[
           webPage(locale, path, {
-            name: copy.meta.title(facts),
-            description: copy.meta.description(facts),
+            name: title,
+            description,
             dateModified: checkedAt,
             breadcrumb: {
               "@type": "BreadcrumbList",
@@ -106,12 +168,22 @@ export default async function CityGymsPage({ params }: Props) {
                 {
                   "@type": "ListItem",
                   position: 1,
-                  name: t.gyms.title,
+                  name: abroad ? t.gyms.nav : t.gyms.title,
                   item: absoluteUrl(href("/gyms")),
                 },
+                ...(hub && hubName
+                  ? [
+                      {
+                        "@type": "ListItem",
+                        position: 2,
+                        name: hubName,
+                        item: absoluteUrl(href(`/gyms/${hub.slug}`)),
+                      },
+                    ]
+                  : []),
                 {
                   "@type": "ListItem",
-                  position: 2,
+                  position: hub ? 3 : 2,
                   name: facts.city,
                   item: absoluteUrl(href(path)),
                 },
@@ -133,8 +205,8 @@ export default async function CityGymsPage({ params }: Props) {
                         address: {
                           "@type": "PostalAddress",
                           streetAddress: g.address,
-                          addressLocality: city.name,
-                          addressCountry: "TW",
+                          addressLocality: displayName,
+                          addressCountry: city.country,
                         },
                       }
                     : {}),
@@ -148,7 +220,13 @@ export default async function CityGymsPage({ params }: Props) {
                       }
                     : {}),
                   ...(g.phone ? { telephone: g.phone } : {}),
-                  ...(g.website ? { sameAs: [g.website] } : {}),
+                  ...(g.website || g.instagram || g.facebook
+                    ? {
+                        sameAs: [g.website, g.instagram, g.facebook].filter(
+                          Boolean,
+                        ),
+                      }
+                    : {}),
                 },
               })),
             },
@@ -170,20 +248,33 @@ export default async function CityGymsPage({ params }: Props) {
       <main className="relative">
         <div
           aria-hidden
-          className="pointer-events-none absolute inset-x-0 top-0 h-[900px] opacity-[0.25] [background-image:radial-gradient(#2c2f33_1.2px,transparent_1.2px)] [background-size:30px_30px] [mask-image:linear-gradient(to_bottom,black,transparent)]"
+          className="pointer-events-none absolute inset-x-0 top-0 h-[900px] opacity-[0.25] [background-image:radial-gradient(#2e2e2e_1.2px,transparent_1.2px)] [background-size:30px_30px] [mask-image:linear-gradient(to_bottom,black,transparent)]"
         />
 
         <Container className="relative pb-10 pt-32 sm:pt-40">
           <nav aria-label="Breadcrumb" className="text-[15px] text-mute">
             <Link
-              className="underline decoration-line underline-offset-4 transition-colors hover:text-lime hover:decoration-lime"
+              className="underline decoration-line underline-offset-4 transition-colors hover:text-lime-ink hover:decoration-lime"
               href={href("/gyms")}
             >
-              {t.gyms.title}
+              {abroad ? t.gyms.nav : t.gyms.title}
             </Link>
             <span aria-hidden className="mx-2">
               /
             </span>
+            {hub && hubName ? (
+              <>
+                <Link
+                  className="underline decoration-line underline-offset-4 transition-colors hover:text-lime-ink hover:decoration-lime"
+                  href={href(`/gyms/${hub.slug}`)}
+                >
+                  {hubName}
+                </Link>
+                <span aria-hidden className="mx-2">
+                  /
+                </span>
+              </>
+            ) : null}
             <span aria-current="page">{facts.city}</span>
           </nav>
           <h1 className={clsx("rise mt-5 text-[40px] sm:text-[60px]", heading)}>
@@ -238,7 +329,7 @@ export default async function CityGymsPage({ params }: Props) {
             {others.map((c) => (
               <li key={c.slug}>
                 <Link
-                  className="flex h-10 items-center gap-2 rounded-full border border-line px-4 text-[15px] font-medium transition-colors hover:border-lime hover:text-lime"
+                  className="flex h-10 items-center gap-2 rounded-full border border-line px-4 text-[15px] font-medium transition-colors hover:border-lime hover:text-lime-ink"
                   href={href(cityPath(c.name))}
                 >
                   {t.gyms.cities[c.name] ?? c.name}
@@ -248,18 +339,28 @@ export default async function CityGymsPage({ params }: Props) {
                 </Link>
               </li>
             ))}
+            {hub && hubName ? (
+              <li>
+                <Link
+                  className="flex h-10 items-center rounded-full border-2 border-night px-4 text-[15px] font-semibold transition-colors hover:bg-lime"
+                  href={href(`/gyms/${hub.slug}`)}
+                >
+                  {t.gymsAbroad.hub.all(hubName)}
+                </Link>
+              </li>
+            ) : null}
             <li>
               <Link
-                className="flex h-10 items-center rounded-full bg-cream px-4 text-[15px] font-semibold text-ink transition-colors hover:bg-white"
+                className="flex h-10 items-center rounded-full bg-cream px-4 text-[15px] font-semibold text-day transition-colors hover:bg-cream/85"
                 href={href("/gyms")}
               >
-                {copy.allGyms}
+                {abroad ? t.gyms.abroad.back : copy.allGyms}
               </Link>
             </li>
           </ul>
         </Container>
 
-        <GymsCaveat />
+        <GymsCaveat checked={checkedAt} />
         <GymsClosing />
       </main>
       <SiteFooter />

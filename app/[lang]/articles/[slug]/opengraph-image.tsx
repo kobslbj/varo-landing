@@ -41,7 +41,7 @@ export default async function ArticleOgImage({
         padding: "0 88px",
         fontFamily: "Noto Sans TC",
         background:
-          "radial-gradient(circle at 82% 30%, #26301a 0%, #101112 52%)",
+          "radial-gradient(circle at 82% 30%, #26301a 0%, #111111 52%)",
       }}
     >
       {/* eslint-disable-next-line jsx-a11y/alt-text */}
@@ -58,7 +58,7 @@ export default async function ArticleOgImage({
             style={{ width: 16, height: 16, borderRadius: 999, background: c }}
           />
         ))}
-        <span style={{ marginLeft: 10, fontSize: 30, color: "#D4FF5A" }}>
+        <span style={{ marginLeft: 10, fontSize: 30, color: "#C6FF00" }}>
           {og?.eyebrow ?? "VARO 文章"}
         </span>
       </div>
@@ -69,7 +69,7 @@ export default async function ArticleOgImage({
           marginTop: 26,
           fontSize: 68,
           lineHeight: 1.25,
-          color: "#F5F3EE",
+          color: "#F5F5F5",
           letterSpacing: "-0.02em",
         }}
       >

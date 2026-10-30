@@ -11,8 +11,13 @@ export type GymKind =
   /** Outdoor or semi-outdoor wall. */
   | "outdoor";
 
+/** Where a gym is. Taiwan is the main directory; the rest come from the app's lists. */
+export type Country = "TW" | "HK" | "SG" | "MY";
+
 export interface Gym {
   id: string;
+  /** Left out for Taiwan. */
+  country?: Country;
   name: string;
   /** As written in the data, e.g. "台北市". */
   city: string;

@@ -599,7 +599,7 @@ export const boulderingTerms: Article = {
             {firstTwelve.map((t) => (
               <li key={t}>
                 <Link
-                  className="inline-flex h-10 items-center rounded-full border border-line bg-ink-2 px-4 text-[15px] font-bold text-cream transition-colors hover:border-lime hover:text-lime"
+                  className="inline-flex h-10 items-center rounded-full border border-line bg-ink-2 px-4 text-[15px] font-bold text-cream transition-colors hover:border-lime hover:text-lime-ink"
                   href={`#${termId(t)}`}
                 >
                   {t}

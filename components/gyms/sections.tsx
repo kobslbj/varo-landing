@@ -8,14 +8,21 @@ import Link from "next/link";
 import { GymExplorer } from "./gym-explorer";
 
 import { DownloadCta } from "@/components/landing/download-cta";
-import { Container } from "@/components/landing/ui";
+import { Card, Container, Tag } from "@/components/landing/ui";
 import { siteConfig } from "@/config/site";
-import { cityOrder as allCities, cityPath, gymPath } from "@/lib/gyms/cities";
+import {
+  abroadCountries,
+  abroadHubs,
+  cityOrder as allCities,
+  cityPath,
+  gymsIn,
+  gymPath,
+} from "@/lib/gyms/cities";
 import { checkedAt } from "@/lib/gyms/data";
 import { gymTextLang, localizeGym } from "@/lib/gyms/localize";
 import { getI18n } from "@/lib/i18n";
 
-/** Russo One (Latin only) for English headings; CJK gets the heavy sans. */
+/** Space Grotesk (Latin only) for English headings; CJK gets the heavy sans. */
 export const gymsHeading = (locale: string) =>
   locale === "en" ? "font-display leading-[1.04]" : "display-zh";
 
@@ -70,8 +77,96 @@ export async function GymsMap({
   );
 }
 
+/**
+ * Hong Kong, Singapore and Malaysia, under Taiwan's map: one card per
+ * country with its gym count and city pages.
+ */
+export async function GymsAbroad() {
+  const { locale, t, href } = await getI18n();
+  const copy = t.gyms;
+  const total = abroadCountries.reduce((n, c) => n + c.n, 0);
+
+  return (
+    <Container className="relative pb-20">
+      <section aria-labelledby="abroad-title" id="abroad">
+        <Tag>{copy.abroad.eyebrow}</Tag>
+        <h2
+          className={clsx(
+            "mt-4 text-[30px] sm:text-[38px]",
+            gymsHeading(locale),
+          )}
+          id="abroad-title"
+        >
+          {copy.abroad.title}
+        </h2>
+        <p className="mt-4 max-w-[40rem] text-[16px] leading-[1.8] text-mute">
+          {copy.abroad.lead(total)}
+        </p>
+
+        <div className="mt-8 grid gap-3 md:grid-cols-3">
+          {abroadCountries.map(({ country, cities, n }) => {
+            const single = cities.length === 1 ? cities[0] : null;
+            const hub = abroadHubs.find((h) => h.country === country);
+
+            return (
+              <Card key={country} className="flex flex-col p-6 sm:p-7">
+                <p className="label-wide text-[12px] text-mute">
+                  {hub ? (
+                    <Link
+                      className="underline decoration-lime decoration-2 underline-offset-4 hover:text-cream"
+                      href={href(`/gyms/${hub.slug}`)}
+                    >
+                      {copy.countries[country]}
+                    </Link>
+                  ) : (
+                    copy.countries[country]
+                  )}
+                </p>
+                <p className="mt-4 font-display text-[64px] leading-[0.85] tabular">
+                  {n}
+                </p>
+                <p className="mt-2 text-[14px] text-mute">
+                  {copy.abroad.unit(n)}
+                </p>
+                {single ? (
+                  <Link
+                    className="mt-6 inline-flex w-fit text-[15px] font-semibold underline decoration-lime decoration-2 underline-offset-4 hover:text-lime-ink"
+                    href={href(cityPath(single.name))}
+                  >
+                    {copy.cities[single.name] ?? single.name} →
+                  </Link>
+                ) : (
+                  <ul className="mt-6 grid grid-cols-2 gap-x-4 border-t border-line">
+                    {cities.map((c) => (
+                      <li key={c.slug} className="border-b border-line">
+                        <Link
+                          className="flex items-center justify-between gap-2 py-2.5 text-[14px] transition-colors hover:text-lime-ink"
+                          href={href(cityPath(c.name))}
+                        >
+                          <span>{copy.cities[c.name] ?? c.name}</span>
+                          <span className="text-[12px] text-mute tabular">
+                            {gymsIn(c.name).length}
+                          </span>
+                        </Link>
+                      </li>
+                    ))}
+                  </ul>
+                )}
+              </Card>
+            );
+          })}
+        </div>
+      </section>
+    </Container>
+  );
+}
+
 /** How sure the data is, and where to send corrections. */
-export async function GymsCaveat() {
+export async function GymsCaveat({
+  checked = checkedAt,
+}: {
+  checked?: string;
+}) {
   const { t } = await getI18n();
   const copy = t.gyms;
 
@@ -81,12 +176,12 @@ export async function GymsCaveat() {
         <h2 className="text-[20px] font-bold">{copy.caveat.title}</h2>
         <div>
           <p className="max-w-[44rem] text-[16px] leading-[1.75] text-mute">
-            {copy.caveat.body(copy.date(checkedAt))}
+            {copy.caveat.body(copy.date(checked))}
           </p>
           <p className="mt-4 text-[15px] text-mute">
             {copy.caveat.report}{" "}
             <a
-              className="font-semibold text-cream underline decoration-line underline-offset-4 transition-colors hover:text-lime hover:decoration-lime"
+              className="font-semibold text-cream underline decoration-line underline-offset-4 transition-colors hover:text-lime-ink hover:decoration-lime"
               href={`mailto:${siteConfig.contactEmail}?subject=${encodeURIComponent(copy.caveat.reportSubject)}`}
             >
               {copy.caveat.reportLink}
@@ -108,7 +203,7 @@ export async function GymsClosing() {
       <h2 className={clsx("text-[34px] sm:text-[48px]", gymsHeading(locale))}>
         {copy.closing.title[0]}
         <br />
-        <span className="text-lime">{copy.closing.title[1]}</span>
+        <span className="text-lime-ink">{copy.closing.title[1]}</span>
       </h2>
       <div className="mt-9 flex w-full justify-center">
         <DownloadCta className="text-left" source="gyms" />
@@ -118,7 +213,7 @@ export async function GymsClosing() {
         <p className="mt-10 text-[15px] text-mute">
           第一次去岩館？先看{" "}
           <Link
-            className="font-semibold text-cream underline decoration-lime underline-offset-4 hover:text-lime"
+            className="font-semibold text-cream underline decoration-lime underline-offset-4 hover:text-lime-ink"
             href="/articles/first-time-bouldering-guide"
           >
             第一次抱石新手指南
@@ -149,7 +244,7 @@ export async function VisitorFaq({ items }: { items: VisitorQuestion[] }) {
                   {links.map((l) => (
                     <li key={l.path}>
                       <Link
-                        className="flex h-9 items-center rounded-full border border-line px-4 text-[14px] font-medium text-cream transition-colors hover:border-lime hover:text-lime"
+                        className="flex h-9 items-center rounded-full border border-line px-4 text-[14px] font-medium text-cream transition-colors hover:border-lime hover:text-lime-ink"
                         href={href(l.path)}
                       >
                         {l.label}

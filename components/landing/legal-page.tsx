@@ -32,7 +32,7 @@ export async function LegalPage({
       <main className="relative">
         <Container className="pb-24 pt-32 sm:pt-40">
           <div className="max-w-[44rem]">
-            <p className="text-[14px] font-semibold tracking-[0.12em] text-lime">
+            <p className="text-[14px] font-semibold tracking-[0.12em] text-lime-ink">
               {eyebrow}
             </p>
             <h1 className="mt-4 text-[36px] font-extrabold leading-tight sm:text-[48px]">
@@ -72,7 +72,7 @@ export function Section({
       <h2 className="text-[21px] font-bold leading-snug text-cream sm:text-[23px]">
         {title}
       </h2>
-      <div className="mt-4 flex flex-col gap-4 text-[16px] leading-[1.85] text-mute [text-wrap:pretty] [&_a]:text-cream [&_a]:underline [&_a]:decoration-line [&_a]:underline-offset-4 hover:[&_a]:text-lime [&_strong]:font-semibold [&_strong]:text-cream [&_ul]:flex [&_ul]:list-disc [&_ul]:flex-col [&_ul]:gap-2 [&_ul]:pl-5">
+      <div className="mt-4 flex flex-col gap-4 text-[16px] leading-[1.85] text-mute [text-wrap:pretty] [&_a]:text-cream [&_a]:underline [&_a]:decoration-line [&_a]:underline-offset-4 hover:[&_a]:text-lime-ink [&_strong]:font-semibold [&_strong]:text-cream [&_ul]:flex [&_ul]:list-disc [&_ul]:flex-col [&_ul]:gap-2 [&_ul]:pl-5">
         {children}
       </div>
     </section>

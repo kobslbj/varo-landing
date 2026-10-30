@@ -7,22 +7,40 @@
 	--font-sans:
 		var(--font-inter), "PingFang TC", "Noto Sans TC", "Microsoft JhengHei",
 		system-ui, sans-serif;
-	--font-display: var(--font-russo), var(--font-sans);
+	--font-display: var(--font-grotesk), var(--font-sans);
+	--font-wide: var(--font-archivo), var(--font-sans);
 	--font-mono: ui-monospace, SFMono-Regular, Menlo, monospace;
 
-	/* Varo palette */
-	--color-ink: #101112;
-	--color-ink-2: #1b1d1f;
-	--color-ink-3: #25282b;
-	--color-line: #2c2f33;
-	--color-paper: #f5f3ee;
-	--color-paper-2: #e9e6df;
-	--color-paper-line: #d8d4cb;
-	--color-cream: #f5f3ee;
-	--color-mute: #a3a29d;
-	--color-mute-ink: #5c5b57;
-	--color-lime: #d4ff5a;
-	--color-lime-deep: #b8e636;
+	/*
+	 * Varo palette, light by default. The names come from the dark era:
+	 * `ink*` are surfaces (page, card, raised) and `cream` is the main text.
+	 * `.theme-dark` below flips them back for dark islands (phone mocks,
+	 * photo cards). `night` and `day` never flip.
+	 */
+	--color-ink: #f4f4f1;
+	--color-ink-2: #ffffff;
+	--color-ink-3: #e9e9e4;
+	--color-line: #dfdfd9;
+	--color-paper: #f5f5f5;
+	--color-paper-2: #e8e8e8;
+	--color-paper-line: #d4d4d4;
+	--color-cream: #111111;
+	--color-mute: #66665f;
+	--color-mute-ink: #5a5a5a;
+	--color-night: #111111;
+	--color-day: #f5f5f5;
+	/* Lime as a fill (~10-15% of the page). On light surfaces, lime text
+	   uses lime-ink so it stays readable; on dark it is lime again. */
+	--color-lime: #c6ff00;
+	--color-lime-deep: #aee000;
+	--color-lime-ink: #4a7a00;
+	/* Card outlines and hard offset shadows: black on light, quiet on dark. */
+	--color-edge: #111111;
+	--color-drop: #111111;
+
+	--radius-card: 24px;
+	--radius-card-sm: 16px;
+	--radius-card-lg: 28px;
 
 	/* Hold colours, matching the app */
 	--color-hold-red: #e5484d;
@@ -33,24 +51,38 @@
 	--color-hold-purple: #8e4ec6;
 }
 
-/* HeroUI theme overrides: dark only, lime accent with charcoal text */
-:root,
-.dark {
+/* HeroUI theme overrides: light, lime accent with charcoal text */
+:root {
+	color-scheme: light;
+	--background: #f4f4f1;
+	--foreground: #111111;
+	--surface: #ffffff;
+	--surface-foreground: #111111;
+	--surface-secondary: #e9e9e4;
+	--muted: #66665f;
+	--border: #dfdfd9;
+	--separator: #dfdfd9;
+	--default: #e9e9e4;
+	--default-foreground: #111111;
+	--accent: #c6ff00;
+	--accent-foreground: #111111;
+	--focus: #111111;
+	--radius: 1rem;
+}
+
+/* A dark island inside the light page: same utilities, dark values. */
+.theme-dark {
 	color-scheme: dark;
-	--background: #101112;
-	--foreground: #f5f3ee;
-	--surface: #1b1d1f;
-	--surface-foreground: #f5f3ee;
-	--surface-secondary: #25282b;
-	--muted: #a3a29d;
-	--border: #2c2f33;
-	--separator: #2c2f33;
-	--default: #25282b;
-	--default-foreground: #f5f3ee;
-	--accent: #d4ff5a;
-	--accent-foreground: #101112;
-	--focus: #d4ff5a;
-	--radius: 0.5rem;
+	--color-ink: #111111;
+	--color-ink-2: #1a1a1a;
+	--color-ink-3: #242424;
+	--color-line: #2e2e2e;
+	--color-cream: #f5f5f5;
+	--color-mute: #9b9b9b;
+	--color-lime-ink: #c6ff00;
+	--color-edge: #2e2e2e;
+	--color-drop: #c6ff00;
+	color: var(--color-cream);
 }
 
 html {
@@ -67,26 +99,57 @@ body {
 
 ::selection {
 	background: var(--color-lime);
-	color: var(--color-ink);
+	color: var(--color-night);
 }
 
 /* In the base layer so a component's own focus style (a utility) can replace it. */
 @layer base {
 	:focus-visible {
-		outline: 2px solid var(--color-lime);
+		outline: 2px solid var(--color-night);
 		outline-offset: 3px;
 	}
 
-	.on-paper :focus-visible {
-		outline-color: var(--color-ink);
+	.on-paper :focus-visible,
+	.theme-dark .on-paper :focus-visible {
+		outline-color: var(--color-night);
 	}
+
+	.theme-dark :focus-visible {
+		outline-color: var(--color-lime);
+	}
+
+	/* Space Grotesk headlines: heavy and tight. Utilities can still override. */
+	.font-display {
+		font-weight: 700;
+		letter-spacing: -0.035em;
+	}
+}
+
+.theme-dark .bolt-grid {
+	background-image: radial-gradient(rgb(255 255 255 / 0.09) 1.2px, transparent 1.2px);
+}
+
+/* Small extra-wide caps for labels and stickers. */
+.label-wide {
+	font-family: var(--font-wide);
+	font-stretch: 125%;
+	font-weight: 800;
+	letter-spacing: 0.08em;
+	text-transform: uppercase;
+}
+
+/* Bolt-hole dot grid, like a climbing wall. Used as a texture inside cards. */
+.bolt-grid {
+	background-image: radial-gradient(rgb(0 0 0 / 0.1) 1.2px, transparent 1.2px);
+	background-size: 22px 22px;
 }
 
 /* Chinese headlines: tighter leading, balanced lines */
 .display-zh {
-	font-weight: 800;
-	letter-spacing: -0.02em;
-	line-height: 1.12;
+	font-family: var(--font-noto-tc), var(--font-sans);
+	font-weight: 900;
+	letter-spacing: -0.045em;
+	line-height: 1.06;
 	text-wrap: balance;
 }
 
@@ -151,6 +214,14 @@ body {
 }
 .phone3d--right .phone3d__edge {
 	transform: translateZ(-14px) translateX(-9px);
+}
+/* Straight-on phone for bento cards: no tilt, no visible edge. */
+.phone3d--flat .phone3d__body,
+.phone3d--flat.phone3d--right .phone3d__body {
+	transform: none;
+}
+.phone3d--flat .phone3d__edge {
+	display: none;
 }
 .phone3d__frame {
 	position: relative;
@@ -218,6 +289,17 @@ body {
 			transform: scale(0.2);
 		}
 	}
+	/* Pop in with a little overshoot, like a game notification. */
+	.ping-pop {
+		animation: ping-pop 620ms cubic-bezier(0.34, 1.56, 0.64, 1) both;
+		animation-delay: var(--pop-delay, 0ms);
+	}
+	@keyframes ping-pop {
+		from {
+			opacity: 0;
+			transform: translateY(10px) scale(0.85);
+		}
+	}
 	.hold-drift {
 		animation: hold-drift 6s ease-in-out infinite;
 		animation-delay: var(--drift-delay, 0s);
@@ -244,10 +326,10 @@ body {
 }
 
 @media (max-width: 640px) {
-	.phone3d__body {
+	.phone3d:not(.phone3d--flat) .phone3d__body {
 		transform: rotateY(-12deg) rotateX(6deg) rotateZ(2deg);
 	}
-	.phone3d--right .phone3d__body {
+	.phone3d--right:not(.phone3d--flat) .phone3d__body {
 		transform: rotateY(14deg) rotateX(6deg) rotateZ(-3deg);
 	}
 }
@@ -257,7 +339,7 @@ body {
 .article-body {
 	font-size: 17px;
 	line-height: 1.95;
-	color: rgb(245 243 238 / 0.88);
+	color: rgb(17 17 17 / 0.86);
 	text-wrap: pretty;
 }
 @media (min-width: 640px) {
@@ -317,13 +399,13 @@ body {
 .callout-body a {
 	color: var(--color-cream);
 	text-decoration: underline;
-	text-decoration-color: var(--color-lime);
-	text-decoration-thickness: 1.5px;
+	text-decoration-color: var(--color-lime-deep);
+	text-decoration-thickness: 2px;
 	text-underline-offset: 4px;
 	transition: color 150ms;
 }
 .article-body a:hover {
-	color: var(--color-lime);
+	color: var(--color-lime-ink);
 }
 .callout-body > * + * {
 	margin-top: 0.6em;
@@ -374,6 +456,186 @@ body {
 		from {
 			opacity: 0;
 			scale: 0.6;
+		}
+	}
+}
+
+/* ------------------------------------------------------------- Motion kit */
+/* Everything here is optional: without motion (or support) the page is complete. */
+
+/* A highlighter stroke behind a word. The lime sits on ::before so it can wipe in. */
+.hl {
+	position: relative;
+	isolation: isolate;
+}
+.hl::before {
+	content: "";
+	position: absolute;
+	inset: 0;
+	z-index: -1;
+	background: var(--color-lime);
+	transform-origin: left center;
+}
+
+/* Brand ticker: two copies of the same row, slid by half its width. */
+.marquee__track {
+	display: flex;
+	width: max-content;
+}
+
+@media (prefers-reduced-motion: no-preference) {
+	.hl::before {
+		animation: hl-wipe 760ms cubic-bezier(0.7, 0, 0.2, 1) both;
+		animation-delay: var(--hl-delay, 280ms);
+	}
+	@keyframes hl-wipe {
+		from {
+			transform: scaleX(0);
+		}
+	}
+
+	.marquee__track {
+		animation: marquee 38s linear infinite;
+	}
+	.marquee:hover .marquee__track {
+		animation-play-state: paused;
+	}
+	@keyframes marquee {
+		to {
+			transform: translateX(-50%);
+		}
+	}
+
+	/* Rise into place as it scrolls into view. `--i` staggers items in a row. */
+	@supports (animation-timeline: view()) {
+		.reveal {
+			animation: reveal linear both;
+			animation-timeline: view();
+			animation-range: entry calc(4% + var(--i, 0) * 7%) entry
+				calc(48% + var(--i, 0) * 7%);
+		}
+		/* A highlighter further down the page wipes in as it's scrolled to. */
+		.hl-scroll::before {
+			animation: hl-wipe linear both;
+			animation-timeline: view();
+			animation-range: entry 60% cover 50%;
+		}
+		@keyframes reveal {
+			from {
+				opacity: 0;
+				transform: translateY(40px) scale(0.97);
+			}
+		}
+	}
+
+	/* Cards lift a little under the pointer. */
+	.lift {
+		transition:
+			transform 420ms cubic-bezier(0.2, 0.7, 0.2, 1),
+			box-shadow 420ms cubic-bezier(0.2, 0.7, 0.2, 1);
+	}
+	@media (hover: hover) {
+		.lift:hover {
+			transform: translate(-4px, -4px);
+			box-shadow: 8px 8px 0 var(--color-drop);
+		}
+	}
+}
+
+/* ----------------------------------------------------- Playful brutalism */
+/* A pill button with a black outline and a hard offset shadow that it
+   presses into. No blur anywhere. */
+.btn-brutal {
+	border: 2px solid var(--color-night);
+	box-shadow: 4px 4px 0 var(--color-night);
+	transition:
+		transform 140ms ease-out,
+		box-shadow 140ms ease-out;
+}
+.btn-brutal:hover {
+	transform: translate(2px, 2px);
+	box-shadow: 2px 2px 0 var(--color-night);
+}
+.btn-brutal:active {
+	transform: translate(4px, 4px);
+	box-shadow: 0 0 0 var(--color-night);
+}
+
+/* Flat phones: solid black body, no metal gradient, glare or floor shadow. */
+.phone3d--flat .phone3d__body {
+	background: #111111;
+	box-shadow: inset 0 0 0 2px #2a2a2a;
+}
+.phone3d--flat .phone3d__glare,
+.phone3d--flat ~ .phone3d__shadow,
+.phone3d--flat .phone3d__shadow {
+	display: none;
+}
+
+/* ------------------------------------------------------- Campaign (Nike) */
+/* Tall, condensed, black-weight caps: Archivo at its narrowest. */
+.campaign {
+	font-family: var(--font-archivo), var(--font-noto-tc), var(--font-sans);
+	font-stretch: 62.5%;
+	font-weight: 900;
+	text-transform: uppercase;
+	letter-spacing: -0.01em;
+	line-height: 0.84;
+}
+/* An outlined giant letter behind a chapter. */
+.outline-letter {
+	color: transparent;
+	-webkit-text-stroke: 2px currentColor;
+}
+
+@media (prefers-reduced-motion: no-preference) {
+	/* Each headline line slides up out of its own mask. */
+	.line-up {
+		display: block;
+		animation: line-up 900ms cubic-bezier(0.2, 0.8, 0.1, 1) both;
+		animation-delay: var(--line-delay, 0ms);
+	}
+	@keyframes line-up {
+		from {
+			transform: translateY(105%);
+		}
+	}
+
+	/* The hero photo settles in, slowly. */
+	.settle {
+		animation: settle 2400ms cubic-bezier(0.2, 0.7, 0.1, 1) both;
+	}
+	@keyframes settle {
+		from {
+			transform: scale(1.12);
+		}
+	}
+
+	@supports (animation-timeline: view()) {
+		/* Giant letters drift against the scroll. */
+		.drift {
+			animation: drift linear both;
+			animation-timeline: view();
+			animation-range: cover;
+		}
+		@keyframes drift {
+			from {
+				transform: translateY(18%);
+			}
+			to {
+				transform: translateY(-18%);
+			}
+		}
+		/* Manifesto text brightens as it crosses the middle of the screen. */
+		.brighten {
+			animation: brighten linear both;
+			animation-timeline: view();
+			animation-range: entry 20% cover 45%;
+		}
+		@keyframes brighten {
+			from {
+				opacity: 0.15;
+			}
 		}
 	}
 }

@@ -1,7 +1,7 @@
 import Link from "next/link";
 
 import { LegalPage, Section } from "@/components/landing/legal-page";
-import { cities, gymPath, gymsIn } from "@/lib/gyms/cities";
+import { allCities, gymPath, gymsIn } from "@/lib/gyms/cities";
 import { checkedAt } from "@/lib/gyms/data";
 import { getI18n, siteLocale } from "@/lib/i18n";
 import { productFaq } from "@/lib/product-faq";
@@ -90,7 +90,7 @@ export default async function AgentsPage() {
           <>
             <p>{c.intro}</p>
             <a
-              className="mt-5 inline-block font-semibold text-lime underline underline-offset-4"
+              className="mt-5 inline-block font-semibold text-lime-ink underline underline-offset-4"
               href="/llms.txt"
             >
               {c.brief}
@@ -130,7 +130,7 @@ export default async function AgentsPage() {
         <Section title={c.directory}>
           <p>{c.directoryBody}</p>
           <Link href={href("/gyms")}>{c.map}</Link>
-          {cities.map((city) => (
+          {allCities.map((city) => (
             <div key={city.slug} className="mt-4">
               <h3 className="mb-3 text-[18px] font-semibold">
                 <Link href={href(`/gyms/${city.slug}`)}>

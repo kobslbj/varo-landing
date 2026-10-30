@@ -21,8 +21,8 @@ export function GymMapThumb({ className }: { className?: string }) {
         <path
           key={c.name}
           d={c.d}
-          fill="#202326"
-          stroke="#3a3e44"
+          fill="#ffffff"
+          stroke="#c9cfcb"
           strokeLinejoin="round"
           strokeWidth={1.6}
         />
@@ -40,7 +40,7 @@ export function GymMapThumb({ className }: { className?: string }) {
             <path
               d={blob}
               fill={KIND_COLORS[g.kind]}
-              stroke="#101112"
+              stroke="#111111"
               strokeWidth={0.18}
             />
             <circle cx=".18" cy="-.12" fill="rgba(0,0,0,.35)" r=".2" />

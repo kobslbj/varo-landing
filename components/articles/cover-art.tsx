@@ -16,14 +16,14 @@ import { holdColors as R } from "@/components/landing/ui";
 
 const W = 900;
 const H = 1125;
-const LIME = "#D4FF5A";
+const LIME = "#C6FF00";
 
 function Wall({ id, children }: { id: string; children: ReactNode }) {
   return (
     <>
       <defs>
         <pattern height="44" id={id} patternUnits="userSpaceOnUse" width="44">
-          <circle cx="22" cy="22" fill="#2c2f33" r="2.6" />
+          <circle cx="22" cy="22" fill="#2e2e2e" r="2.6" />
         </pattern>
         <radialGradient cx="70%" cy="35%" id={`${id}-glow`} r="70%">
           <stop offset="0" stopColor="#26301a" />
@@ -124,7 +124,7 @@ function GradesArt() {
         return (
           <g key={s.v}>
             <rect
-              fill="#25282b"
+              fill="#242424"
               height={H - top}
               rx="18"
               width="104"
@@ -150,7 +150,7 @@ function GradesArt() {
               />
             )}
             <text
-              fill="#F5F3EE"
+              fill="#F5F5F5"
               fontSize="44"
               fontWeight="900"
               textAnchor="middle"
@@ -209,7 +209,7 @@ function TermsArt() {
             />
             <text
               dominantBaseline="central"
-              fill={b.me ? "#101112" : "#F5F3EE"}
+              fill={b.me ? "#111111" : "#F5F5F5"}
               fontSize="52"
               fontWeight="800"
               x={x + 35}

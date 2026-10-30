@@ -129,6 +129,40 @@ const ko: Dictionary = {
       宜蘭縣: "이란",
       花蓮縣: "화롄",
       台東縣: "타이둥",
+      香港: "홍콩",
+      新加坡: "싱가포르",
+      吉隆坡: "쿠알라룸푸르",
+      八打靈再也: "페탈링자야",
+      梳邦再也: "수방자야",
+      莎阿南: "샤알람",
+      布城: "푸트라자야",
+      檳城: "페낭",
+      新山: "조호르바루",
+      馬六甲: "믈라카",
+      亞庇: "코타키나발루",
+      古晉: "쿠칭",
+      美里: "미리",
+    },
+    countries: {
+      TW: "대만",
+      HK: "홍콩",
+      SG: "싱가포르",
+      MY: "말레이시아",
+    },
+    where: (city, country) =>
+      country === "TW"
+        ? `대만 ${city}`
+        : country === "MY"
+          ? `말레이시아 ${city}`
+          : city,
+    abroad: {
+      eyebrow: "다른 지역",
+      title: "홍콩·싱가포르·말레이시아",
+      lead: (n) =>
+        `VARO 앱에는 이 세 지역의 클라이밍장 ${n}곳도 있습니다. 주소, 공식 링크, 메모만 제공하니 영업시간과 요금은 클라이밍장에 확인하세요.`,
+      unit: () => "곳",
+      jump: "홍콩·싱가포르·말레이시아도 있어요",
+      back: "모든 클라이밍장",
     },
   },
   gymsCity: {
@@ -184,11 +218,61 @@ const ko: Dictionary = {
     listSep: "; ",
     listEnd: ".",
   },
+  gymsAbroad: {
+    meta: {
+      title: (f) =>
+        `${f.where} 볼더링장 (${f.year}): ${f.n}곳 주소와 지도 | VARO`,
+      description: (f) =>
+        `${f.where}에서 볼더링을 할 수 있는 클라이밍장 ${f.n}곳: ${f.names.slice(0, 3).join(", ")} 등. 지도, 주소, 공식 웹사이트와 Instagram 링크${f.ropes.length ? `. 그중 ${f.ropes.length}곳은 로프 클라이밍도 가능` : ""}.`,
+    },
+    faq: {
+      districts: (f) => ({
+        q: `${f.city}의 볼더링장은 어디에 많나요?`,
+        a: `가장 많은 곳은 ${f.districtCounts[0].name}(${f.districtCounts[0].n}곳)${
+          f.districtCounts.length > 1
+            ? `, 그다음은 ${f.districtCounts
+                .slice(1, 3)
+                .map((d) => `${d.name}(${d.n}곳)`)
+                .join(", ")}`
+            : ""
+        }입니다.`,
+      }),
+      ropes: (f) => ({
+        q: `${f.city}에서 로프 클라이밍도 할 수 있는 곳은?`,
+        a: "볼더링과 함께 톱로프나 리드 벽이 있는 클라이밍장:",
+        items: f.ropes,
+      }),
+      hours: (f) => ({
+        q: `${f.city} 클라이밍장의 영업시간과 요금은?`,
+        a: "VARO에는 아직 이 클라이밍장들의 영업시간과 요금이 없습니다. 각 클라이밍장 페이지에 공식 웹사이트와 Instagram 링크가 있으니 가기 전에 확인하세요.",
+      }),
+    },
+    hub: {
+      title: (country) => `${country} 클라이밍장`,
+      metaTitle: (country, n, cities, year) =>
+        `${country} 볼더링장 (${year}): ${cities.slice(0, 2).join(", ")} 등 ${n}곳 | VARO`,
+      description: (country, n, cities) =>
+        `${country}의 볼더링·클라이밍장 ${n}곳 (${cities.join(", ")}). 도시별 주소, 지도, 공식 링크.`,
+      lead: (n, cities) =>
+        `볼더링을 할 수 있는 곳 ${n}곳, ${cities.length}개 도시: ${cities.map((c) => `${c.name} ${c.n}곳`).join(", ")}.`,
+      where: (country) => ({
+        q: `${country}에서 볼더링을 할 수 있는 곳은?`,
+        a: "클라이밍장이 있는 도시:",
+      }),
+      cityLine: (city, n, names) => `${city}: ${n}곳 (${names.join(", ")})`,
+      seeCity: (city) => `${city} 지도 →`,
+      all: (country) => `${country}의 모든 클라이밍장 →`,
+    },
+  },
   gymPage: {
+    titleAbroad: (name, where) =>
+      `${name} | ${where} 볼더링장: 주소·지도·공식 링크 | VARO`,
+    descriptionAbroad: (g) =>
+      `${g.district ? `${g.where} ${g.district}` : g.where}의 ${g.ropes ? "볼더링·로프 클라이밍" : "볼더링"}장 ${g.name}. 주소, 지도, 공식 웹사이트와 Instagram 링크. 영업시간과 요금은 공식 채널에서 확인하세요.`,
     title: (name, city) =>
       `${name} | ${city} 클라이밍장: 영업시간·요금·가는 길 | VARO`,
     description: (g) =>
-      `대만 ${g.city}의 클라이밍장 ${g.name}의 주소, 영업시간${g.priced ? ", 1일 이용권 요금" : ""}, 공식 연락처. 가기 전에 최신 정보를 클라이밍장에 확인하세요.`,
+      `${g.where}의 클라이밍장 ${g.name}의 주소, 영업시간${g.priced ? ", 1일 이용권 요금" : ""}, 공식 연락처. 가기 전에 최신 정보를 클라이밍장에 확인하세요.`,
     missing: "아직 정보가 없습니다. 클라이밍장에 문의하세요.",
     prices: "공개된 요금 (대만 달러)",
     sourceNote: "출처: ",
@@ -200,7 +284,7 @@ const ko: Dictionary = {
     officialNote:
       "최신 공지를 확인하기 위한 링크이며, 위 정보가 모두 이 페이지에서 나왔다는 뜻은 아닙니다.",
     moreInArea: "이 지역의 다른 클라이밍장",
-    place: (city, district) => `${city} ${district}`,
+    place: (city, district) => (district ? `${city} ${district}` : city),
   },
   footer: {
     support: "고객 지원",

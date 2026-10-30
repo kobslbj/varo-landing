@@ -4,8 +4,7 @@ import type { ReactNode } from "react";
 import { alt, size } from "@/app/[lang]/opengraph-image";
 import { siteConfig } from "@/config/site";
 import { articlePath, articles } from "@/lib/articles";
-import { cities, gymPath } from "@/lib/gyms/cities";
-import { gyms } from "@/lib/gyms/data";
+import { abroadHubs, allCities, allGyms, gymPath } from "@/lib/gyms/cities";
 import {
   alternates,
   getI18n,
@@ -27,7 +26,15 @@ const ogImage = { width: size.width, height: size.height, alt };
  */
 export async function pageMetadata(
   path: string,
-  { title, description }: { title: string; description: string },
+  {
+    title,
+    description,
+    regional,
+  }: {
+    title: string;
+    description: string;
+    regional?: Record<string, Locale>;
+  },
 ): Promise<Metadata> {
   const { locale, t } = await getI18n();
   // Share images are drawn for the full-site locales only.
@@ -36,7 +43,7 @@ export async function pageMetadata(
   return {
     title,
     description,
-    alternates: alternates(locale, path),
+    alternates: alternates(locale, path, regional),
     openGraph: {
       type: "website",
       locale: t.ogLocale,
@@ -69,8 +76,9 @@ export const sitePages: {
     locales: ["zh-TW"] as Locale[],
   })),
   { path: "/gyms", priority: 0.8 },
-  ...cities.map((c) => ({ path: `/gyms/${c.slug}`, priority: 0.7 })),
-  ...gyms.map((g) => ({ path: gymPath(g), priority: 0.6 })),
+  ...abroadHubs.map((h) => ({ path: `/gyms/${h.slug}`, priority: 0.7 })),
+  ...allCities.map((c) => ({ path: `/gyms/${c.slug}`, priority: 0.7 })),
+  ...allGyms.map((g) => ({ path: gymPath(g), priority: 0.6 })),
   { path: "/agents", priority: 0.4 },
   { path: "/philosophy", priority: 0.6 },
   { path: "/partners", priority: 0.5 },
@@ -96,7 +104,8 @@ export function siteGraph(locale: Locale, description: string) {
       alternateName: "Varo",
       url: absoluteUrl("/"),
       logo: absoluteUrl("/icon.png"),
-      slogan: "Every attempt counts.",
+      slogan: "Made to Overcome.",
+      sameAs: [siteConfig.social.instagram, siteConfig.social.threads],
       email: siteConfig.contactEmail ?? undefined,
       foundingLocation: { "@type": "Country", name: "Taiwan" },
       founder: {

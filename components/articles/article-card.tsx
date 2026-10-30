@@ -52,7 +52,7 @@ export async function ArticleCard({
               : "(min-width: 1024px) 400px, (min-width: 640px) 50vw, 100vw"
           }
         />
-        <span className="absolute left-4 top-4 -rotate-[4deg] rounded-full bg-lime px-3.5 py-1.5 text-[13px] font-extrabold text-ink">
+        <span className="absolute left-4 top-4 -rotate-[4deg] rounded-full bg-lime px-3.5 py-1.5 text-[13px] font-extrabold text-night">
           {label ?? copy.categories[a.category]}
         </span>
       </div>
@@ -91,8 +91,8 @@ export async function ArticleCard({
             className={clsx(
               "font-semibold transition-colors",
               featured
-                ? "rounded-full bg-cream px-5 py-2.5 text-ink group-hover:bg-lime"
-                : "text-cream group-hover:text-lime",
+                ? "rounded-full bg-cream px-5 py-2.5 text-day group-hover:bg-lime group-hover:text-night"
+                : "text-cream group-hover:text-lime-ink",
             )}
           >
             {copy.readMore}

@@ -10,8 +10,8 @@ export function productFaq(locale: Locale) {
     {
       q: en ? "What is Varo?" : "Varo 是什麼？",
       a: en
-        ? "Varo is an iOS bouldering log for climbers in Taiwan. Record attempts and sends, track projects, and look back on your progress. Available in Traditional Chinese and English."
-        : "Varo 是為台灣抱石者打造的 iOS 攀岩紀錄 App，支援繁體中文與英文。記錄每條路線的嘗試與完攀、追蹤 Project，回顧自己的進步。",
+        ? "Varo is an iOS bouldering log for climbers. Record attempts and sends, track projects, and look back on your progress. Available in Traditional Chinese and English."
+        : "Varo 是為抱石者打造的 iOS 攀岩紀錄 App，支援繁體中文與英文。記錄每條路線的嘗試與完攀、追蹤 Project，回顧自己的進步。",
     },
     {
       q: en ? "Can I download it now?" : "現在可以下載嗎？",

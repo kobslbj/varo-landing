@@ -36,7 +36,7 @@ export function StoryCollage({
 
       {/* Hashtag stickers, shaped like holds */}
       <span
-        className="pop absolute right-[6%] top-0 z-20 rotate-[8deg] rounded-[46%_54%_42%_58%/58%_44%_56%_42%] bg-hold-yellow px-5 py-3 text-[15px] font-extrabold text-ink shadow-[0_10px_30px_-10px_rgba(0,0,0,.8)] sm:text-[17px]"
+        className="pop absolute right-[6%] top-0 z-20 rotate-[8deg] rounded-[46%_54%_42%_58%/58%_44%_56%_42%] bg-hold-yellow px-5 py-3 text-[15px] font-extrabold text-night shadow-[0_10px_30px_-10px_rgba(0,0,0,.8)] sm:text-[17px]"
         style={{ ["--rise-delay" as string]: "520ms" }}
       >
         {tags[0]}
@@ -65,7 +65,7 @@ export function StoryCollage({
             className={clsx(
               "pop max-w-[78%] rounded-[22px] px-4 py-2.5 text-[15px] font-semibold leading-snug shadow-[0_12px_30px_-12px_rgba(0,0,0,.9)] sm:text-[16px]",
               m.me
-                ? "self-end rounded-br-md bg-lime text-ink"
+                ? "self-end rounded-br-md bg-lime text-night"
                 : "self-start rounded-bl-md bg-[#2b2e31] text-cream",
             )}
             style={{ ["--rise-delay" as string]: `${820 + i * 380}ms` }}

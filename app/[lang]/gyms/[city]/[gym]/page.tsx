@@ -10,13 +10,17 @@ import { SiteFooter } from "@/components/landing/site-footer";
 import { Container } from "@/components/landing/ui";
 import { siteConfig } from "@/config/site";
 import {
-  cities,
+  allCities,
   cityBySlug,
   cityPath,
+  countryOf,
   gymPath,
   gymsIn,
+  hubFor,
+  regionalFor,
 } from "@/lib/gyms/cities";
-import { checkedAt } from "@/lib/gyms/data";
+import { checkedAt as taiwanCheckedAt } from "@/lib/gyms/data";
+import { abroadCheckedAt } from "@/lib/gyms/data-abroad";
 import { gymTextLang, localizeGym } from "@/lib/gyms/localize";
 import { getI18n } from "@/lib/i18n";
 import { absoluteUrl, JsonLd, pageMetadata, webPage } from "@/lib/seo";
@@ -24,7 +28,7 @@ import { absoluteUrl, JsonLd, pageMetadata, webPage } from "@/lib/seo";
 export const dynamicParams = false;
 
 export function generateStaticParams() {
-  return cities.flatMap((city) =>
+  return allCities.flatMap((city) =>
     gymsIn(city.name).map((gym) => ({ city: city.slug, gym: gym.id })),
   );
 }
@@ -41,26 +45,42 @@ async function load(params: Props["params"]) {
   const gym = localizeGym(raw, i18n.locale);
   const g = i18n.t.gymPage;
   const cityName = i18n.t.gyms.cities[gym.city] ?? gym.city;
+  const where = i18n.t.gyms.where(cityName, countryOf(raw));
+  // Outside Taiwan there are no hours or prices, so the title and description don't promise them.
+  const abroad = Boolean(raw.country);
 
   return {
     ...i18n,
     gym,
+    hub: hubFor(gym.city),
     path: gymPath(gym),
-    title: g.title(gym.name, cityName),
-    description: g.description({
-      name: gym.name,
-      city: cityName,
-      cityZh: gym.city,
-      district: raw.district,
-      priced: Boolean(gym.price),
-    }),
+    regional: regionalFor(countryOf(raw)),
+    checkedAt: abroad ? abroadCheckedAt : taiwanCheckedAt,
+    title: abroad
+      ? g.titleAbroad(gym.name, where)
+      : g.title(gym.name, cityName),
+    description: abroad
+      ? g.descriptionAbroad({
+          name: gym.name,
+          where,
+          district: gym.district,
+          ropes: gym.kind === "mixed",
+        })
+      : g.description({
+          name: gym.name,
+          city: cityName,
+          cityZh: gym.city,
+          district: raw.district,
+          where,
+          priced: Boolean(gym.price),
+        }),
   };
 }
 
 export async function generateMetadata({ params }: Props): Promise<Metadata> {
-  const { path, title, description } = await load(params);
+  const { path, title, description, regional } = await load(params);
 
-  return pageMetadata(path, { title, description });
+  return pageMetadata(path, { title, description, regional });
 }
 
 export default async function GymPage({ params }: Props) {
@@ -72,8 +92,13 @@ export default async function GymPage({ params }: Props) {
     path,
     title,
     description,
+    checkedAt,
+    hub,
   } = await load(params);
   const c = t.gyms;
+  const hubCrumb = hub
+    ? { name: c.countries[hub.country], path: `/gyms/${hub.slug}` }
+    : null;
   const p = t.gymPage;
   const textLang = gymTextLang(locale);
   const missing = p.missing;
@@ -86,54 +111,60 @@ export default async function GymPage({ params }: Props) {
   );
   const rows: { label: string; body: ReactNode }[] = [
     { label: c.address, body: g.address ?? missing },
-    {
-      label: c.hours,
-      body: (
-        <>
-          <ul>
-            {g.hours?.map((h) => (
-              <li key={h}>{h}</li>
-            ))}
-          </ul>
-          {!g.hours?.length && <p>{missing}</p>}
-          {g.hoursNote && (
-            <p className="mt-3 text-[14px] text-mute">{g.hoursNote}</p>
-          )}
-        </>
-      ),
-    },
-    {
-      label: p.prices,
-      body: g.price ? (
-        <>
-          <ul>
-            {(
-              [
-                [c.weekday, g.price.weekday],
-                [c.weekend, g.price.weekend],
-                [c.shoes, g.price.shoes],
-              ] as const
-            ).map(([label, amount]) =>
-              amount != null ? (
-                <li key={label}>
-                  {label}：NT$ {amount}
-                </li>
-              ) : null,
-            )}
-          </ul>
-          {g.price.notes && <p>{g.price.notes}</p>}
-          <p className="mt-3 text-[14px] text-mute">
-            {p.sourceNote}
-            {g.price.source}
-          </p>
-        </>
-      ) : (
-        missing
-      ),
-    },
-    { label: c.courses, body: g.courses ?? missing },
-    { label: c.facilities, body: g.facilities ?? missing },
-    { label: c.booking, body: g.booking ?? missing },
+    // The Hong Kong, Singapore and Malaysia lists never record hours, prices
+    // or courses, so those rows would only say "not recorded".
+    ...(g.country
+      ? []
+      : [
+          {
+            label: c.hours,
+            body: (
+              <>
+                <ul>
+                  {g.hours?.map((h) => (
+                    <li key={h}>{h}</li>
+                  ))}
+                </ul>
+                {!g.hours?.length && <p>{missing}</p>}
+                {g.hoursNote && (
+                  <p className="mt-3 text-[14px] text-mute">{g.hoursNote}</p>
+                )}
+              </>
+            ),
+          },
+          {
+            label: p.prices,
+            body: g.price ? (
+              <>
+                <ul>
+                  {(
+                    [
+                      [c.weekday, g.price.weekday],
+                      [c.weekend, g.price.weekend],
+                      [c.shoes, g.price.shoes],
+                    ] as const
+                  ).map(([label, amount]) =>
+                    amount != null ? (
+                      <li key={label}>
+                        {label}：NT$ {amount}
+                      </li>
+                    ) : null,
+                  )}
+                </ul>
+                {g.price.notes && <p>{g.price.notes}</p>}
+                <p className="mt-3 text-[14px] text-mute">
+                  {p.sourceNote}
+                  {g.price.source}
+                </p>
+              </>
+            ) : (
+              missing
+            ),
+          },
+          { label: c.courses, body: g.courses ?? missing },
+          { label: c.facilities, body: g.facilities ?? missing },
+          { label: c.booking, body: g.booking ?? missing },
+        ]),
     ...(g.notes ? [{ label: c.notes, body: g.notes }] : []),
   ];
 
@@ -152,18 +183,28 @@ export default async function GymPage({ params }: Props) {
                 {
                   "@type": "ListItem",
                   position: 1,
-                  name: c.title,
+                  name: g.country ? c.nav : c.title,
                   item: absoluteUrl(href("/gyms")),
                 },
+                ...(hubCrumb
+                  ? [
+                      {
+                        "@type": "ListItem",
+                        position: 2,
+                        name: hubCrumb.name,
+                        item: absoluteUrl(href(hubCrumb.path)),
+                      },
+                    ]
+                  : []),
                 {
                   "@type": "ListItem",
-                  position: 2,
+                  position: hubCrumb ? 3 : 2,
                   name: c.cities[g.city] ?? g.city,
                   item: absoluteUrl(href(cityPath(g.city))),
                 },
                 {
                   "@type": "ListItem",
-                  position: 3,
+                  position: hubCrumb ? 4 : 3,
                   name: g.name,
                   item: absoluteUrl(href(path)),
                 },
@@ -181,8 +222,8 @@ export default async function GymPage({ params }: Props) {
                   address: {
                     "@type": "PostalAddress",
                     streetAddress: g.address,
-                    addressLocality: g.city,
-                    addressCountry: "TW",
+                    addressLocality: c.cities[g.city] ?? g.city,
+                    addressCountry: countryOf(g),
                   },
                 }
               : {}),
@@ -207,14 +248,25 @@ export default async function GymPage({ params }: Props) {
             className="flex flex-wrap gap-2 text-[15px] text-mute"
           >
             <Link
-              className="underline underline-offset-4 hover:text-lime"
+              className="underline underline-offset-4 hover:text-lime-ink"
               href={href("/gyms")}
             >
-              {c.title}
+              {g.country ? c.nav : c.title}
             </Link>
             <span aria-hidden>/</span>
+            {hubCrumb ? (
+              <>
+                <Link
+                  className="underline underline-offset-4 hover:text-lime-ink"
+                  href={href(hubCrumb.path)}
+                >
+                  {hubCrumb.name}
+                </Link>
+                <span aria-hidden>/</span>
+              </>
+            ) : null}
             <Link
-              className="underline underline-offset-4 hover:text-lime"
+              className="underline underline-offset-4 hover:text-lime-ink"
               href={href(cityPath(g.city))}
             >
               {c.cities[g.city] ?? g.city}
@@ -240,7 +292,7 @@ export default async function GymPage({ params }: Props) {
           <div className="mt-8 flex flex-wrap gap-3">
             {g.mapsUrl && (
               <a
-                className="rounded-lg bg-cream px-5 py-3 font-semibold text-ink hover:bg-white"
+                className="rounded-lg bg-cream px-5 py-3 font-semibold text-day hover:bg-cream/85"
                 href={g.mapsUrl}
                 rel="noopener noreferrer"
                 target="_blank"
@@ -288,7 +340,7 @@ export default async function GymPage({ params }: Props) {
                 {official.map((url) => (
                   <li key={url}>
                     <a
-                      className="break-all underline decoration-line underline-offset-4 hover:text-lime"
+                      className="break-all underline decoration-line underline-offset-4 hover:text-lime-ink"
                       href={url}
                       rel="noopener noreferrer"
                       target="_blank"
@@ -305,7 +357,7 @@ export default async function GymPage({ params }: Props) {
                 {p.officialNote}
               </p>
               <a
-                className="mt-6 inline-block text-[15px] font-semibold underline underline-offset-4 hover:text-lime"
+                className="mt-6 inline-block text-[15px] font-semibold underline underline-offset-4 hover:text-lime-ink"
                 href={`mailto:${siteConfig.contactEmail}?subject=${encodeURIComponent(`${c.caveat.reportSubject}：${g.name}`)}`}
               >
                 {c.caveat.reportLink}
@@ -313,7 +365,7 @@ export default async function GymPage({ params }: Props) {
             </aside>
           </div>
           <Link
-            className="mt-10 inline-block underline underline-offset-4 hover:text-lime"
+            className="mt-10 inline-block underline underline-offset-4 hover:text-lime-ink"
             href={href(cityPath(g.city))}
           >
             {p.moreInArea}

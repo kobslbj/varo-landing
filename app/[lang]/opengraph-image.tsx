@@ -3,13 +3,13 @@ import { join } from "node:path";
 
 import { ImageResponse } from "next/og";
 
-import { subtitle } from "./og-copy.mjs";
+import { headline, subtitle } from "./og-copy.mjs";
 
 import { siteLocales } from "@/lib/i18n/config";
 
 // Lives under [lang] so the og:image tag is attached to every page (root-level
 // metadata files sit outside the [lang] root layout and get dropped).
-export const alt = "VARO — Every attempt counts.";
+export const alt = "VARO — Made to Overcome.";
 export const size = { width: 1200, height: 630 };
 export const contentType = "image/png";
 
@@ -42,7 +42,7 @@ export default async function OpengraphImage({
   const [wordmark, mascot, display, body] = await Promise.all([
     dataUri("brand/varo-wordmark-white.png"),
     dataUri("mascot/jug-lime.png"),
-    font("russo-one-subset.ttf"),
+    font("space-grotesk-700-subset.ttf"),
     font("noto-sans-tc-700-subset.ttf"),
   ]);
 
@@ -58,7 +58,7 @@ export default async function OpengraphImage({
         alignItems: "center",
         justifyContent: "center",
         background:
-          "radial-gradient(circle at 50% 38%, #26301a 0%, #101112 46%)",
+          "radial-gradient(circle at 50% 38%, #26301a 0%, #111111 46%)",
       }}
     >
       {/* eslint-disable-next-line jsx-a11y/alt-text */}
@@ -69,14 +69,15 @@ export default async function OpengraphImage({
           flexDirection: "column",
           alignItems: "center",
           marginTop: 18,
-          fontFamily: "Russo One",
-          fontSize: 80,
-          lineHeight: 1.04,
-          color: "#F5F3EE",
+          fontFamily: "Space Grotesk",
+          fontSize: 92,
+          lineHeight: 0.92,
+          letterSpacing: "-0.05em",
+          color: "#F5F5F5",
         }}
       >
-        <span>Every attempt</span>
-        <span style={{ color: "#D4FF5A" }}>counts.</span>
+        <span>{headline[0]}</span>
+        <span style={{ color: "#C6FF00" }}>{headline[1]}</span>
       </div>
       <div
         style={{
@@ -100,7 +101,7 @@ export default async function OpengraphImage({
     {
       ...size,
       fonts: [
-        { name: "Russo One", data: display, weight: 400 },
+        { name: "Space Grotesk", data: display, weight: 700 },
         { name: "Noto Sans TC", data: body, weight: 700 },
       ],
     },

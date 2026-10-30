@@ -86,7 +86,7 @@ export function WaitlistForm({
         >
           <span
             aria-hidden
-            className="grid size-6 shrink-0 place-items-center rounded-full bg-lime text-[13px] text-ink"
+            className="grid size-6 shrink-0 place-items-center rounded-full bg-lime text-[13px] text-night"
           >
             ✓
           </span>
@@ -143,7 +143,7 @@ export function WaitlistForm({
           <input name="locale" type="hidden" value={locale} />
           <input name="source" type="hidden" value={source} />
           <button
-            className="h-full shrink-0 rounded-lg bg-lime px-4 text-[15px] font-bold text-ink transition-[background-color,transform] hover:bg-lime-deep active:scale-[0.97] disabled:opacity-60 sm:px-6 sm:text-[16px]"
+            className="h-full shrink-0 rounded-lg bg-lime px-4 text-[15px] font-bold text-night transition-[background-color,transform] hover:bg-lime-deep active:scale-[0.97] disabled:opacity-60 sm:px-6 sm:text-[16px]"
             disabled={pending}
             type="submit"
           >
@@ -167,7 +167,7 @@ export function WaitlistForm({
               <span
                 key={hold.color}
                 className={clsx(
-                  "grid h-[18px] w-[22px] place-items-center ring-2 ring-ink",
+                  "grid h-[18px] w-[22px] place-items-center ring-2 ring-night",
                   i > 0 && "-ml-1",
                 )}
                 style={{

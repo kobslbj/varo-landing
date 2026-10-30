@@ -198,7 +198,7 @@ export default async function ArticlePage({ params }: Props) {
       <main className="relative">
         <div
           aria-hidden
-          className="pointer-events-none absolute inset-x-0 top-0 h-[520px] opacity-[0.25] [background-image:radial-gradient(#2c2f33_1.2px,transparent_1.2px)] [background-size:30px_30px] [mask-image:linear-gradient(to_bottom,black,transparent)]"
+          className="pointer-events-none absolute inset-x-0 top-0 h-[520px] opacity-[0.25] [background-image:radial-gradient(#2e2e2e_1.2px,transparent_1.2px)] [background-size:30px_30px] [mask-image:linear-gradient(to_bottom,black,transparent)]"
         />
         <Container className="relative pt-28 sm:pt-36">
           <nav
@@ -206,7 +206,7 @@ export default async function ArticlePage({ params }: Props) {
             className="flex flex-wrap items-center gap-2 text-[14px] text-mute"
           >
             <Link
-              className="underline-offset-4 hover:text-lime hover:underline"
+              className="underline-offset-4 hover:text-lime-ink hover:underline"
               href={href("/articles")}
             >
               {copy.eyebrow}
@@ -235,7 +235,7 @@ export default async function ArticlePage({ params }: Props) {
                   />
                   <span>
                     <a
-                      className="font-semibold text-cream hover:text-lime"
+                      className="font-semibold text-cream hover:text-lime-ink"
                       href={author.url}
                       rel="author noopener noreferrer"
                       target="_blank"
@@ -266,7 +266,7 @@ export default async function ArticlePage({ params }: Props) {
           <article className="min-w-0">
             <section
               aria-labelledby="summary"
-              className="on-paper rounded-[28px] bg-paper px-6 py-7 text-ink sm:px-9 sm:py-9"
+              className="on-paper rounded-[28px] bg-paper px-6 py-7 text-night sm:px-9 sm:py-9"
             >
               <h2
                 className="text-[22px] font-black tracking-[-0.01em] sm:text-[24px]"
@@ -369,7 +369,7 @@ export default async function ArticlePage({ params }: Props) {
                   {a.sources.map((s) => (
                     <li key={s.url}>
                       <a
-                        className="underline decoration-line underline-offset-4 hover:text-lime"
+                        className="underline decoration-line underline-offset-4 hover:text-lime-ink"
                         href={s.url}
                         rel="noopener noreferrer"
                         target="_blank"
@@ -382,7 +382,7 @@ export default async function ArticlePage({ params }: Props) {
                 <p className="mt-4 text-[14px] leading-[1.7] text-mute">
                   價格、規定與課程因館而異，請以各岩館最新公告為準。內容有誤或想補充，歡迎寄信到{" "}
                   <a
-                    className="underline decoration-line underline-offset-4 hover:text-lime"
+                    className="underline decoration-line underline-offset-4 hover:text-lime-ink"
                     href={`mailto:${siteConfig.contactEmail}?subject=${encodeURIComponent(`文章回饋：${a.title}`)}`}
                   >
                     {siteConfig.contactEmail}
@@ -403,7 +403,7 @@ export default async function ArticlePage({ params }: Props) {
                 全台抱石館的地址、營業時間與價格，一張地圖看完。
               </p>
               <Link
-                className="mt-4 inline-flex h-10 items-center rounded-lg bg-lime px-4 text-[14px] font-semibold text-ink transition-colors hover:bg-lime-deep"
+                className="mt-4 inline-flex h-10 items-center rounded-lg bg-lime px-4 text-[14px] font-semibold text-night transition-colors hover:bg-lime-deep"
                 href={href("/gyms")}
               >
                 找附近的岩館
@@ -429,9 +429,9 @@ export default async function ArticlePage({ params }: Props) {
                   className="group grid h-full grid-rows-[auto_1fr] overflow-hidden rounded-[28px] border border-line bg-ink-2 transition-colors hover:border-lime/60"
                   href={href("/gyms")}
                 >
-                  <div className="relative flex aspect-[4/3] justify-center overflow-hidden bg-ink pt-6 [background-image:radial-gradient(#2c2f33_1.2px,transparent_1.2px)] [background-size:22px_22px]">
+                  <div className="relative flex aspect-[4/3] justify-center overflow-hidden bg-[#e6ebe9] pt-6">
                     <GymMapThumb className="h-[115%] transition-transform duration-500 group-hover:scale-[1.04] motion-reduce:transition-none" />
-                    <span className="absolute left-4 top-4 -rotate-[4deg] rounded-full bg-lime px-3.5 py-1.5 text-[13px] font-extrabold text-ink">
+                    <span className="absolute left-4 top-4 -rotate-[4deg] rounded-full bg-lime px-3.5 py-1.5 text-[13px] font-extrabold text-night">
                       岩館地圖
                     </span>
                   </div>
@@ -445,7 +445,7 @@ export default async function ArticlePage({ params }: Props) {
                     </p>
                     <p className="mt-auto flex items-center justify-between pt-6 text-[14px] text-mute">
                       {gyms.length} 間岩館
-                      <span className="font-semibold text-cream transition-colors group-hover:text-lime">
+                      <span className="font-semibold text-cream transition-colors group-hover:text-lime-ink">
                         打開地圖
                       </span>
                     </p>
@@ -460,7 +460,7 @@ export default async function ArticlePage({ params }: Props) {
           <h2 className="display-zh text-[30px] sm:text-[42px]">
             每一次嘗試，
             <br />
-            <span className="text-lime">都值得被記下來。</span>
+            <span className="text-lime-ink">都值得被記下來。</span>
           </h2>
           <p className="mt-5 max-w-[32rem] text-[16px] leading-[1.8] text-mute">
             VARO
