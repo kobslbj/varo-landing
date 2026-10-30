@@ -110,7 +110,7 @@ export const boulderingGrades: Article = {
           </p>
           <ColorCircuit
             steps={[
-              { name: "白", color: "#F5F3EE", range: "VB–V0" },
+              { name: "白", color: "#F5F5F5", range: "VB–V0" },
               { name: "黃", color: holdColors.yellow, range: "V0–V1" },
               { name: "綠", color: holdColors.green, range: "V1–V2" },
               { name: "藍", color: holdColors.blue, range: "V2–V3" },

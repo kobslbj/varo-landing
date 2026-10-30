@@ -1,14 +1,20 @@
 import "@/styles/globals.css";
 import type { Metadata } from "next";
 
-import { Russo_One } from "next/font/google";
+import { Inter, Space_Grotesk } from "next/font/google";
 import Link from "next/link";
 import clsx from "clsx";
 
-const russo = Russo_One({
+const inter = Inter({
   subsets: ["latin"],
-  weight: "400",
-  variable: "--font-russo",
+  variable: "--font-inter",
+  display: "swap",
+});
+
+const grotesk = Space_Grotesk({
+  subsets: ["latin"],
+  weight: ["400", "500", "700"],
+  variable: "--font-grotesk",
   display: "swap",
 });
 
@@ -20,14 +26,14 @@ export const metadata: Metadata = {
 export default function GlobalNotFound() {
   return (
     <html
-      className={clsx("dark", russo.variable)}
-      data-theme="dark"
+      className={clsx(inter.variable, grotesk.variable)}
+      data-theme="light"
       lang="zh-Hant-TW"
     >
       <body className="min-h-dvh font-sans antialiased">
         <main className="grid min-h-dvh place-items-center px-6 text-center">
           <div>
-            <p className="font-display text-[72px] leading-none text-lime">
+            <p className="font-display text-[72px] font-bold leading-none tracking-[-0.04em] text-lime-ink">
               404
             </p>
             <h1 className="mt-4 text-[24px] font-bold">找不到這個頁面</h1>
@@ -36,7 +42,7 @@ export default function GlobalNotFound() {
             </p>
             <div className="mt-6 flex justify-center gap-3">
               <Link
-                className="inline-flex h-11 items-center rounded-lg bg-lime px-5 font-semibold text-ink"
+                className="inline-flex h-11 items-center rounded-lg bg-lime px-5 font-semibold text-night"
                 href="/"
               >
                 回到首頁

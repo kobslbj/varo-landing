@@ -25,7 +25,12 @@ async function subset(family, weight, text, out) {
   console.log(`${out} (${font.length} bytes)`);
 }
 
-await subset("Russo+One", 400, headline, "assets/og/russo-one-subset.ttf");
+await subset(
+  "Space+Grotesk",
+  700,
+  headline.join(""),
+  "assets/og/space-grotesk-700-subset.ttf",
+);
 await subset(
   "Noto+Sans+TC",
   700,

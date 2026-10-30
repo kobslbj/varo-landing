@@ -36,12 +36,20 @@ export async function getI18n() {
 export function alternates(
   locale: Locale,
   path: string,
+  /** Extra regional hreflang codes and the locale they point at, e.g. { "en-SG": "en" }. */
+  regional: Record<string, Locale> = {},
 ): Metadata["alternates"] {
   return {
     canonical: localizePath(locale, path),
     languages: {
       ...Object.fromEntries(
         localesFor(path).map((l) => [l, localizePath(l, path)]),
+      ),
+      ...Object.fromEntries(
+        Object.entries(regional).map(([code, l]) => [
+          code,
+          localizePath(l, path),
+        ]),
       ),
       "x-default": path,
     },

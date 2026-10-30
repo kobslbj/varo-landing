@@ -178,6 +178,40 @@ const districts: Record<string, Record<Lang, string>> = {
   員林市: { en: "Yuanlin", ja: "員林市", ko: "위안린시" },
 };
 
+/**
+ * Hong Kong's 18 districts (the ones with gyms). Kept apart from Taiwan's,
+ * which share names like 東區 but translate differently. Singapore and
+ * Malaysia areas are already in English.
+ */
+const hkDistricts: Record<string, Record<Lang, string>> = {
+  中西區: { en: "Central and Western", ja: "中西区", ko: "중서구" },
+  灣仔區: { en: "Wan Chai", ja: "湾仔区", ko: "완차이구" },
+  東區: { en: "Eastern", ja: "東区", ko: "동구" },
+  南區: { en: "Southern", ja: "南区", ko: "남구" },
+  油尖旺區: { en: "Yau Tsim Mong", ja: "油尖旺区", ko: "야우침몽구" },
+  九龍城區: { en: "Kowloon City", ja: "九龍城区", ko: "구룡성구" },
+  黃大仙區: { en: "Wong Tai Sin", ja: "黄大仙区", ko: "웡타이신구" },
+  觀塘區: { en: "Kwun Tong", ja: "観塘区", ko: "쿤통구" },
+  沙田區: { en: "Sha Tin", ja: "沙田区", ko: "사틴구" },
+  荃灣區: { en: "Tsuen Wan", ja: "荃湾区", ko: "췬완구" },
+  葵青區: { en: "Kwai Tsing", ja: "葵青区", ko: "콰이칭구" },
+  屯門區: { en: "Tuen Mun", ja: "屯門区", ko: "툰문구" },
+  西貢區: { en: "Sai Kung", ja: "西貢区", ko: "사이쿵구" },
+};
+
+/** A district name in `locale`. Hong Kong has its own table (東區 differs from Taiwan's). */
+export function localizeDistrict(
+  district: string,
+  locale: Locale,
+  country?: Gym["country"],
+): string {
+  if (locale === "zh-TW") return district;
+
+  return (
+    (country === "HK" ? hkDistricts : districts)[district]?.[locale] ?? district
+  );
+}
+
 /** The gym with its text in `locale`; Chinese pages get it unchanged. */
 export function localizeGym(gym: Gym, locale: Locale): Gym {
   if (locale === "zh-TW") return gym;
@@ -186,7 +220,7 @@ export function localizeGym(gym: Gym, locale: Locale): Gym {
 
   return {
     ...gym,
-    district: districts[gym.district]?.[locale] ?? gym.district,
+    district: localizeDistrict(gym.district, locale, gym.country),
     hours: gym.hours?.map((h) => localizeHours(h, locale)),
     hoursNote: tr(gym.hoursNote),
     courses: tr(gym.courses),

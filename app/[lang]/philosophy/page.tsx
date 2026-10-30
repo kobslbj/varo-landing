@@ -1,7 +1,11 @@
 import type { Metadata } from "next";
 
+import clsx from "clsx";
 import Image from "next/image";
 
+import { CampaignLine } from "@/components/landing/campaign-line";
+import { DownloadCta } from "@/components/landing/download-cta";
+import { Marquee } from "@/components/landing/marquee";
 import { SiteFooter } from "@/components/landing/site-footer";
 import { SiteHeader } from "@/components/landing/site-header";
 import { Container } from "@/components/landing/ui";
@@ -14,31 +18,46 @@ export async function generateMetadata(): Promise<Metadata> {
   return pageMetadata("/philosophy", t.philosophy.meta);
 }
 
-/** One letter per hold on the route, bottom of the wall to the top. Copy lives in the dictionary. */
-const STEPS = [
+/**
+ * The name, told like a campaign: a full-bleed photo, then one chapter per
+ * letter of the route, then the line. Copy lives in the dictionary; the
+ * route colours are the holds' colours in the app.
+ */
+const CHAPTERS: {
+  letter: string;
+  word: string;
+  color: string;
+  tone: "black" | "white" | "lime";
+  /** Null means type only. */
+  photo: string | null;
+}[] = [
   {
     letter: "V",
     word: "Venture",
     color: "#E5484D",
-    radius: "46% 54% 38% 62% / 52% 44% 56% 48%",
+    tone: "black",
+    photo: "/shots/partners-wall.jpg",
   },
   {
     letter: "A",
     word: "Attempt",
     color: "#F5D90A",
-    radius: "58% 42% 50% 50% / 40% 58% 42% 60%",
+    tone: "white",
+    photo: "/shots/climb-5.jpg",
   },
   {
     letter: "R",
     word: "Resilience",
     color: "#3E8BFF",
-    radius: "40% 60% 56% 44% / 56% 46% 54% 44%",
+    tone: "black",
+    photo: "/shots/climb-3.jpg",
   },
   {
     letter: "O",
     word: "Overcome",
-    color: "#D4FF5A",
-    radius: "52% 48% 44% 56% / 46% 54% 46% 54%",
+    color: "#C6FF00",
+    tone: "lime",
+    photo: null,
   },
 ];
 
@@ -49,6 +68,7 @@ const keyword = (word: string) => (
 export default async function PhilosophyPage() {
   const { locale, t } = await getI18n();
   const copy = t.philosophy;
+  const zh = locale === "zh-TW";
 
   return (
     <>
@@ -60,117 +80,233 @@ export default async function PhilosophyPage() {
           }),
         ]}
       />
-      <SiteHeader path="/philosophy" />
-      <main className="relative overflow-hidden">
-        {/* Bolt-hole grid */}
-        <div
-          aria-hidden
-          className="pointer-events-none absolute inset-0 opacity-[0.25] [background-image:radial-gradient(#2c2f33_1.2px,transparent_1.2px)] [background-size:30px_30px] [mask-image:linear-gradient(to_bottom,black,transparent_90%)]"
-        />
+      <SiteHeader overPhoto path="/philosophy" />
+      <main>
+        {/* ---------------------------------------------------------- Hero */}
+        <section className="theme-dark relative flex min-h-[100svh] flex-col justify-end overflow-hidden bg-night text-day">
+          <Image
+            fill
+            priority
+            alt={t.images.climbPhoto}
+            className="settle object-cover brightness-[0.55] contrast-125 grayscale"
+            sizes="100vw"
+            src="/shots/climb-1.jpg"
+          />
+          <Container className="relative pb-10 pt-32 sm:pb-14">
+            <p className="label-wide flex items-center gap-3 text-[12px] text-white/80 sm:text-[13px]">
+              <span className="block h-[2px] w-8 bg-lime" />
+              {copy.eyebrow}
+            </p>
+            <h1 className="campaign mt-6 text-[clamp(72px,19vw,300px)]">
+              <span className="sr-only">VARO — </span>
+              <CampaignLine delay={120}>Made to</CampaignLine>
+              <CampaignLine delay={240}>
+                <span className="text-lime">Overcome.</span>
+              </CampaignLine>
+            </h1>
+            <div className="mt-8 flex flex-wrap items-end justify-between gap-6 border-t-2 border-white/80 pt-5">
+              {zh ? (
+                <p className="display-zh text-[24px] sm:text-[34px]">
+                  生來就是為了突破。
+                </p>
+              ) : (
+                <p className="text-[18px] font-semibold sm:text-[22px]">
+                  Venture. Attempt. Resilience. Overcome.
+                </p>
+              )}
+              <p className="label-wide text-[11px] text-white/70">
+                V — A — R — O
+              </p>
+            </div>
+          </Container>
+        </section>
 
-        {/* Opening */}
-        <Container className="relative pb-20 pt-36 sm:pt-44">
-          <p className="rise text-[14px] font-semibold tracking-[0.12em] text-lime">
-            {copy.eyebrow}
-          </p>
-          <h1
-            aria-label="VARO"
-            className="rise mt-6 font-display text-[88px] leading-none tracking-[0.02em] sm:text-[140px] lg:text-[180px]"
-            style={{ ["--rise-delay" as string]: "60ms" }}
-          >
-            {STEPS.map((s) => (
-              <span
-                key={s.letter}
-                aria-hidden
-                style={{ color: s.letter === "O" ? s.color : undefined }}
-              >
-                {s.letter}
+        {/* --------------------------------------------------- Manifesto */}
+        <section className="theme-dark bg-night py-24 text-day sm:py-36">
+          <Container>
+            <p
+              className={clsx(
+                "brighten max-w-[60rem] [text-wrap:balance]",
+                zh
+                  ? "display-zh text-[34px] sm:text-[60px]"
+                  : "font-display text-[38px] leading-[1.02] sm:text-[68px]",
+              )}
+            >
+              {copy.opening(keyword)}
+            </p>
+          </Container>
+        </section>
+
+        <div className="bg-night">
+          <Marquee />
+        </div>
+
+        {/* ---------------------------------------------------- Chapters */}
+        {CHAPTERS.map((c, i) => (
+          <Chapter
+            key={c.letter}
+            index={i}
+            label={copy.steps[i].label}
+            line={copy.steps[i].line}
+            sub={copy.steps[i].sub}
+            {...c}
+          />
+        ))}
+
+        {/* ------------------------------------------------------ Closing */}
+        <section className="theme-dark bg-night py-24 text-day sm:py-36">
+          <Container>
+            <p
+              className={clsx(
+                "brighten max-w-[56rem] [text-wrap:balance]",
+                zh
+                  ? "display-zh text-[32px] sm:text-[54px]"
+                  : "font-display text-[34px] leading-[1.05] sm:text-[60px]",
+              )}
+            >
+              {copy.closing}
+            </p>
+          </Container>
+        </section>
+
+        <section className="on-paper border-y-2 border-night bg-lime text-night">
+          <Container className="py-20 sm:py-28">
+            <p className="campaign text-[clamp(64px,15vw,240px)]">
+              Made to
+              <br />
+              <span className="inline-block bg-night px-[0.06em] text-lime">
+                Overcome.
               </span>
-            ))}
-          </h1>
-          <p
-            className="rise mt-8 max-w-[38rem] text-[19px] leading-[1.85] text-cream [text-wrap:pretty] sm:text-[22px]"
-            style={{ ["--rise-delay" as string]: "140ms" }}
-          >
-            {copy.opening(keyword)}
-          </p>
-        </Container>
-
-        {/* The route: four holds, four letters */}
-        <Container className="relative pb-24">
-          <ol className="relative">
-            {/* the line of the route */}
-            <span
-              aria-hidden
-              className="absolute bottom-10 left-[38px] top-10 w-px bg-gradient-to-b from-[#E5484D]/60 via-[#3E8BFF]/50 to-lime/80 sm:left-[52px]"
-            />
-            {STEPS.map((s, i) => (
-              <li
-                key={s.letter}
-                className="rise relative grid grid-cols-[76px_1fr] items-start gap-6 py-10 sm:grid-cols-[104px_1fr] sm:gap-10 sm:py-14"
-                style={{ ["--rise-delay" as string]: `${200 + i * 90}ms` }}
-              >
-                {/* the hold, with its letter */}
-                <div className="relative">
-                  <div
-                    className="relative grid size-[76px] place-items-center sm:size-[104px]"
-                    style={{ background: s.color, borderRadius: s.radius }}
-                  >
-                    <span className="font-display text-[40px] leading-none text-ink sm:text-[56px]">
-                      {s.letter}
-                    </span>
-                    <span
-                      aria-hidden
-                      className="absolute right-[18%] top-[20%] size-2 rounded-full bg-black/35"
-                    />
-                  </div>
-                  {s.letter === "O" ? (
-                    <Image
-                      aria-hidden
-                      alt={t.images.mascot}
-                      className="bob absolute -top-[62%] left-1/2 w-[70%] -translate-x-1/2"
-                      height={512}
-                      sizes="80px"
-                      src="/mascot/jug-lime.png"
-                      width={512}
-                    />
-                  ) : null}
-                </div>
-
-                <div className="pt-1">
-                  <p className="flex flex-wrap items-baseline gap-x-3">
-                    <span className="font-display text-[34px] leading-tight sm:text-[48px]">
-                      {s.word}
-                    </span>
-                    {copy.steps[i].label ? (
-                      <span className="text-[17px] font-bold text-mute sm:text-[19px]">
-                        {copy.steps[i].label}
-                      </span>
-                    ) : null}
-                  </p>
-                  <p className="mt-3 text-[20px] font-bold leading-[1.5] text-cream [text-wrap:pretty] sm:text-[26px]">
-                    {copy.steps[i].line}
-                  </p>
-                  <p className="mt-2 text-[16px] leading-[1.7] text-mute sm:text-[18px]">
-                    {copy.steps[i].sub}
-                  </p>
-                </div>
-              </li>
-            ))}
-          </ol>
-        </Container>
-
-        {/* Closing */}
-        <Container className="relative pb-28 text-center">
-          <p className="mx-auto max-w-[34rem] text-[19px] leading-[1.85] text-mute [text-wrap:balance] sm:text-[22px]">
-            {copy.closing}
-          </p>
-          <p className="mt-10 font-display text-[44px] leading-[1.05] sm:text-[72px]">
-            Every attempt <span className="text-lime">counts.</span>
-          </p>
-        </Container>
+            </p>
+            <div className="mt-12 flex flex-wrap items-center justify-between gap-6 border-t-2 border-night pt-6">
+              <span className="inline-grid size-[84px] place-items-center rounded-[20px] bg-night">
+                <Image
+                  aria-hidden
+                  alt={t.images.mascot}
+                  className="bob w-[58px]"
+                  height={512}
+                  sizes="58px"
+                  src="/mascot/jug-lime.png"
+                  width={512}
+                />
+              </span>
+              <DownloadCta source="closing" variant="dark" />
+            </div>
+          </Container>
+        </section>
       </main>
       <SiteFooter />
     </>
+  );
+}
+
+/**
+ * A chapter of the route: number, the word huge, the line, and a photo.
+ * A giant outlined letter drifts behind it as you scroll.
+ */
+function Chapter({
+  index,
+  letter,
+  word,
+  color,
+  tone,
+  photo,
+  label,
+  line,
+  sub,
+}: {
+  index: number;
+  letter: string;
+  word: string;
+  color: string;
+  tone: "black" | "white" | "lime";
+  photo: string | null;
+  label?: string;
+  line: string;
+  sub: string;
+}) {
+  const flip = index % 2 === 1;
+
+  return (
+    <section
+      className={clsx(
+        "relative overflow-hidden border-b-2 border-night",
+        tone === "black" && "theme-dark bg-night text-day",
+        tone === "white" && "bg-ink-2 text-night",
+        tone === "lime" && "on-paper bg-lime text-night",
+      )}
+    >
+      {/* The giant letter, outlined, drifting behind */}
+      <span
+        aria-hidden
+        className={clsx(
+          "campaign outline-letter drift pointer-events-none absolute -bottom-[8%] select-none text-[70vw] leading-none lg:text-[48vw]",
+          flip ? "-left-[4%]" : "-right-[4%]",
+          tone === "black" ? "text-white/15" : "text-night/15",
+        )}
+      >
+        {letter}
+      </span>
+
+      <div
+        className={clsx(
+          "relative grid min-h-[88svh] items-stretch",
+          photo && "lg:grid-cols-2",
+        )}
+      >
+        <Container
+          className={clsx(
+            "reveal flex flex-col justify-center py-20 sm:py-28",
+            photo && "lg:max-w-none lg:px-14 xl:px-20",
+            photo && flip && "lg:order-2",
+          )}
+        >
+          <p className="label-wide flex items-center gap-3 text-[12px] sm:text-[13px]">
+            <span className="tabular">0{index + 1}</span>
+            <span className="h-[2px] w-8 bg-current opacity-60" />
+            <span>{label ?? word}</span>
+            {/* The route's hold colour for this step */}
+            <span
+              className="ml-1 block size-3 rotate-12 rounded-[40%_55%_45%_50%] border border-black/30"
+              style={{ background: color }}
+            />
+          </p>
+          <h2 className="campaign mt-6 text-[clamp(64px,15vw,200px)] lg:text-[clamp(72px,9vw,168px)]">
+            {word}.
+          </h2>
+          <p className="mt-8 max-w-[34rem] text-[24px] font-bold leading-[1.35] [text-wrap:pretty] sm:text-[32px]">
+            {line}
+          </p>
+          <p
+            className={clsx(
+              "mt-4 max-w-[30rem] text-[16px] leading-[1.75] sm:text-[18px]",
+              tone === "black" ? "text-white/65" : "opacity-70",
+            )}
+          >
+            {sub}
+          </p>
+        </Container>
+
+        {photo ? (
+          <figure
+            className={clsx(
+              "relative m-0 min-h-[60svh] border-t-2 border-night lg:min-h-full lg:border-t-0",
+              flip ? "lg:order-1 lg:border-r-2" : "lg:border-l-2",
+            )}
+          >
+            <Image
+              fill
+              alt=""
+              className="object-cover contrast-125 grayscale"
+              sizes="(min-width: 1024px) 50vw, 100vw"
+              src={photo}
+            />
+            <figcaption className="label-wide absolute bottom-4 left-4 rounded-[6px] bg-night px-2.5 py-1.5 text-[11px] text-white">
+              {letter} — {word}
+            </figcaption>
+          </figure>
+        ) : null}
+      </div>
+    </section>
   );
 }

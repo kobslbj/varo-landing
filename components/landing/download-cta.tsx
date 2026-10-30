@@ -9,15 +9,18 @@ import { getWaitlistCount } from "@/lib/waitlist-count";
 export async function DownloadCta({
   source,
   className,
+  variant = "primary",
 }: {
   source: "hero" | "closing" | "gyms" | "articles";
   className?: string;
+  /** "dark" on lime backgrounds. */
+  variant?: "primary" | "dark";
 }) {
   const { locale, t } = await getI18n();
 
   if (siteConfig.appStoreUrl) {
     return (
-      <CtaLink href={siteConfig.appStoreUrl}>
+      <CtaLink href={siteConfig.appStoreUrl} variant={variant}>
         <AppleIcon />
         {t.hero.download}
       </CtaLink>

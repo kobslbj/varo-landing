@@ -129,6 +129,40 @@ const ja: Dictionary = {
       宜蘭縣: "宜蘭",
       花蓮縣: "花蓮",
       台東縣: "台東",
+      香港: "香港",
+      新加坡: "シンガポール",
+      吉隆坡: "クアラルンプール",
+      八打靈再也: "ペタリンジャヤ",
+      梳邦再也: "スバンジャヤ",
+      莎阿南: "シャー・アラム",
+      布城: "プトラジャヤ",
+      檳城: "ペナン",
+      新山: "ジョホールバル",
+      馬六甲: "マラッカ",
+      亞庇: "コタキナバル",
+      古晉: "クチン",
+      美里: "ミリ",
+    },
+    countries: {
+      TW: "台湾",
+      HK: "香港",
+      SG: "シンガポール",
+      MY: "マレーシア",
+    },
+    where: (city, country) =>
+      country === "TW"
+        ? `台湾・${city}`
+        : country === "MY"
+          ? `マレーシア・${city}`
+          : city,
+    abroad: {
+      eyebrow: "その他の地域",
+      title: "香港・シンガポール・マレーシア",
+      lead: (n) =>
+        `VARO アプリには、この3つの地域のジム ${n} 件も掲載しています。情報は住所・公式リンク・備考のみです。営業時間と料金はジムに確認してください。`,
+      unit: () => "件のジム",
+      jump: "香港・シンガポール・マレーシアも掲載",
+      back: "すべてのジム",
     },
   },
   gymsCity: {
@@ -185,11 +219,61 @@ const ja: Dictionary = {
     listSep: "、",
     listEnd: "。",
   },
+  gymsAbroad: {
+    meta: {
+      title: (f) =>
+        `${f.where}のボルダリングジム（${f.year}）：${f.n}軒の住所と地図｜VARO`,
+      description: (f) =>
+        `${f.where}でボルダリングができるジム${f.n}軒：${f.names.slice(0, 3).join("、")}など。地図、住所、公式サイト・Instagramへのリンク${f.ropes.length ? `。うち${f.ropes.length}軒はロープクライミングも可能` : ""}。`,
+    },
+    faq: {
+      districts: (f) => ({
+        q: `${f.city}のボルダリングジムはどこに多いですか？`,
+        a: `最も多いのは${f.districtCounts[0].name}（${f.districtCounts[0].n}軒）${
+          f.districtCounts.length > 1
+            ? `、次いで${f.districtCounts
+                .slice(1, 3)
+                .map((d) => `${d.name}（${d.n}軒）`)
+                .join("、")}`
+            : ""
+        }です。`,
+      }),
+      ropes: (f) => ({
+        q: `${f.city}でロープクライミングもできるジムは？`,
+        a: "ボルダリングに加えて、トップロープやリードの壁があるジム：",
+        items: f.ropes,
+      }),
+      hours: (f) => ({
+        q: `${f.city}のクライミングジムの営業時間と料金は？`,
+        a: "VARO ではこれらのジムの営業時間と料金をまだ掲載していません。各ジムのページに公式サイトと Instagram へのリンクがあるので、行く前にご確認ください。",
+      }),
+    },
+    hub: {
+      title: (country) => `${country}のクライミングジム`,
+      metaTitle: (country, n, cities, year) =>
+        `${country}のボルダリングジム（${year}）：${cities.slice(0, 2).join("・")}など${n}軒｜VARO`,
+      description: (country, n, cities) =>
+        `${country}のボルダリング・クライミングジム${n}軒（${cities.join("、")}）。都市ごとに住所、地図、公式リンクを掲載。`,
+      lead: (n, cities) =>
+        `ボルダリングができるジム${n}軒、${cities.length}都市：${cities.map((c) => `${c.name}${c.n}軒`).join("、")}。`,
+      where: (country) => ({
+        q: `${country}でボルダリングができる場所は？`,
+        a: "ジムを掲載している都市：",
+      }),
+      cityLine: (city, n, names) => `${city}：${n}軒（${names.join("、")}）`,
+      seeCity: (city) => `${city}の地図 →`,
+      all: (country) => `${country}のすべてのジム →`,
+    },
+  },
   gymPage: {
+    titleAbroad: (name, where) =>
+      `${name}｜${where}のボルダリングジム：住所・地図・公式リンク｜VARO`,
+    descriptionAbroad: (g) =>
+      `${g.district ? `${g.where}・${g.district}` : g.where}の${g.ropes ? "ボルダリングとロープクライミングができる" : "ボルダリング"}ジム「${g.name}」。住所、地図、公式サイト・Instagramへのリンク。営業時間と料金は公式情報をご確認ください。`,
     title: (name, city) =>
       `${name}｜${city}のクライミングジム：営業時間・料金・行き方｜VARO`,
     description: (g) =>
-      `台湾・${g.city}のクライミングジム「${g.name}」の住所、営業時間${g.priced ? "、1日券の料金" : ""}、公式連絡先。行く前に最新情報をジムに確認してください。`,
+      `${g.where}のクライミングジム「${g.name}」の住所、営業時間${g.priced ? "、1日券の料金" : ""}、公式連絡先。行く前に最新情報をジムに確認してください。`,
     missing: "未掲載です。ジムにお問い合わせください。",
     prices: "掲載料金（台湾ドル）",
     sourceNote: "出典：",
@@ -201,7 +285,7 @@ const ja: Dictionary = {
     officialNote:
       "最新のお知らせを確認するためのリンクです。上記のすべての情報がこれらのページから取られたという意味ではありません。",
     moreInArea: "このエリアのほかのジム",
-    place: (city, district) => `${city} ${district}`,
+    place: (city, district) => (district ? `${city} ${district}` : city),
   },
   footer: {
     support: "サポート",

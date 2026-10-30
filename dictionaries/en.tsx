@@ -37,7 +37,7 @@ const en: Dictionary = {
     title: "Bouldering, from your first visit",
     lead: "What to know before your first gym session, the etiquette on the wall, and how to keep getting better.",
     heading: "VARO bouldering guides",
-    slogan: ["Every attempt", "counts."] as [string, string],
+    slogan: ["Made to", "Overcome."] as [string, string],
     chat: [
       { me: false, text: "Bouldering after work on Friday?" },
       { me: true, text: "I've never climbed. Is it hard?" },
@@ -164,6 +164,40 @@ const en: Dictionary = {
       宜蘭縣: "Yilan",
       花蓮縣: "Hualien",
       台東縣: "Taitung",
+      香港: "Hong Kong",
+      新加坡: "Singapore",
+      吉隆坡: "Kuala Lumpur",
+      八打靈再也: "Petaling Jaya",
+      梳邦再也: "Subang Jaya",
+      莎阿南: "Shah Alam",
+      布城: "Putrajaya",
+      檳城: "Penang",
+      新山: "Johor Bahru",
+      馬六甲: "Melaka",
+      亞庇: "Kota Kinabalu",
+      古晉: "Kuching",
+      美里: "Miri",
+    },
+    countries: {
+      TW: "Taiwan",
+      HK: "Hong Kong",
+      SG: "Singapore",
+      MY: "Malaysia",
+    },
+    where: (city, country) =>
+      country === "TW"
+        ? `${city}, Taiwan`
+        : country === "MY"
+          ? `${city}, Malaysia`
+          : city,
+    abroad: {
+      eyebrow: "Elsewhere",
+      title: "Hong Kong, Singapore & Malaysia",
+      lead: (n) =>
+        `The VARO app also lists ${n} gyms across these three. The details are shorter than Taiwan’s: address, official links and notes. Check hours and prices with the gym.`,
+      unit: (n) => (n === 1 ? "gym" : "gyms"),
+      jump: "Also: Hong Kong, Singapore & Malaysia",
+      back: "All climbing gyms",
     },
   },
   gymsCity: {
@@ -220,11 +254,61 @@ const en: Dictionary = {
     listSep: "; ",
     listEnd: ".",
   },
+  gymsAbroad: {
+    meta: {
+      title: (f) =>
+        `Bouldering gyms in ${f.where} (${f.year}): ${f.n} climbing ${f.n === 1 ? "gym" : "gyms"} | VARO`,
+      description: (f) =>
+        `${f.n} bouldering and climbing ${f.n === 1 ? "gym" : "gyms"} in ${f.where}, including ${f.names.slice(0, 3).join(", ")}. Map, addresses and official website and Instagram links${f.ropes.length ? `; ${f.ropes.length} also ${f.ropes.length === 1 ? "has" : "have"} roped climbing` : ""}.`,
+    },
+    faq: {
+      districts: (f) => ({
+        q: `Where are the bouldering gyms in ${f.city}?`,
+        a: `Most are in ${f.districtCounts[0].name} (${f.districtCounts[0].n})${
+          f.districtCounts.length > 1
+            ? `, then ${f.districtCounts
+                .slice(1, 3)
+                .map((d) => `${d.name} (${d.n})`)
+                .join(" and ")}`
+            : ""
+        }.`,
+      }),
+      ropes: (f) => ({
+        q: `Which ${f.city} gyms also have roped climbing?`,
+        a: "These gyms have top rope or lead walls as well as bouldering:",
+        items: f.ropes,
+      }),
+      hours: (f) => ({
+        q: `What are the opening hours and prices of climbing gyms in ${f.city}?`,
+        a: "VARO doesn’t list hours or prices for these gyms yet. Each gym’s page links to its official website and Instagram; check there before you go.",
+      }),
+    },
+    hub: {
+      title: (country) => `Climbing gyms in ${country}`,
+      metaTitle: (country, n, cities, year) =>
+        `Bouldering gyms in ${country} (${year}): ${n} climbing gyms in ${cities.slice(0, 2).join(", ")} & more | VARO`,
+      description: (country, n, cities) =>
+        `${n} bouldering and climbing gyms across ${country}: ${cities.join(", ")}. Addresses, maps and official links, by city.`,
+      lead: (n, cities) =>
+        `${n} gyms where you can boulder, in ${cities.length} cities: ${cities.map((c) => `${c.name} (${c.n})`).join(", ")}.`,
+      where: (country) => ({
+        q: `Where can you go bouldering in ${country}?`,
+        a: "These cities have gyms in the directory:",
+      }),
+      cityLine: (city, n, names) => `${city}: ${n} (${names.join(", ")})`,
+      seeCity: (city) => `${city} map →`,
+      all: (country) => `All gyms in ${country} →`,
+    },
+  },
   gymPage: {
+    titleAbroad: (name, where) =>
+      `${name} | Bouldering gym in ${where}: address, map & links | VARO`,
+    descriptionAbroad: (g) =>
+      `${g.name} is a ${g.ropes ? "bouldering and roped climbing" : "bouldering"} gym in ${g.district ? `${g.district}, ` : ""}${g.where}. Address, map and official website and Instagram links; check hours and prices on the gym’s own channels.`,
     title: (name, city) =>
       `${name} | Climbing gym in ${city}: hours, prices & directions | VARO`,
     description: (g) =>
-      `Visiting ${g.name}, a climbing gym in ${g.city}, Taiwan: address, opening hours${g.priced ? ", day-pass prices" : ""} and official contact links. Confirm current details with the gym before you go.`,
+      `Visiting ${g.name}, a climbing gym in ${g.where}: address, opening hours${g.priced ? ", day-pass prices" : ""} and official contact links. Confirm current details with the gym before you go.`,
     missing: "Not recorded. Please contact the gym.",
     prices: "Published prices (TWD)",
     sourceNote: "Source note: ",
@@ -236,7 +320,7 @@ const en: Dictionary = {
     officialNote:
       "These links are for checking current announcements; they are not a claim that every detail above came from these pages.",
     moreInArea: "More gyms in this area",
-    place: (city, district) => `${district}, ${city}`,
+    place: (city, district) => (district ? `${district}, ${city}` : city),
   },
   partners: {
     meta: {
@@ -398,7 +482,7 @@ const en: Dictionary = {
     flag: "Flag of Taiwan",
   },
   hero: {
-    lead: "An iOS bouldering log for climbers in Taiwan.",
+    lead: "An iOS bouldering log for climbers.",
     body: "Record attempts and sends, track the projects you’re working on, and look back on your progress.",
     download: "Download on the App Store",
     comingSoon: "Coming soon to the App Store",

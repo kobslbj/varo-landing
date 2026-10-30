@@ -4,6 +4,8 @@ import type { Gym, GymKind } from "./types";
 export interface CityFacts {
   /** Display name in the page's language. */
   city: string;
+  /** City with its country where that helps, e.g. "Penang, Malaysia". */
+  where: string;
   n: number;
   year: number;
   names: string[];
@@ -22,6 +24,10 @@ export interface CityFacts {
   beginners: { name: string; courses: string }[];
   /** Gyms with kids' classes or a kids' wall. */
   kids: string[];
+  /** Gyms with roped climbing (as well as, or instead of, bouldering). */
+  ropes: string[];
+  /** Districts with their gym counts, most first. */
+  districtCounts: { name: string; n: number }[];
 }
 
 const KIND_ORDER: GymKind[] = ["boulder", "mixed", "rope", "kids", "outdoor"];
@@ -32,14 +38,32 @@ export function cityFacts(
   list: Gym[],
   checkedAt: string,
   show: (g: Gym) => Gym = (g) => g,
+  where: string = city,
+  /** A district in the page's language. */
+  district: (d: string, country?: Gym["country"]) => string = (d) => d,
 ): CityFacts {
-  const districts = new Map<string, number>();
+  // Counted and sorted once; gyms with no recorded district are left out.
+  const counts = new Map<string, { n: number; country?: Gym["country"] }>();
 
-  for (const g of list)
-    districts.set(g.district, (districts.get(g.district) ?? 0) + 1);
+  for (const g of list) {
+    if (!g.district) continue;
+    const c = counts.get(g.district);
+
+    counts.set(g.district, { n: (c?.n ?? 0) + 1, country: g.country });
+  }
+  const sorted = Array.from(counts).sort((a, b) => b[1].n - a[1].n);
+  const districtCounts = sorted.map(([d, { n, country }]) => ({
+    name: district(d, country),
+    n,
+  }));
 
   return {
     city,
+    where,
+    districtCounts,
+    ropes: list
+      .filter((g) => g.kind === "mixed" || g.kind === "rope")
+      .map((g) => g.name),
     n: list.length,
     year: Number(checkedAt.slice(0, 4)),
     names: list.map((g) => g.name),
@@ -47,9 +71,7 @@ export function cityFacts(
       kind,
       n: list.filter((g) => g.kind === kind).length,
     })).filter((k) => k.n),
-    districts: Array.from(districts)
-      .sort((a, b) => b[1] - a[1])
-      .map(([d]) => d),
+    districts: sorted.map(([d]) => d),
     priced: list
       .filter((g) => g.price)
       .map((g) => ({ name: g.name, ...show(g).price! })),

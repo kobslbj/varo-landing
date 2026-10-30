@@ -20,8 +20,8 @@ export function Phone3D({
   /** Accessible description of what the preview shows. */
   label: string;
   className?: string;
-  /** Which way the screen faces. */
-  tilt?: "left" | "right";
+  /** Which way the screen faces; "flat" faces the viewer. */
+  tilt?: "left" | "right" | "flat";
   style?: CSSProperties;
 }) {
   return (
@@ -30,6 +30,7 @@ export function Phone3D({
       className={clsx(
         "phone3d",
         tilt === "right" && "phone3d--right",
+        tilt === "flat" && "phone3d--flat",
         className,
       )}
       style={style}
@@ -38,7 +39,7 @@ export function Phone3D({
         {/* side edge: the phone's thickness, seen because of the tilt */}
         <div aria-hidden className="phone3d__edge" />
         <div className="phone3d__frame">
-          <div className="phone3d__screen">
+          <div className="phone3d__screen theme-dark">
             <ScaledScreen>{children}</ScaledScreen>
             <div aria-hidden className="phone3d__island" />
             <div aria-hidden className="phone3d__glare" />

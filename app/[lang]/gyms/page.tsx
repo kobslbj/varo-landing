@@ -3,6 +3,7 @@ import type { Metadata } from "next";
 import clsx from "clsx";
 
 import {
+  GymsAbroad,
   GymsCaveat,
   GymsClosing,
   GymsMap,
@@ -102,7 +103,7 @@ export default async function GymsPage() {
         {/* Bolt-hole grid */}
         <div
           aria-hidden
-          className="pointer-events-none absolute inset-x-0 top-0 h-[900px] opacity-[0.25] [background-image:radial-gradient(#2c2f33_1.2px,transparent_1.2px)] [background-size:30px_30px] [mask-image:linear-gradient(to_bottom,black,transparent)]"
+          className="pointer-events-none absolute inset-x-0 top-0 h-[900px] opacity-[0.25] [background-image:radial-gradient(#2e2e2e_1.2px,transparent_1.2px)] [background-size:30px_30px] [mask-image:linear-gradient(to_bottom,black,transparent)]"
         />
 
         <Container className="relative pb-10 pt-32 sm:pt-40">
@@ -115,11 +116,20 @@ export default async function GymsPage() {
           >
             {copy.lead(gyms.length, CITY_ORDER.length)}
           </p>
+          <a
+            className="rise mt-5 inline-flex text-[15px] font-semibold underline decoration-lime decoration-2 underline-offset-4 hover:text-lime-ink"
+            href="#abroad"
+            style={{ ["--rise-delay" as string]: "120ms" }}
+          >
+            {copy.abroad.jump} ↓
+          </a>
         </Container>
 
         <Container className="relative pb-20">
           <GymsMap cityOrder={CITY_ORDER} gyms={gyms} />
         </Container>
+
+        <GymsAbroad />
 
         {visitors.length ? <VisitorFaq items={visitors} /> : null}
         <GymsCaveat />

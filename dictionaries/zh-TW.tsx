@@ -1,5 +1,5 @@
 import type { CityFacts } from "@/lib/gyms/city-facts";
-import type { GymKind } from "@/lib/gyms/types";
+import type { Country, GymKind } from "@/lib/gyms/types";
 
 const zhTW = {
   htmlLang: "zh-Hant-TW",
@@ -37,7 +37,7 @@ const zhTW = {
     title: "抱石，從第一次開始",
     lead: "給剛開始抱石的你：去岩館前該知道的事、牆上的規矩，以及怎麼一次比一次爬得更好。",
     heading: "VARO 抱石新手指南",
-    slogan: ["每一次嘗試，", "都算數。"] as [string, string],
+    slogan: ["生來就是", "為了突破。"] as [string, string],
     chat: [
       { me: false, text: "週五下班要不要去抱石？" },
       { me: true, text: "我沒爬過欸，會不會很難" },
@@ -155,7 +155,39 @@ const zhTW = {
       宜蘭縣: "宜蘭縣",
       花蓮縣: "花蓮縣",
       台東縣: "台東縣",
+      香港: "香港",
+      新加坡: "新加坡",
+      吉隆坡: "吉隆坡",
+      八打靈再也: "八打靈再也",
+      梳邦再也: "梳邦再也",
+      莎阿南: "莎阿南",
+      布城: "布城",
+      檳城: "檳城",
+      新山: "新山",
+      馬六甲: "馬六甲",
+      亞庇: "亞庇",
+      古晉: "古晉",
+      美里: "美里",
     } as Record<string, string>,
+    countries: {
+      TW: "台灣",
+      HK: "香港",
+      SG: "新加坡",
+      MY: "馬來西亞",
+    } as Record<Country, string>,
+    /** Where a gym is, for sentences: "馬來西亞檳城", but just "香港". */
+    where: (city: string, country: Country) =>
+      country === "MY" ? `馬來西亞${city}` : city,
+    abroad: {
+      eyebrow: "其他地區",
+      title: "香港・新加坡・馬來西亞",
+      lead: (n: number) =>
+        `VARO App 也收錄了這三地的 ${n} 間岩館。資料比台灣精簡：地址、官方連結與場館備註；營業時間與價格請向場館確認。`,
+      /** The word under the big number. */
+      unit: (_n: number) => "間岩館",
+      jump: "也收錄香港・新加坡・馬來西亞",
+      back: "看所有岩館",
+    },
   },
   /** /gyms/[city]: every sentence is built from the data, so nothing is claimed that the research didn't find. */
   gymsCity: {
@@ -217,8 +249,69 @@ const zhTW = {
     listSep: "；",
     listEnd: "。",
   },
+  /** Hong Kong, Singapore and Malaysia: city pages, country pages and gym pages. Their lists have no hours or prices. */
+  gymsAbroad: {
+    meta: {
+      title: (f: CityFacts) =>
+        `${f.where}抱石館・攀岩館一覽（${f.year}）｜${f.n} 間地址與地圖｜VARO`,
+      description: (f: CityFacts) =>
+        `${f.where}有 ${f.n} 間可以抱石的岩館：${f.names.slice(0, 4).join("、")}${f.n > 4 ? "等" : ""}。附地圖、地址與官方網站、Instagram 連結${f.ropes.length ? `，其中 ${f.ropes.length} 間也能上攀` : ""}。`,
+    },
+    faq: {
+      districts: (f: CityFacts) => ({
+        q: `${f.city}的抱石館集中在哪裡？`,
+        a: `最多的是${f.districtCounts[0].name}（${f.districtCounts[0].n} 間）${
+          f.districtCounts.length > 1
+            ? `，其次是${f.districtCounts
+                .slice(1, 3)
+                .map((d) => `${d.name}（${d.n} 間）`)
+                .join("、")}`
+            : ""
+        }。`,
+      }),
+      ropes: (f: CityFacts) => ({
+        q: `${f.city}哪些岩館也能上攀或先鋒？`,
+        a: "以下岩館除了抱石，也有頂繩或先鋒攀登：",
+        items: f.ropes,
+      }),
+      hours: (f: CityFacts) => ({
+        q: `${f.city}的抱石館營業時間和價格？`,
+        a: "VARO 目前沒有收錄這些岩館的營業時間與價格。每間岩館的頁面都附有官方網站與 Instagram 連結，出發前請以官方公告為準。",
+      }),
+    } as Record<
+      "districts" | "ropes" | "hours",
+      (f: CityFacts) => { q: string; a: string; items?: string[] }
+    >,
+    /** A country page listing every city, e.g. /gyms/malaysia. */
+    hub: {
+      title: (country: string) => `${country}抱石館・攀岩館`,
+      metaTitle: (country: string, n: number, cities: string[], year: number) =>
+        `${country}抱石館・攀岩館一覽（${year}）｜${n} 間，${cities.slice(0, 3).join("、")}等 ${cities.length} 個城市｜VARO`,
+      description: (country: string, n: number, cities: string[]) =>
+        `${country} ${n} 間可以抱石的岩館，分布在${cities.join("、")}。依城市整理地址、地圖與官方連結。`,
+      lead: (n: number, cities: { name: string; n: number }[]) =>
+        `${n} 間可以抱石的岩館，分布在 ${cities.length} 個城市：${cities.map((c) => `${c.name} ${c.n} 間`).join("、")}。`,
+      where: (country: string) => ({
+        q: `${country}哪裡可以抱石？`,
+        a: "以下城市有收錄岩館：",
+      }),
+      cityLine: (city: string, n: number, names: string[]) =>
+        `${city}：${n} 間（${names.join("、")}）`,
+      seeCity: (city: string) => `看${city}地圖 →`,
+      all: (country: string) => `看全部${country}岩館 →`,
+    },
+  },
   /** A single gym's page. */
   gymPage: {
+    titleAbroad: (name: string, where: string) =>
+      `${name}｜${where}抱石館：地址、地圖與官方連結｜VARO`,
+    descriptionAbroad: (g: {
+      name: string;
+      where: string;
+      district: string;
+      ropes: boolean;
+    }) =>
+      `${g.name}位於${g.where}${g.district}，是可以抱石的岩館${g.ropes ? "，也能上攀" : ""}。查看地址、地圖與官方網站、Instagram 連結；營業時間與價格請以官方公告為準。`,
     title: (name: string, _city: string) =>
       `${name}｜營業時間、價格與場館資訊｜VARO`,
     description: (g: {
@@ -226,6 +319,8 @@ const zhTW = {
       city: string;
       cityZh: string;
       district: string;
+      /** City and, outside Taiwan, the country: from `gyms.where`. */
+      where: string;
       priced: boolean;
     }) =>
       `${g.name}位於${g.cityZh}${g.district}。查看地址、已收錄的營業時間與價格、課程及官方聯絡入口；出發前請向場館確認最新資訊。`,
@@ -404,7 +499,7 @@ const zhTW = {
     flag: "台灣國旗",
   },
   hero: {
-    lead: "為台灣抱石者打造的 iOS 攀岩紀錄 App。",
+    lead: "為抱石者打造的 iOS 攀岩紀錄 App。",
     body: "記下每條路線的嘗試與完攀、追蹤正在挑戰的 Project，回頭看見自己的進步。",
     download: "在 App Store 下載",
     comingSoon: "即將登陸 App Store",

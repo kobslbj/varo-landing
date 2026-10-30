@@ -61,7 +61,7 @@ export default async function ArticlesPage() {
         {/* Bolt-hole grid, as on the rest of the site */}
         <div
           aria-hidden
-          className="pointer-events-none absolute inset-x-0 top-0 h-[900px] opacity-[0.25] [background-image:radial-gradient(#2c2f33_1.2px,transparent_1.2px)] [background-size:30px_30px] [mask-image:linear-gradient(to_bottom,black,transparent)]"
+          className="pointer-events-none absolute inset-x-0 top-0 h-[900px] opacity-[0.25] [background-image:radial-gradient(#2e2e2e_1.2px,transparent_1.2px)] [background-size:30px_30px] [mask-image:linear-gradient(to_bottom,black,transparent)]"
         />
 
         <Container className="relative grid items-center gap-12 pb-20 pt-28 sm:pt-36 lg:grid-cols-[minmax(0,1fr)_minmax(0,1.05fr)] lg:gap-8 lg:pb-28">
@@ -78,7 +78,7 @@ export default async function ArticlesPage() {
                 }
               >
                 <span className="block">{copy.slogan[0]}</span>
-                <span className="block text-lime">{copy.slogan[1]}</span>
+                <span className="block text-lime-ink">{copy.slogan[1]}</span>
               </span>
             </h1>
             <p className="mt-7 max-w-[30rem] text-[18px] leading-[1.8] text-mute sm:text-[20px]">
@@ -128,7 +128,7 @@ export default async function ArticlesPage() {
         </Container>
 
         <Container className="relative pb-28">
-          <div className="relative overflow-hidden rounded-[32px] bg-lime px-7 py-12 text-ink sm:px-14 sm:py-16">
+          <div className="relative overflow-hidden rounded-[32px] bg-lime px-7 py-12 text-night sm:px-14 sm:py-16">
             {/* A few holds bolted to the panel */}
             <span
               aria-hidden
@@ -147,11 +147,11 @@ export default async function ArticlesPage() {
             >
               {copy.closing.title}
             </h2>
-            <p className="relative mt-4 max-w-[28rem] text-[17px] leading-[1.7] text-ink/75">
+            <p className="relative mt-4 max-w-[28rem] text-[17px] leading-[1.7] text-night/75">
               {copy.closing.body}
             </p>
             <Link
-              className="relative mt-8 inline-flex h-12 items-center rounded-full bg-ink px-7 text-[16px] font-semibold text-cream transition-colors hover:bg-ink-3 focus-visible:outline-ink"
+              className="relative mt-8 inline-flex h-12 items-center rounded-full bg-ink px-7 text-[16px] font-semibold text-cream transition-colors hover:bg-ink-3 focus-visible:outline-night"
               href={href("/gyms")}
             >
               {copy.closing.cta}

@@ -21,6 +21,8 @@ export interface SiteConfig {
   termsUrl: string | null;
   /** Real App Store screenshots. When empty, the page renders labelled HTML previews instead. */
   screenshots: Screenshot[];
+  /** VARO's own social accounts, linked in the footer and as the organization's sameAs. */
+  social: { instagram: string; threads: string };
 }
 
 export const siteConfig: SiteConfig = {
@@ -37,6 +39,10 @@ export const siteConfig: SiteConfig = {
   privacyUrl: "/privacy",
   termsUrl: null,
   screenshots: [],
+  social: {
+    instagram: "https://www.instagram.com/varo.climb/",
+    threads: "https://www.threads.com/@varo.climb",
+  },
 };
 
 /** Mailto for gym enquiries, with an optional pre-filled body, or null when no inbox is set. */

@@ -1,10 +1,13 @@
 // Lists gym research text with no translation in lib/gyms/i18n/{en,ja,ko}.json.
-// Run after regenerating lib/gyms/data.ts from a new CSV:
+// Run after regenerating lib/gyms/data.ts or data-abroad.ts from a new CSV:
 //   node scripts/gym-i18n-missing.mjs
 // Untranslated text still renders, in Chinese.
 import { readFile } from "node:fs/promises";
 
-const data = await readFile("lib/gyms/data.ts", "utf8");
+const data = [
+  await readFile("lib/gyms/data.ts", "utf8"),
+  await readFile("lib/gyms/data-abroad.ts", "utf8"),
+].join("\n");
 const fields = [
   "hoursNote",
   "courses",

@@ -19,7 +19,7 @@ export default function Error({ reset }: { error: Error; reset: () => void }) {
       <div>
         <h1 className="display-zh text-[32px]">{t.title}</h1>
         <button
-          className="mt-6 h-11 rounded-lg bg-lime px-5 font-semibold text-ink"
+          className="mt-6 h-11 rounded-lg bg-lime px-5 font-semibold text-night"
           type="button"
           onClick={() => reset()}
         >

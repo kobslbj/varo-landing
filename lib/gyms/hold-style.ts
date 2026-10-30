@@ -6,7 +6,7 @@ import { holdColors } from "@/components/landing/ui";
 
 /** Hold colour per kind; the legend and the list use the same ones. */
 export const KIND_COLORS: Record<GymKind, string> = {
-  boulder: "#D4FF5A",
+  boulder: "#C6FF00",
   mixed: holdColors.blue,
   rope: holdColors.purple,
   kids: holdColors.yellow,

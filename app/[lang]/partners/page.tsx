@@ -59,12 +59,12 @@ export default async function PartnersPage() {
         {/* Bolt-hole grid */}
         <div
           aria-hidden
-          className="pointer-events-none absolute inset-0 opacity-[0.25] [background-image:radial-gradient(#2c2f33_1.2px,transparent_1.2px)] [background-size:30px_30px] [mask-image:linear-gradient(to_bottom,black,transparent_70%)]"
+          className="pointer-events-none absolute inset-0 opacity-[0.25] [background-image:radial-gradient(#2e2e2e_1.2px,transparent_1.2px)] [background-size:30px_30px] [mask-image:linear-gradient(to_bottom,black,transparent_70%)]"
         />
 
         {/* Opening */}
         <Container className="relative pb-20 pt-36 sm:pt-44">
-          <p className="rise flex items-center gap-2 text-[14px] font-semibold tracking-[0.08em] text-lime sm:text-[15px]">
+          <p className="rise flex items-center gap-2 text-[14px] font-semibold tracking-[0.08em] text-lime-ink sm:text-[15px]">
             <span aria-hidden className="size-2 rounded-full bg-lime" />
             {copy.eyebrow}
           </p>
@@ -77,7 +77,7 @@ export default async function PartnersPage() {
           >
             {copy.title[0]}
             <br />
-            <span className="text-lime">{copy.title[1]}</span>
+            <span className="text-lime-ink">{copy.title[1]}</span>
           </h1>
           <p
             className="rise mt-7 max-w-[36rem] text-[17px] leading-[1.8] text-mute [text-wrap:pretty] sm:text-[19px]"
@@ -105,7 +105,7 @@ export default async function PartnersPage() {
               </PartnerCta>
             ) : null}
             <a
-              className="text-[15px] font-medium text-mute underline decoration-line underline-offset-4 transition-colors hover:text-lime hover:decoration-lime"
+              className="text-[15px] font-medium text-mute underline decoration-line underline-offset-4 transition-colors hover:text-lime-ink hover:decoration-lime"
               href="#how"
             >
               {copy.howLink} ↓
@@ -155,7 +155,7 @@ export default async function PartnersPage() {
             <ol className="flex flex-col gap-8">
               {copy.how.steps.map((step, i) => (
                 <li key={step.title} className="flex gap-5">
-                  <span className="font-display text-[28px] leading-none text-lime">
+                  <span className="font-display text-[28px] leading-none text-lime-ink">
                     {String(i + 1).padStart(2, "0")}
                   </span>
                   <div>
@@ -164,7 +164,7 @@ export default async function PartnersPage() {
                         "inline-block rounded-full px-2.5 py-0.5 text-[12px] font-semibold",
                         i < 2
                           ? "border border-line text-mute"
-                          : "bg-lime text-ink",
+                          : "bg-lime text-night",
                       )}
                     >
                       {i < 2 ? copy.how.setter : copy.how.climber}
@@ -188,7 +188,7 @@ export default async function PartnersPage() {
           <h2 className={clsx("text-[32px] sm:text-[40px]", heading)}>
             {copy.value.heading}
           </h2>
-          <p className="mt-8 text-[14px] font-semibold tracking-[0.04em] text-lime">
+          <p className="mt-8 text-[14px] font-semibold tracking-[0.04em] text-lime-ink">
             {copy.value.now.label}
           </p>
           <ul className="mt-4 grid gap-4 md:grid-cols-3">
@@ -234,7 +234,7 @@ export default async function PartnersPage() {
           <ol className="mt-10 grid gap-4 md:grid-cols-3">
             {copy.setup.steps.map((step, i) => (
               <li key={step.title} className="border-t-2 border-line pt-5">
-                <span className="font-display text-[22px] text-lime">
+                <span className="font-display text-[22px] text-lime-ink">
                   {i + 1}
                 </span>
                 <h3 className="mt-2 text-[19px] font-bold leading-snug">
@@ -278,7 +278,7 @@ export default async function PartnersPage() {
                     key={item}
                     className="flex gap-3 text-[17px] leading-[1.6]"
                   >
-                    <span aria-hidden className="mt-[2px] text-lime">
+                    <span aria-hidden className="mt-[2px] text-lime-ink">
                       ✓
                     </span>
                     {item}
@@ -304,7 +304,7 @@ export default async function PartnersPage() {
               <p className="mt-5 text-[14px] text-mute">
                 {copy.contact.or}{" "}
                 <a
-                  className="text-cream underline decoration-line underline-offset-4 transition-colors hover:text-lime hover:decoration-lime"
+                  className="text-cream underline decoration-line underline-offset-4 transition-colors hover:text-lime-ink hover:decoration-lime"
                   href={`mailto:${siteConfig.partnerEmail}`}
                 >
                   {siteConfig.partnerEmail}
@@ -358,7 +358,7 @@ function WallMock({ copy }: { copy: Dictionary["partners"]["how"] }) {
             <span
               className={clsx(
                 "absolute top-0 -translate-y-1/2 whitespace-nowrap rounded-full px-2 py-0.5 text-[12px] font-bold shadow-[0_2px_8px_rgba(0,0,0,0.35)]",
-                route.selected ? "bg-lime text-ink" : "bg-ink/85 text-cream",
+                route.selected ? "bg-lime text-night" : "bg-ink/85 text-cream",
                 route.tagLeft
                   ? "right-[18px]"
                   : route.selected
@@ -386,7 +386,9 @@ function WallMock({ copy }: { copy: Dictionary["partners"]["how"] }) {
               key={label}
               className={clsx(
                 "rounded-xl py-2.5 text-center text-[13px] font-semibold",
-                i === 1 ? "bg-lime text-ink" : "border border-line text-cream",
+                i === 1
+                  ? "bg-lime text-night"
+                  : "border border-line text-cream",
               )}
             >
               {label}

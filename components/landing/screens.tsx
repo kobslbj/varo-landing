@@ -541,7 +541,7 @@ function Pill({
 }) {
   return (
     <span className="flex h-6 items-center gap-1 rounded-full bg-[#161618] px-2.5 text-[9px]">
-      {flash ? <span className="text-lime">⚡</span> : null}
+      {flash ? <span className="text-lime-ink">⚡</span> : null}
       <span className="text-[11px] font-extrabold tabular">{value}</span>
       <span className="font-semibold text-[#a1a1a8]">{label}</span>
     </span>
