@@ -27,14 +27,14 @@ const copy = {
     download: "下載 VARO",
     codeTitle: "還沒有 VARO？",
     codeBody: (name: string) =>
-      `下載後，在第一個畫面點「輸入邀請碼」，輸入這 6 碼就會送出好友邀請給 ${name}。`,
+      `下載後，在第一個畫面點「輸入邀請碼」，輸入這 6 碼就會和 ${name} 成為好友。`,
     copy: "複製",
     copied: "已複製",
     qrNote: "這個 QR Code 每 10 分鐘更新一次。",
     inApp: "按了沒反應？點右上角的「⋯」，選擇用 Safari 開啟。",
     goneTitle: "這個邀請已失效",
     goneBody:
-      "QR Code 每 10 分鐘更新一次，邀請連結也可能已被重設。請朋友重新打開 QR Code，或再傳一次邀請連結。",
+      "QR Code 每 10 分鐘更新一次，邀請連結只能用一次，也可能已被重設。請朋友重新打開 QR Code，或再傳一條新的邀請連結。",
     metaTitle: "VARO 好友邀請",
   },
   en: {
@@ -46,14 +46,14 @@ const copy = {
     download: "Download VARO",
     codeTitle: "No VARO yet?",
     codeBody: (name: string) =>
-      `After downloading, tap “Enter invite code” on the first screen and type these 6 characters to send ${name} a friend request.`,
+      `After downloading, tap “Enter invite code” on the first screen and type these 6 characters to become friends with ${name}.`,
     copy: "Copy",
     copied: "Copied",
     qrNote: "This QR code changes every 10 minutes.",
     inApp: "Nothing happens? Tap “⋯” at the top right and open in Safari.",
     goneTitle: "This invite has expired",
     goneBody:
-      "QR codes change every 10 minutes, and invite links can be reset. Ask your friend to open their QR code again, or to send the link again.",
+      "QR codes change every 10 minutes, and an invite link works once and can be reset. Ask your friend to open their QR code again, or to send a new invite link.",
     metaTitle: "VARO friend invite",
   },
 };
