@@ -1,5 +1,6 @@
 import type { Metadata } from "next";
 
+import Image from "next/image";
 import Link from "next/link";
 import { headers } from "next/headers";
 
@@ -84,12 +85,16 @@ export default async function InvitePage({ params }: Props) {
 
   return (
     <main className="mx-auto flex min-h-dvh w-full max-w-[480px] flex-col justify-center gap-8 px-5 py-12">
-      <Link
-        aria-label="VARO"
-        className="font-display text-[22px] tracking-wide text-cream"
-        href="/"
-      >
-        VARO
+      <Link aria-label="VARO" className="flex h-11 items-center" href="/">
+        <Image
+          priority
+          alt="VARO"
+          className="h-[22px] w-auto"
+          height={172}
+          sizes="128px"
+          src="/brand/varo-wordmark-black.png"
+          width={1000}
+        />
       </Link>
 
       {invite ? (
