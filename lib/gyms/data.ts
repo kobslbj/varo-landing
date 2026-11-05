@@ -1224,29 +1224,6 @@ export const gyms: Gym[] = [
       "https://www.google.com/maps/search/?api=1&query=WUSA%20%E6%94%80%E5%B2%A9%E9%A4%A8%E3%83%BB%E5%9C%9F%E5%9F%8E%E9%A4%A8%20%E6%96%B0%E5%8C%97%E5%B8%82%E5%9C%9F%E5%9F%8E%E5%8D%80%E9%87%91%E5%9F%8E%E8%B7%AF%E4%BA%8C%E6%AE%B5247-1%E8%99%9F",
   },
   {
-    id: "climbway-yuanlin",
-    name: "岩途 Climb Way（原破舊工廠）",
-    city: "彰化縣",
-    district: "員林市",
-    address: "彰化縣員林市新義街104號",
-    kind: "mixed",
-    confirmed: true,
-    category: "抱石＋上攀",
-    price: {
-      notes:
-        "官方摘要列不限時間300元；平假日、會員及租鞋條件待確認，故未填平假日日票欄",
-      source: "官方摘要列單次價格；完整適用條件待確認",
-    },
-    booking: "依官方聯絡入口詢問",
-    phone: "04-833-4106",
-    website: "https://www.facebook.com/p/岩途-Climb-Way-61591326732206/",
-    facebook: "https://www.facebook.com/p/岩途-Climb-Way-61591326732206/",
-    notes:
-      "同址品牌更名，只計一筆；與提供全台地圖的「岩途」網站無已確認的關係。",
-    mapsUrl:
-      "https://www.google.com/maps/search/?api=1&query=%E5%B2%A9%E9%80%94%20Climb%20Way%EF%BC%88%E5%8E%9F%E7%A0%B4%E8%88%8A%E5%B7%A5%E5%BB%A0%EF%BC%89%20%E5%BD%B0%E5%8C%96%E7%B8%A3%E5%93%A1%E6%9E%97%E5%B8%82%E6%96%B0%E7%BE%A9%E8%A1%97104%E8%99%9F",
-  },
-  {
     id: "camp4-wanhua",
     name: "Camp4 攀岩館・萬華運動中心館",
     city: "台北市",
