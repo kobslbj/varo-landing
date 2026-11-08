@@ -20,6 +20,8 @@ const en: Dictionary = {
     ],
   },
   nav: {
+    beta: "Beta",
+    getApp: "Get the app",
     articles: "Guides",
     philosophy: "Philosophy",
     partner: "For gyms",
@@ -397,18 +399,30 @@ const en: Dictionary = {
             title: "A reason to come back",
             body: "Every project a climber logs at your gym stays in the app, a reminder that it isn’t sent yet.",
           },
+          {
+            title: "Reset notifications",
+            body: "When you reset, the climbers following your gym get a notification.",
+          },
+          {
+            title: "Route numbers",
+            body: "Weekly logs, grade spread and the most-tried problems. Counted only from climbers who log in VARO, never showing anyone’s individual log.",
+          },
+          {
+            title: "A QR poster for every wall",
+            body: "Print them from the gym tool. Climbers scan to see that wall’s routes and beta, no app needed; no reprint after a reset.",
+          },
         ],
       },
       planned: {
         label: "Planned",
         items: [
           {
-            title: "Reset notifications",
-            body: "When you reset, the climbers who come to your gym get a notification.",
+            title: "Classes and events",
+            body: "Intro sessions, comps and events on your gym page, linking straight to your own booking or ticket page.",
           },
           {
-            title: "Route feedback",
-            body: "Which problems get the most attempts and how climbers rate the grades. Counted only from climbers who log in VARO, never showing anyone’s individual log.",
+            title: "On your own website",
+            body: "Embed the routes on the wall and their beta in your site, updated at every reset.",
           },
         ],
       },

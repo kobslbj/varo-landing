@@ -34,6 +34,18 @@ export async function SiteFooter() {
           </Link>
           <Link
             className="transition-colors hover:text-cream"
+            href={href("/philosophy")}
+          >
+            {t.nav.philosophy}
+          </Link>
+          <Link
+            className="transition-colors hover:text-cream"
+            href={href("/partners")}
+          >
+            {t.nav.partner}
+          </Link>
+          <Link
+            className="transition-colors hover:text-cream"
             href={href("/agents")}
           >
             For agents
@@ -105,7 +117,7 @@ function SocialLink({
   return (
     <a
       aria-label={label}
-      className="grid size-9 place-items-center rounded-full border-2 border-line text-cream transition-colors hover:border-night hover:bg-lime hover:text-night"
+      className="grid size-9 place-items-center rounded-full border border-line text-cream transition-colors hover:bg-ink-3"
       href={href}
       rel="noopener noreferrer"
       target="_blank"
