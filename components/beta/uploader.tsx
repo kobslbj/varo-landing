@@ -27,6 +27,18 @@ interface Me {
 
 type Result = "sent" | "flash" | "attempted";
 
+/** One of my own clips of this route, logged in the app. */
+interface AppClip {
+  id: string;
+  /** Already this route's beta. */
+  shared: boolean;
+  /** In the cloud; one still on the phone can't be shared from here yet. */
+  uploaded: boolean;
+  thumb: string | null;
+  /** When the visit was. */
+  occurredAt: string;
+}
+
 /**
  * Sign in with Apple on the web: on once Supabase has the Apple Services ID
  * and client secret. The secret is a JWT that lasts at most 6 months, so it
@@ -97,6 +109,8 @@ export function BetaUploader({
   // One upload at a time; also keeps a retry on the same clip id (idempotent).
   const busy = useRef(false);
   const mediaId = useRef<string | null>(null);
+  const [appClips, setAppClips] = useState<AppClip[]>([]);
+  const [sharingId, setSharingId] = useState<string | null>(null);
 
   const loadMe = useCallback(async () => {
     const supabase = supabaseBrowser();
@@ -137,6 +151,110 @@ export function BetaUploader({
     });
     setPhase({ at: "pick" });
   }, []);
+
+  // Logged this route in the app already? Offer that clip as beta first:
+  // uploading again would make a second visit and count the climb twice.
+  useEffect(() => {
+    // Never show (and share) another route's or person's clips.
+    setAppClips([]);
+    if (!me) return;
+    let alive = true;
+    const supabase = supabaseBrowser();
+
+    void (async () => {
+      const { data } = await supabase
+        .from("media_assets")
+        .select(
+          "id, visibility, status, thumbnail_path, created_at, climb_logs!inner(route_id, sessions!inner(occurred_at))",
+        )
+        .eq("owner_id", me.id)
+        .eq("kind", "video")
+        .eq("climb_logs.route_id", route.id)
+        .order("created_at", { ascending: false })
+        .limit(3);
+      const rows = (data ?? []) as unknown as {
+        id: string;
+        visibility: string;
+        status: string;
+        thumbnail_path: string | null;
+        created_at: string;
+        climb_logs: { sessions: { occurred_at: string } | null } | null;
+      }[];
+
+      if (!alive || !rows.length) return;
+      const paths = rows.flatMap((r) =>
+        r.thumbnail_path ? [r.thumbnail_path] : [],
+      );
+      const { data: signed } = paths.length
+        ? await supabase.storage.from("media").createSignedUrls(paths, 3600)
+        : { data: [] as { path: string | null; signedUrl: string }[] };
+      const thumbOf = new Map<string, string>(
+        (signed ?? []).flatMap(
+          (s: { path: string | null; signedUrl: string }) =>
+            s.path && s.signedUrl ? [[s.path, s.signedUrl] as const] : [],
+        ),
+      );
+
+      if (!alive) return;
+      setAppClips(
+        rows.map((r) => ({
+          id: r.id,
+          shared: r.visibility === "public",
+          uploaded: r.status === "uploaded",
+          thumb: r.thumbnail_path
+            ? (thumbOf.get(r.thumbnail_path) ?? null)
+            : null,
+          occurredAt: r.climb_logs?.sessions?.occurred_at ?? r.created_at,
+        })),
+      );
+    })().catch(() => undefined);
+
+    return () => {
+      alive = false;
+    };
+  }, [me, route.id]);
+
+  const refreshPages = () =>
+    void supabaseBrowser()
+      .auth.getSession()
+      .then(
+        ({ data }: { data: { session: { access_token: string } | null } }) =>
+          fetch("/api/beta-revalidate", {
+            method: "POST",
+            keepalive: true,
+            headers: {
+              "Content-Type": "application/json",
+              Authorization: `Bearer ${data.session?.access_token ?? ""}`,
+            },
+            body: JSON.stringify({ path: route.hubPath, routeId: route.id }),
+          }),
+      )
+      .catch(() => undefined);
+
+  /** Shares a clip already logged in the app: no new upload, no second visit. */
+  const shareAppClip = async (id: string) => {
+    if (sharingId || reading) return;
+    setSharingId(id);
+    setError(null);
+    const { data, error: e } = await supabaseBrowser()
+      .from("media_assets")
+      .update({ visibility: "public" })
+      .eq("id", id)
+      .select("id");
+
+    setSharingId(null);
+    if (e || !data?.length) {
+      setError(c.errors.generic);
+
+      return;
+    }
+    setAppClips((list) =>
+      list.map((x) => (x.id === id ? { ...x, shared: true } : x)),
+    );
+    refreshPages();
+    track("web_beta_app_clip_shared");
+    setPhase({ at: "done", first: route.clipsBefore === 0 });
+  };
 
   useEffect(() => {
     const params = new URLSearchParams(window.location.search);
@@ -196,7 +314,7 @@ export function BetaUploader({
   const [reading, setReading] = useState(false);
 
   const pick = async (f: File | undefined) => {
-    if (!f || reading) return;
+    if (!f || reading || sharingId) return;
     setError(null);
     setReading(true);
     try {
@@ -296,21 +414,7 @@ export function BetaUploader({
 
       // Let the route and gym pages show it now rather than in 5 minutes.
       // keepalive: survives the person leaving the page right away.
-      void supabaseBrowser()
-        .auth.getSession()
-        .then(
-          ({ data }: { data: { session: { access_token: string } | null } }) =>
-            fetch("/api/beta-revalidate", {
-              method: "POST",
-              keepalive: true,
-              headers: {
-                "Content-Type": "application/json",
-                Authorization: `Bearer ${data.session?.access_token ?? ""}`,
-              },
-              body: JSON.stringify({ path: route.hubPath, routeId: route.id }),
-            }),
-        )
-        .catch(() => undefined);
+      refreshPages();
       track("web_beta_uploaded", {
         transcoded: clip.transcoded,
         seconds: Math.round(clip.durationMs / 1000),
@@ -468,6 +572,15 @@ export function BetaUploader({
             <p className="mt-2 text-[15px] leading-[1.75] text-mute">
               {c.pickBody}
             </p>
+            {appClips.length ? (
+              <AppClips
+                c={c}
+                clips={appClips}
+                routeHref={route.routeHref}
+                sharingId={sharingId}
+                onShare={(id) => void shareAppClip(id)}
+              />
+            ) : null}
             {inApp ? (
               <InAppNotice
                 body={c.inAppPickBody}
@@ -508,7 +621,7 @@ export function BetaUploader({
               <input
                 accept="video/mp4,video/quicktime,video/*"
                 className="sr-only"
-                disabled={reading}
+                disabled={reading || sharingId !== null}
                 type="file"
                 onChange={(e) => {
                   void pick(e.target.files?.[0]);
@@ -1012,6 +1125,78 @@ function InAppNotice({
       >
         {copied ? copiedLabel : copyLabel}
       </button>
+    </div>
+  );
+}
+
+/**
+ * This route's clips already logged in the app: share one as beta from here
+ * instead of uploading it again (which would make a second visit and count
+ * the climb twice).
+ */
+function AppClips({
+  c,
+  clips,
+  routeHref,
+  sharingId,
+  onShare,
+}: {
+  c: UploadCopy;
+  clips: AppClip[];
+  routeHref: string;
+  sharingId: string | null;
+  onShare: (id: string) => void;
+}) {
+  const shared = clips.some((x) => x.shared);
+
+  return (
+    <div className="mt-5 rounded-2xl border-2 border-night bg-lime/15 p-4">
+      <p className="text-[15px] font-extrabold">{c.appClipsTitle}</p>
+      <p className="mt-1 text-[13px] leading-[1.7] text-mute">
+        {shared ? c.appClipsShared : c.appClipsBody}
+      </p>
+      <ul className="mt-3 grid gap-2.5">
+        {clips.map((x) => (
+          <li key={x.id} className="flex items-center gap-3">
+            <span className="relative block h-16 w-12 shrink-0 overflow-hidden rounded-lg bg-ink-3">
+              {x.thumb ? (
+                // eslint-disable-next-line @next/next/no-img-element -- a signed poster from storage
+                <img
+                  alt=""
+                  className="absolute inset-0 size-full object-cover"
+                  src={x.thumb}
+                />
+              ) : null}
+            </span>
+            <span className="min-w-0 flex-1 text-[14px] font-bold">
+              {c.appClipDate(x.occurredAt)}
+              {!x.uploaded ? (
+                <span className="block text-[12px] font-medium text-mute">
+                  {c.appClipNotUp}
+                </span>
+              ) : null}
+            </span>
+            {x.shared ? (
+              <a
+                className="shrink-0 rounded-full bg-night px-3.5 py-2 text-[13px] font-bold text-lime"
+                href={routeHref}
+              >
+                ✓ {c.appClipIsBeta}
+              </a>
+            ) : (
+              <button
+                className="shrink-0 rounded-full bg-night px-3.5 py-2 text-[13px] font-bold text-day transition-opacity disabled:opacity-40"
+                disabled={!x.uploaded || sharingId !== null}
+                type="button"
+                onClick={() => onShare(x.id)}
+              >
+                {sharingId === x.id ? c.appClipSharing : c.appClipShare}
+              </button>
+            )}
+          </li>
+        ))}
+      </ul>
+      <p className="mt-3 text-[12px] text-mute">{c.appClipsOr}</p>
     </div>
   );
 }
