@@ -1,9 +1,12 @@
 "use client";
 
+import type { FloorPlan } from "@/lib/beta/plans";
+
 import clsx from "clsx";
 import Link from "next/link";
 import { useEffect, useMemo, useRef, useState } from "react";
 
+import { FloorPlanPicker } from "./floor-plan";
 import { GradeChip } from "./grade-chip";
 import { WallCrop, type WallPhoto } from "./wall-crop";
 
@@ -46,6 +49,7 @@ export function RouteBrowser({
   routes,
   colorNames,
   labels,
+  plan = null,
 }: {
   zones: BrowserZone[];
   routes: BrowserRoute[];
@@ -63,6 +67,8 @@ export function RouteBrowser({
     clear: string;
     none: string;
   };
+  /** The gym's floor plan, shown above the walls as another way to pick one. */
+  plan?: FloorPlan | null;
 }) {
   const [f, setF] = useState<Filter>({ zone: null, color: null, grade: null });
   const [onlyBeta, setOnlyBeta] = useState(false);
@@ -154,6 +160,23 @@ export function RouteBrowser({
       <div className="space-y-5 rounded-[24px] border border-line bg-ink-2 p-4 sm:p-6">
         {/* 1. Which wall: by its photo, as you see it from the mat. */}
         <Step label={labels.wall} n={1}>
+          {plan ? (
+            <div className="mb-3">
+              <FloorPlanPicker
+                active={f.zone}
+                count={count}
+                plan={plan}
+                routesLabel={labels.found}
+                onPick={(w) =>
+                  update({
+                    zone: f.zone === w ? null : w,
+                    color: null,
+                    grade: null,
+                  })
+                }
+              />
+            </div>
+          ) : null}
           <div
             ref={row}
             className="relative -mx-4 flex gap-2.5 overflow-x-auto px-4 pb-1 [scrollbar-width:none] sm:-mx-6 sm:px-6 [&::-webkit-scrollbar]:hidden"
