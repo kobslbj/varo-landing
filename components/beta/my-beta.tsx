@@ -18,7 +18,18 @@ const copy = {
     bumps: "碰拳",
     helped: "幫人完攀",
     total: (n: number) => `${n} 支 beta`,
-    note: "刪除或改成私人，請到 VARO App 的紀錄裡操作。",
+    note: "從 beta 拿下：影片還在，只是別人看不到。刪除：整筆紀錄和影片都會刪掉。",
+    more: "更多",
+    takeBack: "從 beta 拿下",
+    takeBackSure: "從這條路線的 beta 拿下？影片還在你的紀錄裡，別人看不到。",
+    takeBackSureFriends: "從這條路線的 beta 拿下？好友仍看得到，其他人看不到。",
+    del: "刪除",
+    delSure: "刪除這支影片和它的紀錄？刪除後無法復原。",
+    cancel: "取消",
+    working: "處理中…",
+    inApp:
+      "這支影片在 App 的紀錄裡（還有其他攀爬或影片），請到 VARO App 刪除。",
+    failed: "沒有成功，再試一次。",
   },
   en: {
     loading: "Loading…",
@@ -31,13 +42,28 @@ const copy = {
     bumps: "Fist bumps",
     helped: "Helped send",
     total: (n: number) => `${n} beta`,
-    note: "To delete one or make it private, open it in the VARO app.",
+    note: "Take off beta: the video stays, others can't see it. Delete: the video and its visit are gone.",
+    more: "More",
+    takeBack: "Take off beta",
+    takeBackSure:
+      "Take it off this route's beta? It stays in your log; others can't see it.",
+    takeBackSureFriends:
+      "Take it off this route's beta? Friends can still see it; no one else can.",
+    del: "Delete",
+    delSure: "Delete this video and its visit? This can't be undone.",
+    cancel: "Cancel",
+    working: "Working…",
+    inApp:
+      "This video is in a visit with other climbs or videos in the app. Delete it in the VARO app.",
+    failed: "That didn't work. Try again.",
   },
 };
 
 interface Row {
   id: string;
   routeId: string;
+  /** Its visit is shared with friends: taken off beta, friends still see it. */
+  friendsVisit: boolean;
   grade: string | null;
   color: string | null;
   wall: string | null;
@@ -66,6 +92,88 @@ export function MyBeta({
   const c = copy[lang];
   const [rows, setRows] = useState<Row[] | null>(null);
   const [signedOut, setSignedOut] = useState(false);
+  // One card's actions open at a time: its menu, or a confirm for one of them.
+  const [open, setOpen] = useState<{
+    id: string;
+    step: "menu" | "takeBack" | "delete";
+  } | null>(null);
+  const [busy, setBusy] = useState(false);
+  const [notice, setNotice] = useState<{ id: string; text: string } | null>(
+    null,
+  );
+
+  const refresh = (routeId: string) =>
+    void supabaseBrowser()
+      .auth.getSession()
+      .then(
+        ({ data }: { data: { session: { access_token: string } | null } }) =>
+          fetch("/api/beta-revalidate", {
+            method: "POST",
+            keepalive: true,
+            headers: {
+              "Content-Type": "application/json",
+              Authorization: `Bearer ${data.session?.access_token ?? ""}`,
+            },
+            body: JSON.stringify({ routeId }),
+          }),
+      )
+      .catch(() => undefined);
+
+  const drop = (id: string) => {
+    setRows((list) => (list ?? []).filter((x) => x.id !== id));
+    setOpen(null);
+  };
+
+  /** Off the beta, kept in the log: back to friends if its visit is shared, else private. */
+  const takeBack = async (r: Row) => {
+    if (busy) return;
+    setBusy(true);
+    setNotice(null);
+    const { data, error } = await supabaseBrowser()
+      .from("media_assets")
+      .update({ visibility: r.friendsVisit ? "friends" : "private" })
+      .eq("id", r.id)
+      // Only while it's still public: a page left open must not re-share a
+      // clip made private in the app since.
+      .eq("visibility", "public")
+      .select("id");
+
+    setBusy(false);
+    if (error || !data?.length) {
+      setNotice({ id: r.id, text: c.failed });
+
+      return;
+    }
+    refresh(r.routeId);
+    drop(r.id);
+  };
+
+  /**
+   * A web upload's visit, whole (delete_web_beta refuses an app visit). Its
+   * files go with cleanup-orphans: once the rows are gone only I can read them.
+   */
+  const remove = async (r: Row) => {
+    if (busy) return;
+    setBusy(true);
+    setNotice(null);
+    const { error } = await supabaseBrowser().rpc("delete_web_beta", {
+      p_media_id: r.id,
+    });
+
+    if (error) {
+      setBusy(false);
+      setNotice({
+        id: r.id,
+        text: error.message.includes("in_app_visit") ? c.inApp : c.failed,
+      });
+      setOpen(null);
+
+      return;
+    }
+    setBusy(false);
+    refresh(r.routeId);
+    drop(r.id);
+  };
 
   useEffect(() => {
     void (async () => {
@@ -90,7 +198,7 @@ export function MyBeta({
       const { data } = await supabase
         .from("media_assets")
         .select(
-          "id, thumbnail_path, created_at, climb_logs(route_id, routes(grade_label, hold_color, wall, gyms(name, branch)))",
+          "id, thumbnail_path, created_at, climb_logs(route_id, sessions(visibility), routes(grade_label, hold_color, wall, gyms(name, branch)))",
         )
         .eq("owner_id", auth.user.id)
         .eq("visibility", "public")
@@ -105,6 +213,7 @@ export function MyBeta({
         created_at: string;
         climb_logs: {
           route_id: string | null;
+          sessions: { visibility: string } | null;
           routes: {
             grade_label: string | null;
             hold_color: string | null;
@@ -170,6 +279,7 @@ export function MyBeta({
           return {
             id: r.id,
             routeId: r.climb_logs!.route_id!,
+            friendsVisit: r.climb_logs!.sessions?.visibility === "friends",
             grade: route?.grade_label ?? null,
             color: route?.hold_color ?? null,
             wall: route?.wall ?? null,
@@ -241,7 +351,7 @@ export function MyBeta({
       </p>
       <ul className="mt-3 grid grid-cols-2 gap-3 sm:grid-cols-3">
         {rows.map((r) => (
-          <li key={r.id}>
+          <li key={r.id} className="relative">
             <Link
               className="lift theme-dark group relative block aspect-[9/14] overflow-hidden rounded-[20px] bg-night"
               href={`${shortHref}/${r.routeId}`}
@@ -282,6 +392,83 @@ export function MyBeta({
                 </span>
               </span>
             </Link>
+            <button
+              aria-expanded={open?.id === r.id}
+              aria-label={c.more}
+              className="absolute right-2 top-2 grid size-9 place-items-center rounded-full bg-black/55 text-[18px] font-black leading-none text-white backdrop-blur transition-colors hover:bg-black/75"
+              type="button"
+              onClick={() =>
+                setOpen(open?.id === r.id ? null : { id: r.id, step: "menu" })
+              }
+            >
+              ⋯
+            </button>
+            {open?.id === r.id ? (
+              <div className="absolute inset-x-2 top-12 z-10 rounded-2xl border border-line bg-ink-2 p-3 text-cream shadow-[0_10px_30px_rgb(0_0_0/0.25)]">
+                {open.step === "menu" ? (
+                  <div className="grid gap-1">
+                    <button
+                      className="rounded-xl px-3 py-2.5 text-left text-[14px] font-bold hover:bg-ink-3"
+                      type="button"
+                      onClick={() => setOpen({ id: r.id, step: "takeBack" })}
+                    >
+                      {c.takeBack}
+                    </button>
+                    <button
+                      className="rounded-xl px-3 py-2.5 text-left text-[14px] font-bold text-[#c2272d] hover:bg-hold-red/10"
+                      type="button"
+                      onClick={() => setOpen({ id: r.id, step: "delete" })}
+                    >
+                      {c.del}
+                    </button>
+                  </div>
+                ) : (
+                  <div>
+                    <p className="text-[13px] leading-[1.6]">
+                      {open.step === "delete"
+                        ? c.delSure
+                        : r.friendsVisit
+                          ? c.takeBackSureFriends
+                          : c.takeBackSure}
+                    </p>
+                    <div className="mt-3 flex justify-end gap-2">
+                      <button
+                        className="rounded-full px-3 py-2 text-[13px] font-bold text-mute"
+                        disabled={busy}
+                        type="button"
+                        onClick={() => setOpen(null)}
+                      >
+                        {c.cancel}
+                      </button>
+                      <button
+                        className={`rounded-full px-3.5 py-2 text-[13px] font-bold text-white disabled:opacity-50 ${open.step === "delete" ? "bg-[#c2272d]" : "bg-night"}`}
+                        disabled={busy}
+                        type="button"
+                        onClick={() =>
+                          void (open.step === "delete"
+                            ? remove(r)
+                            : takeBack(r))
+                        }
+                      >
+                        {busy
+                          ? c.working
+                          : open.step === "delete"
+                            ? c.del
+                            : c.takeBack}
+                      </button>
+                    </div>
+                  </div>
+                )}
+              </div>
+            ) : null}
+            {notice?.id === r.id ? (
+              <p
+                className="mt-2 text-[12px] font-semibold text-[#c2272d]"
+                role="alert"
+              >
+                {notice.text}
+              </p>
+            ) : null}
           </li>
         ))}
       </ul>
