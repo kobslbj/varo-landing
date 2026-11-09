@@ -4,6 +4,7 @@ import type { Country } from "@/lib/gyms/types";
 import Link from "next/link";
 
 import { GymDirectory, type OpenGym } from "@/components/beta/gym-directory";
+import { FeedbackButton } from "@/components/beta/feedback-button";
 import { SiteFooter } from "@/components/landing/site-footer";
 import { SiteHeader } from "@/components/landing/site-header";
 import { Container } from "@/components/landing/ui";
@@ -129,6 +130,7 @@ export default async function BetaIndex() {
           </Link>
         </Container>
       </main>
+      <FeedbackButton zh={zh} />
       <SiteFooter />
     </>
   );

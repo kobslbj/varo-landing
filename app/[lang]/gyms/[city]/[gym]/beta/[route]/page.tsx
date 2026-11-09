@@ -7,6 +7,7 @@ import { AppCta } from "@/components/beta/app-cta";
 import { ClipCard } from "@/components/beta/clip-card";
 import { GradeChip } from "@/components/beta/grade-chip";
 import { WallCrop } from "@/components/beta/wall-crop";
+import { FeedbackButton } from "@/components/beta/feedback-button";
 import { SiteFooter } from "@/components/landing/site-footer";
 import { SiteHeader } from "@/components/landing/site-header";
 import { Container, CtaLink } from "@/components/landing/ui";
@@ -419,6 +420,7 @@ export default async function RouteBetaPage({ params }: Props) {
           </div>
         </Container>
       </main>
+      <FeedbackButton zh={zh} />
       <SiteFooter />
     </>
   );
