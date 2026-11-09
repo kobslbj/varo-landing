@@ -209,13 +209,13 @@ export default async function GymBetaPage({ params }: Props) {
                   ),
                 )}
                 labels={{
-                  all: c.allZones,
                   onlyBeta: c.onlyBeta,
                   noBetaYet: c.noBetaYet,
                   clips: c.clipsTpl,
                   wall: c.finderWall,
                   color: c.finderColor,
                   grade: c.finderGrade,
+                  part: c.finderPart,
                   found: c.finderFound,
                   clear: c.finderClear,
                   none: c.finderNone,
