@@ -22,13 +22,10 @@ import {
 import { cityPath } from "@/lib/gyms/cities";
 import { absoluteUrl, JsonLd, pageMetadata, webPage } from "@/lib/seo";
 
-// Built on first visit, then refreshed at most every 5 minutes.
+// Rendered per request; the Supabase reads are cached for 5 minutes (lib/beta/data.ts).
+// No generateStaticParams: an empty list under the static [lang] layout made
+// every beta URL a prerendered 404 in production builds (next dev was fine).
 export const revalidate = 300;
-export const dynamicParams = true;
-
-export function generateStaticParams() {
-  return [];
-}
 
 type Props = { params: GymParams };
 
