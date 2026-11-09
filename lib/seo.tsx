@@ -30,10 +30,13 @@ export async function pageMetadata(
     title,
     description,
     regional,
+    images = true,
   }: {
     title: string;
     description: string;
     regional?: Record<string, Locale>;
+    /** False for a page with its own opengraph-image/twitter-image files. */
+    images?: boolean;
   },
 ): Promise<Metadata> {
   const { locale, t } = await getI18n();
@@ -51,13 +54,17 @@ export async function pageMetadata(
       title,
       description,
       url: localizePath(locale, path),
-      images: [{ url: `/${imageLocale}/opengraph-image`, ...ogImage }],
+      ...(images
+        ? { images: [{ url: `/${imageLocale}/opengraph-image`, ...ogImage }] }
+        : {}),
     },
     twitter: {
       card: "summary_large_image",
       title,
       description,
-      images: [{ url: `/${imageLocale}/twitter-image`, ...ogImage }],
+      ...(images
+        ? { images: [{ url: `/${imageLocale}/twitter-image`, ...ogImage }] }
+        : {}),
     },
   };
 }

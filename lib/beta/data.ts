@@ -1,5 +1,7 @@
 import type { Gym } from "@/lib/gyms/types";
 
+import { PHASE_PRODUCTION_BUILD } from "next/constants";
+
 /**
  * Beta for the public gym pages, read from VARO's Supabase with the
  * publishable key only. Everything here is already public to the app's
@@ -89,22 +91,57 @@ function headers(key: string) {
   };
 }
 
+/**
+ * Supabase could not answer (network error, HTTP error, unreadable reply).
+ * Thrown rather than read as "nothing there": an outage must not turn into
+ * 404s, an emptied sitemap or noindexed routes.
+ */
+export class BetaDataUnavailable extends Error {
+  constructor(path: string, cause?: unknown) {
+    super(`beta data unavailable: ${path.split("?")[0]}`, { cause });
+    this.name = "BetaDataUnavailable";
+  }
+}
+
+/**
+ * Null when Supabase isn't configured, or can't answer during `next build`:
+ * the pages prerendered then (home, /beta, the sitemap, gym pages) ship
+ * without beta rather than failing the deploy, and fill in on revalidation,
+ * where a failure throws and the last good page stays.
+ */
 async function rest<T>(path: string, init?: RequestInit): Promise<T | null> {
   const e = env();
 
   if (!e) return null;
   try {
-    const res = await fetch(`${e.url}${path}`, {
+    return await fetchJson<T>(e, path, init);
+  } catch (err) {
+    if (process.env.NEXT_PHASE === PHASE_PRODUCTION_BUILD) return null;
+    throw err;
+  }
+}
+
+async function fetchJson<T>(
+  e: { url: string; key: string },
+  path: string,
+  init?: RequestInit,
+): Promise<T> {
+  let res: Response;
+
+  try {
+    res = await fetch(`${e.url}${path}`, {
       ...init,
       headers: { ...headers(e.key), ...init?.headers },
       next: { revalidate: REVALIDATE },
     });
-
-    if (!res.ok) return null;
-
+  } catch (err) {
+    throw new BetaDataUnavailable(path, err);
+  }
+  if (!res.ok) throw new BetaDataUnavailable(path, res.status);
+  try {
     return (await res.json()) as T;
-  } catch {
-    return null;
+  } catch (err) {
+    throw new BetaDataUnavailable(path, err);
   }
 }
 

@@ -70,13 +70,18 @@ async function load(params: Props["params"]) {
 }
 
 export async function generateMetadata({ params }: Props): Promise<Metadata> {
-  const { path, title, description, route } = await load(params);
-  const meta = await pageMetadata(path, { title, description });
+  const { path, title, description, route, clips } = await load(params);
+  // The route's own opengraph-image / twitter-image files draw its wall.
+  const meta = await pageMetadata(path, { title, description, images: false });
 
   return {
     ...meta,
-    // A retired route stays reachable for old links, but leaves the index.
-    ...(route.retired ? { robots: { index: false, follow: true } } : {}),
+    // A retired route stays reachable for old links, and a route without beta
+    // has little to show yet: both stay out of the index (and the sitemap)
+    // until a clip arrives.
+    ...(route.retired || !clips.length
+      ? { robots: { index: false, follow: true } }
+      : {}),
     itunes: { appId: siteConfig.appStoreId, appArgument: absoluteUrl(path) },
   };
 }
@@ -157,16 +162,8 @@ export default async function RouteBetaPage({ params }: Props) {
               ],
             },
           }),
-          ...clips.map((clip) => ({
-            "@type": "VideoObject",
-            name: `${gym.name} ${route.wall ?? ""} ${label} beta`,
-            description,
-            uploadDate: clip.createdAt,
-            ...(clip.posterUrl ? { thumbnailUrl: clip.posterUrl } : {}),
-            ...(clip.durationMs
-              ? { duration: `PT${Math.round(clip.durationMs / 1000)}S` }
-              : {}),
-          })),
+          // No VideoObject yet: thumbnails are signed URLs that expire and the
+          // <video> only exists after a tap, so Google can't index the clips.
         ]}
       />
       <SiteHeader path={path} />
