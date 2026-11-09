@@ -16,6 +16,20 @@ export const uploadCopy = {
     inAppBody:
       "在 IG、LINE、Threads 裡開的網頁，Google 不允許登入。點右上角「⋯」選擇用瀏覽器開啟，或複製連結貼到 Safari。",
     copyLink: "複製連結",
+    appClipsTitle: "你在 App 記過這條線",
+    appClipsBody:
+      "直接把那支影片分享成 beta 就好，不用再傳一次，也不會多一筆紀錄。",
+    appClipsShared: "這條線的 beta 已經有你的影片了。",
+    appClipDate: (iso: string) => {
+      const d = new Date(Date.parse(iso) + 8 * 3600_000);
+
+      return `${d.getUTCMonth() + 1} 月 ${d.getUTCDate()} 日的影片`;
+    },
+    appClipNotUp: "還在你的手機，App 上傳完就能分享",
+    appClipShare: "分享成 beta",
+    appClipSharing: "分享中…",
+    appClipIsBeta: "已是 beta",
+    appClipsOr: "或在下面上傳另一支影片。再傳一次會多一筆紀錄。",
     inAppPickTitle: "在 IG 裡可能選不了影片",
     inAppPickBody:
       "IG、LINE、Threads 裡開的網頁常常讀不到相簿的影片。點右上角「⋯」選擇用瀏覽器開啟，或複製連結貼到 Safari。",
@@ -99,6 +113,18 @@ export const uploadCopy = {
     inAppBody:
       'Google doesn\'t allow sign-in inside Instagram, LINE or Threads. Tap "⋯" and open in your browser, or copy the link into Safari.',
     copyLink: "Copy link",
+    appClipsTitle: "You logged this route in the app",
+    appClipsBody:
+      "Share that video as beta instead: no second upload and no extra visit in your log.",
+    appClipsShared: "Your video is already this route's beta.",
+    appClipDate: (iso: string) =>
+      `Video from ${new Date(Date.parse(iso) + 8 * 3600_000).toLocaleDateString("en", { month: "short", day: "numeric", timeZone: "UTC" })}`,
+    appClipNotUp: "Still on your phone; share it once the app has uploaded it",
+    appClipShare: "Share as beta",
+    appClipSharing: "Sharing…",
+    appClipIsBeta: "Beta",
+    appClipsOr:
+      "Or upload another video below. Uploading again adds another visit to your log.",
     inAppPickTitle: "Picking a video may not work here",
     inAppPickBody:
       'Pages opened inside Instagram, LINE or Threads often can\'t read videos from your library. Tap "⋯" and open in your browser, or copy the link into Safari.',
