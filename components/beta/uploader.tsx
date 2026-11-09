@@ -10,10 +10,10 @@ import { uploadCopy, type UploadCopy } from "@/lib/beta/upload-copy";
 import { siteConfig } from "@/config/site";
 import {
   canTranscode,
+  videoInfo,
   CLIP_MAX_S,
   ClipError,
   makeClip,
-  probe,
 } from "@/lib/beta/transcode";
 import { supabaseBrowser } from "@/lib/supabase/browser";
 
@@ -166,6 +166,13 @@ export function BetaUploader({
     );
   }, []);
 
+  const copyLink = () => {
+    void navigator.clipboard
+      ?.writeText(window.location.href)
+      .then(() => setLinkCopied(true))
+      .catch(() => undefined);
+  };
+
   const signIn = async (provider: "google" | "apple") => {
     setError(null);
     track("web_beta_signin", { provider });
@@ -186,11 +193,14 @@ export function BetaUploader({
     setPhase({ at: "signedOut" });
   };
 
+  const [reading, setReading] = useState(false);
+
   const pick = async (f: File | undefined) => {
-    if (!f) return;
+    if (!f || reading) return;
     setError(null);
+    setReading(true);
     try {
-      const p = await probe(f);
+      const p = await videoInfo(f);
 
       if (fileUrl) URL.revokeObjectURL(fileUrl);
       setFile(f);
@@ -202,7 +212,10 @@ export function BetaUploader({
       setPhase({ at: "trim" });
       track("web_beta_picked", { seconds: Math.round(p.duration) });
     } catch {
-      setError(c.errors.unreadable);
+      setError(inApp ? c.errors.unreadableInApp : c.errors.unreadable);
+      track("web_beta_unreadable", { inApp });
+    } finally {
+      setReading(false);
     }
   };
 
@@ -402,24 +415,14 @@ export function BetaUploader({
             </p>
             {inApp ? (
               // Google refuses sign-in inside Instagram/LINE/Threads webviews.
-              <div className="mt-5 rounded-2xl border border-line bg-ink p-4">
-                <p className="text-[14px] font-bold">{c.inAppTitle}</p>
-                <p className="mt-1 text-[13px] leading-[1.7] text-mute">
-                  {c.inAppBody}
-                </p>
-                <button
-                  className="mt-3 h-10 rounded-full bg-night px-4 text-[14px] font-bold text-day"
-                  type="button"
-                  onClick={() => {
-                    void navigator.clipboard
-                      ?.writeText(window.location.href)
-                      .then(() => setLinkCopied(true))
-                      .catch(() => undefined);
-                  }}
-                >
-                  {linkCopied ? c.copied : c.copyLink}
-                </button>
-              </div>
+              <InAppNotice
+                body={c.inAppBody}
+                copied={linkCopied}
+                copiedLabel={c.copied}
+                copyLabel={c.copyLink}
+                title={c.inAppTitle}
+                onCopy={copyLink}
+              />
             ) : null}
             {APPLE_ON_WEB ? (
               <button
@@ -465,12 +468,24 @@ export function BetaUploader({
             <p className="mt-2 text-[15px] leading-[1.75] text-mute">
               {c.pickBody}
             </p>
-            {encodable === false ? (
+            {inApp ? (
+              <InAppNotice
+                body={c.inAppPickBody}
+                copied={linkCopied}
+                copiedLabel={c.copied}
+                copyLabel={c.copyLink}
+                title={c.inAppPickTitle}
+                onCopy={copyLink}
+              />
+            ) : encodable === false ? (
               <p className="mt-4 rounded-2xl bg-hold-orange/15 px-4 py-3 text-[14px] font-semibold text-[#9a4a00]">
                 {c.unsupportedBrowser}
               </p>
             ) : null}
-            <label className="bolt-grid mt-6 flex cursor-pointer flex-col items-center justify-center gap-3 rounded-[22px] border-2 border-dashed border-night/50 bg-ink px-6 py-12 text-center transition-colors hover:border-night hover:bg-lime/10">
+            <label
+              aria-busy={reading}
+              className="bolt-grid mt-6 flex cursor-pointer flex-col items-center justify-center gap-3 rounded-[22px] border-2 border-dashed border-night/50 bg-ink px-6 py-12 text-center transition-colors hover:border-night hover:bg-lime/10"
+            >
               <span className="flex size-16 items-center justify-center rounded-full bg-lime">
                 <svg
                   aria-hidden
@@ -487,12 +502,19 @@ export function BetaUploader({
                   />
                 </svg>
               </span>
-              <span className="text-[17px] font-bold">{c.pickButton}</span>
+              <span className="text-[17px] font-bold">
+                {reading ? c.reading : c.pickButton}
+              </span>
               <input
                 accept="video/mp4,video/quicktime,video/*"
                 className="sr-only"
+                disabled={reading}
                 type="file"
-                onChange={(e) => void pick(e.target.files?.[0])}
+                onChange={(e) => {
+                  void pick(e.target.files?.[0]);
+                  // So picking the same video again (after an error) fires again.
+                  e.target.value = "";
+                }}
               />
             </label>
           </section>
@@ -960,5 +982,36 @@ function GoogleGlyph() {
         fill="#EA4335"
       />
     </svg>
+  );
+}
+
+/** Inside Instagram, LINE or Threads: what doesn't work here, and the way out. */
+function InAppNotice({
+  title,
+  body,
+  copied,
+  copyLabel,
+  copiedLabel,
+  onCopy,
+}: {
+  title: string;
+  body: string;
+  copied: boolean;
+  copyLabel: string;
+  copiedLabel: string;
+  onCopy: () => void;
+}) {
+  return (
+    <div className="mt-5 rounded-2xl border border-line bg-ink p-4">
+      <p className="text-[14px] font-bold">{title}</p>
+      <p className="mt-1 text-[13px] leading-[1.7] text-mute">{body}</p>
+      <button
+        className="mt-3 h-10 rounded-full bg-night px-4 text-[14px] font-bold text-day"
+        type="button"
+        onClick={onCopy}
+      >
+        {copied ? copiedLabel : copyLabel}
+      </button>
+    </div>
   );
 }
