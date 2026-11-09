@@ -11,6 +11,7 @@ import { SiteHeader } from "@/components/landing/site-header";
 import { Container } from "@/components/landing/ui";
 import { siteConfig } from "@/config/site";
 import { holdName } from "@/lib/beta/holds";
+import { floorPlanFor } from "@/lib/beta/plans";
 import {
   gradeRank,
   gymBeta,
@@ -60,6 +61,7 @@ export default async function GymBetaPage({ params }: Props) {
     clips,
     perRoute,
     zh,
+    app,
   } = await gymBeta(params);
   const cities = t.gyms.cities as Record<string, string>;
   const cityName = cities[gym.city] ?? gym.city;
@@ -218,6 +220,7 @@ export default async function GymBetaPage({ params }: Props) {
                   clear: c.finderClear,
                   none: c.finderNone,
                 }}
+                plan={floorPlanFor(app.id)}
                 routes={routes.map((r) => ({
                   id: r.id,
                   href: href(`${betaPath}/${r.id}`),
