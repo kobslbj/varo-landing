@@ -6,6 +6,7 @@ import { AppCta } from "@/components/beta/app-cta";
 import { LatestStrip } from "@/components/beta/latest-strip";
 import { RememberGym } from "@/components/beta/remember-gym";
 import { RouteBrowser } from "@/components/beta/route-browser";
+import { FeedbackButton } from "@/components/beta/feedback-button";
 import { SiteFooter } from "@/components/landing/site-footer";
 import { SiteHeader } from "@/components/landing/site-header";
 import { Container } from "@/components/landing/ui";
@@ -209,13 +210,15 @@ export default async function GymBetaPage({ params }: Props) {
                   ),
                 )}
                 labels={{
-                  all: c.allZones,
                   onlyBeta: c.onlyBeta,
                   noBetaYet: c.noBetaYet,
                   clips: c.clipsTpl,
                   wall: c.finderWall,
                   color: c.finderColor,
                   grade: c.finderGrade,
+                  part: c.finderPart,
+                  anyColor: c.finderAnyColor,
+                  anyGrade: c.finderAnyGrade,
                   found: c.finderFound,
                   clear: c.finderClear,
                   none: c.finderNone,
@@ -266,6 +269,7 @@ export default async function GymBetaPage({ params }: Props) {
           </div>
         </Container>
       </main>
+      <FeedbackButton zh={zh} />
       <SiteFooter />
     </>
   );

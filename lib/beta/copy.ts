@@ -8,6 +8,28 @@ const taipei = (iso: string) => new Date(Date.parse(iso) + 8 * 3600_000);
 export const betaCopy = {
   "zh-TW": {
     eyebrow: "BETA",
+    dirTitle: ["每一條路線的", "beta 影片"],
+    dirLead:
+      "卡在哪一步，就看別人怎麼爬。VARO 合作岩館的現役路線，都標好牆面、顏色和難度，還有岩友的完攀影片。選你的岩館，找到你正在爬的那條。",
+    dirLive: (gyms: number, routes: number) =>
+      `${gyms} 間岩館開放中 · ${routes} 條現役路線`,
+    dirAll: "全部",
+    dirLast: "上次去的",
+    dirNear: "離我最近",
+    dirLocating: "定位中…",
+    dirDenied: "沒拿到位置，從清單選就好",
+    dirKm: (km: string) => `${km} 公里`,
+    dirOpenTitle: "VARO 限定",
+    dirOpenLead: "只有這幾間，能在 VARO 看到每條路線的 beta。",
+    dirExclusive: "VARO 限定",
+    dirOpen: "開放中",
+    dirStats: (routes: number, beta: number) =>
+      beta ? `${routes} 條路線 · ${beta} 條有 beta` : `${routes} 條路線`,
+    dirFresh: (n: number) => `14 天內新上 ${n} 條`,
+    dirEnter: "進去看 beta",
+    dirNone: "這個地區還沒有岩館。",
+    dirGymCta: "你是館方？讓岩友在這裡找到你的每一條路線",
+    dirGymLink: "岩館合作",
     hubTitle: (gym: string) => `${gym} 的路線與 beta`,
     hubMetaTitle: (gym: string) => `${gym}｜抱石路線與 beta 影片｜VARO`,
     hubMetaDescription: (gym: string, routes: number, withBeta: number) =>
@@ -31,6 +53,9 @@ export const betaCopy = {
     finderWall: "哪面牆",
     finderColor: "什麼顏色",
     finderGrade: "標籤上的難度",
+    finderPart: "{area} 的哪一面",
+    finderAnyColor: "全部顏色",
+    finderAnyGrade: "全部難度",
     finderFound: "{n} 條路線",
     finderClear: "清除",
     finderNone: "沒有符合的路線，換個條件試試。",
@@ -96,6 +121,28 @@ export const betaCopy = {
   },
   en: {
     eyebrow: "BETA",
+    dirTitle: ["Beta videos", "for every route"],
+    dirLead:
+      "Stuck on a move? See how others climbed it. Every route on the wall at VARO's partner gyms is marked by wall, hold color and grade, with climbers' send videos. Pick your gym and find the route you're on.",
+    dirLive: (gyms: number, routes: number) =>
+      `${gyms} ${gyms === 1 ? "gym" : "gyms"} open · ${routes} routes up`,
+    dirAll: "All",
+    dirLast: "Last visited",
+    dirNear: "Nearest",
+    dirLocating: "Locating…",
+    dirDenied: "No location; pick from the list",
+    dirKm: (km: string) => `${km} km`,
+    dirOpenTitle: "Only on VARO",
+    dirOpenLead: "The only gyms where you can see beta for every route.",
+    dirExclusive: "VARO only",
+    dirOpen: "Open",
+    dirStats: (routes: number, beta: number) =>
+      beta ? `${routes} routes · ${beta} with beta` : `${routes} routes`,
+    dirFresh: (n: number) => `${n} new in 14 days`,
+    dirEnter: "See the beta",
+    dirNone: "No gyms in this area yet.",
+    dirGymCta: "Run a gym? Let climbers find every one of your routes here",
+    dirGymLink: "Partner with VARO",
     hubTitle: (gym: string) => `Routes & beta at ${gym}`,
     hubMetaTitle: (gym: string) =>
       `${gym} | Bouldering routes & beta videos | VARO`,
@@ -123,6 +170,9 @@ export const betaCopy = {
     finderWall: "Which wall",
     finderColor: "Hold color",
     finderGrade: "Grade on the tag",
+    finderPart: "Which part of {area}",
+    finderAnyColor: "Any colour",
+    finderAnyGrade: "Any grade",
     finderFound: "{n} routes",
     finderClear: "Clear",
     finderNone: "No routes match. Try fewer filters.",
