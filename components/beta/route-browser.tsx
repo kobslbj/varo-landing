@@ -2,6 +2,7 @@
 
 import type { FloorPlan } from "@/lib/beta/plans";
 
+import { Tag, TagGroup, type Selection } from "@heroui/react";
 import clsx from "clsx";
 import Link from "next/link";
 import { useEffect, useMemo, useRef, useState } from "react";
@@ -116,7 +117,7 @@ export function RouteBrowser({
 
   useEffect(() => {
     for (const r of [row.current, partRow.current]) {
-      const el = r?.querySelector<HTMLElement>('[aria-pressed="true"]');
+      const el = r?.querySelector<HTMLElement>('[data-selected="true"]');
 
       if (el && r) {
         r.scrollTo({
@@ -243,117 +244,162 @@ export function RouteBrowser({
           ) : null}
           {/* First the area (Slab, Cave…), then which of its walls. No "all"
               tile: nothing chosen already lists every route. */}
-          <div
-            ref={row}
-            className="relative -mx-4 flex gap-2.5 overflow-x-auto px-4 pb-1 [scrollbar-width:none] sm:-mx-6 sm:px-6 [&::-webkit-scrollbar]:hidden"
-          >
-            {areas.map((a) => {
-              const on = chosenArea?.name === a.name;
-              // A single wall is the area itself; choosing it picks that wall.
-              const zone = a.split ? a.name : a.walls[0];
+          <TagGroup
+            aria-label={labels.wall}
+            selectedKeys={chosenArea ? [chosenArea.name] : []}
+            selectionMode="single"
+            onSelectionChange={(keys) => {
+              const k = first(keys);
+              const a = areas.find((x) => x.name === k);
 
-              return (
-                <WallTile
+              // A single wall is the area itself; choosing it picks that wall.
+              pick(a ? (a.split ? a.name : a.walls[0]) : null);
+            }}
+          >
+            <TagGroup.List ref={row} className={ROW}>
+              {areas.map((a) => (
+                <Tag
                   key={a.name}
-                  active={on}
-                  count={count(zone)}
-                  name={a.name}
-                  parts={a.split ? a.walls.length : 0}
-                  photo={a.walls.map(photoOf).find(Boolean) ?? photoOf(a.name)}
-                  onClick={() => pick(on ? null : zone)}
-                />
-              );
-            })}
-          </div>
+                  className={TILE}
+                  id={a.name}
+                  textValue={a.name}
+                >
+                  <TileFace
+                    count={count(a.split ? a.name : a.walls[0])}
+                    dim={Boolean(chosenArea) && chosenArea?.name !== a.name}
+                    name={a.name}
+                    on={chosenArea?.name === a.name}
+                    parts={a.split ? a.walls.length : 0}
+                    photo={
+                      a.walls.map(photoOf).find(Boolean) ?? photoOf(a.name)
+                    }
+                  />
+                </Tag>
+              ))}
+            </TagGroup.List>
+          </TagGroup>
           {chosenArea?.split ? (
             <div className="mt-3 rounded-2xl bg-ink-3/60 p-2.5 sm:p-3">
               <p className="mb-2 px-1 text-[12px] font-bold text-mute">
                 {labels.part.replace("{area}", chosenArea.name)}
               </p>
-              <div
-                ref={partRow}
-                className="flex gap-2 overflow-x-auto [scrollbar-width:none] [&::-webkit-scrollbar]:hidden"
+              <TagGroup
+                aria-label={labels.part.replace("{area}", chosenArea.name)}
+                selectedKeys={
+                  f.zone && f.zone !== chosenArea.name ? [f.zone] : []
+                }
+                selectionMode="single"
+                onSelectionChange={(keys) =>
+                  pick(first(keys) ?? chosenArea.name)
+                }
               >
-                {chosenArea.walls.map((w) => (
-                  <PartTile
-                    key={w}
-                    active={f.zone === w}
-                    count={count(w)}
-                    label={partOf(w)}
-                    name={w}
-                    photo={photoOf(w)}
-                    onClick={() => pick(f.zone === w ? chosenArea.name : w)}
-                  />
-                ))}
-              </div>
+                <TagGroup.List
+                  ref={partRow}
+                  className="-m-1 flex !flex-nowrap gap-2 overflow-x-auto p-1.5 [scrollbar-width:none] [&::-webkit-scrollbar]:hidden"
+                >
+                  {chosenArea.walls.map((w) => (
+                    <Tag key={w} className={PART} id={w} textValue={w}>
+                      <PartFace
+                        count={count(w)}
+                        label={partOf(w)}
+                        on={f.zone === w}
+                        photo={photoOf(w)}
+                      />
+                    </Tag>
+                  ))}
+                </TagGroup.List>
+              </TagGroup>
             </div>
           ) : null}
         </Step>
 
         {/* 2. What colour the holds are. */}
         <Step label={labels.color} n={2}>
-          <div className="-mx-4 flex gap-2 overflow-x-auto px-4 pb-1 [scrollbar-width:none] sm:mx-0 sm:flex-wrap sm:overflow-visible sm:px-0 [&::-webkit-scrollbar]:hidden">
-            {colors.map((c) => {
-              const active = f.color === c;
+          <TagGroup
+            aria-label={labels.color}
+            selectedKeys={f.color ? [f.color] : []}
+            selectionMode="single"
+            onSelectionChange={(keys) =>
+              update({ ...f, color: first(keys), grade: null })
+            }
+          >
+            <TagGroup.List className={CHIPS}>
+              {colors.map((c) => {
+                const on = f.color === c;
 
-              return (
-                <button
-                  key={c}
-                  aria-pressed={active}
-                  className={clsx(
-                    "flex h-11 shrink-0 items-center gap-2 rounded-full border pl-1.5 pr-3.5 text-[14px] font-bold transition-colors",
-                    active
-                      ? "border-night bg-night text-day"
-                      : "border-line bg-ink text-cream hover:border-cream/30",
-                  )}
-                  type="button"
-                  onClick={() =>
-                    update({ ...f, color: active ? null : c, grade: null })
-                  }
-                >
-                  <span
-                    aria-hidden
-                    className={clsx(
-                      "size-8 rounded-full",
-                      c === "white" && "ring-1 ring-inset ring-line",
-                    )}
-                    style={{ backgroundColor: hold(c).fill }}
-                  />
-                  {colorNames[c] ?? c}
-                </button>
-              );
-            })}
-          </div>
+                return (
+                  <Tag
+                    key={c}
+                    className={clsx(CHIP, "gap-2 pl-1.5 pr-4")}
+                    id={c}
+                    textValue={colorNames[c] ?? c}
+                  >
+                    <span
+                      aria-hidden
+                      className={clsx(
+                        "relative grid size-8 place-items-center rounded-full",
+                        c === "white" && "ring-1 ring-inset ring-line",
+                        on &&
+                          "ring-2 ring-lime ring-offset-2 ring-offset-night",
+                      )}
+                      style={{ backgroundColor: hold(c).fill }}
+                    >
+                      {on ? <CheckGlyph color={hold(c).ink} /> : null}
+                    </span>
+                    {colorNames[c] ?? c}
+                  </Tag>
+                );
+              })}
+            </TagGroup.List>
+          </TagGroup>
         </Step>
 
         {/* 3. The grade on the tag. */}
         <Step label={labels.grade} n={3}>
-          <div className="-mx-4 flex gap-2 overflow-x-auto px-4 pb-1 [scrollbar-width:none] sm:mx-0 sm:flex-wrap sm:overflow-visible sm:px-0 [&::-webkit-scrollbar]:hidden">
-            {grades.map((g) => {
-              const active = f.grade === g;
-
-              return (
-                <button
+          <TagGroup
+            aria-label={labels.grade}
+            selectedKeys={f.grade ? [f.grade] : []}
+            selectionMode="single"
+            onSelectionChange={(keys) => update({ ...f, grade: first(keys) })}
+          >
+            <TagGroup.List className={CHIPS}>
+              {grades.map((g) => (
+                <Tag
                   key={g}
-                  aria-pressed={active}
                   className={clsx(
-                    "h-11 min-w-14 shrink-0 rounded-full border px-4 font-display text-[16px] font-bold tabular transition-colors",
-                    active
-                      ? "border-night bg-night text-day"
-                      : "border-line bg-ink text-cream hover:border-cream/30",
+                    CHIP,
+                    "min-w-14 justify-center px-4 font-display text-[16px] tabular",
+                    "data-[selected=true]:!border-night data-[selected=true]:!bg-lime data-[selected=true]:!text-night",
                   )}
-                  type="button"
-                  onClick={() => update({ ...f, grade: active ? null : g })}
+                  id={g}
+                  textValue={labelOf(g)}
                 >
                   {labelOf(g)}
-                </button>
-              );
-            })}
-          </div>
+                </Tag>
+              ))}
+            </TagGroup.List>
+          </TagGroup>
         </Step>
+        {/* Phones: the list is below the fold, one tap to it. */}
+        {filtering ? (
+          <button
+            className="flex h-12 w-full items-center justify-center gap-2 rounded-full bg-night text-[15px] font-bold text-day sm:hidden"
+            type="button"
+            onClick={() =>
+              document
+                .getElementById("route-results")
+                ?.scrollIntoView({ behavior: "smooth", block: "start" })
+            }
+          >
+            {labels.found.replace("{n}", String(shown.length))} ↓
+          </button>
+        ) : null}
       </div>
 
-      <div className="mt-6 flex flex-wrap items-center justify-between gap-3">
+      <div
+        className="mt-6 flex scroll-mt-20 flex-wrap items-center justify-between gap-3"
+        id="route-results"
+      >
         <p className="text-[15px] font-bold tabular">
           {labels.found.replace("{n}", String(shown.length))}
         </p>
@@ -409,6 +455,26 @@ export function RouteBrowser({
   );
 }
 
+/** The one selected key of a single-selection group, or null. */
+function first(keys: Selection): string | null {
+  if (keys === "all") return null;
+  const k = keys.values().next().value;
+
+  return k == null ? null : String(k);
+}
+
+/** Tag overrides: HeroUI gives selection, keyboard and a11y; the look is ours. */
+const ROW =
+  "-mx-4 flex !flex-nowrap snap-x gap-2.5 overflow-x-auto px-4 pb-1 pt-1 [scrollbar-width:none] sm:-mx-6 sm:px-6 [&::-webkit-scrollbar]:hidden";
+const TILE =
+  "group/tile !block w-[30vw] min-w-[100px] max-w-[132px] shrink-0 snap-start !rounded-[18px] !bg-transparent !p-0 text-left outline-none sm:w-[124px]";
+const PART =
+  "group/part !block w-[22vw] min-w-[76px] max-w-[96px] shrink-0 !rounded-[14px] !bg-transparent !p-0 outline-none";
+const CHIPS =
+  "-mx-4 flex !flex-nowrap gap-2 overflow-x-auto px-4 pb-1 [scrollbar-width:none] sm:mx-0 sm:!flex-wrap sm:overflow-visible sm:px-0 [&::-webkit-scrollbar]:hidden";
+const CHIP =
+  "!flex h-11 shrink-0 items-center !rounded-full border border-line !bg-ink text-[14px] font-bold !text-cream outline-none transition-colors hover:border-cream/30 data-[focus-visible=true]:ring-2 data-[focus-visible=true]:ring-lime data-[selected=true]:!border-night data-[selected=true]:!bg-night data-[selected=true]:!text-day";
+
 function unique(list: (string | null)[]) {
   return Array.from(new Set(list.filter((x): x is string => Boolean(x))));
 }
@@ -432,33 +498,39 @@ function Step({
   );
 }
 
-function WallTile({
+/** An area's tile: its wall photo, how many walls, routes across them. */
+function TileFace({
   name,
   photo,
   count,
-  parts = 0,
-  active,
-  onClick,
+  parts,
+  on,
+  dim,
 }: {
   name: string;
   photo: WallPhoto | null;
   count: number;
   /** How many walls the area has, when it has several. */
-  parts?: number;
-  active: boolean;
-  onClick: () => void;
+  parts: number;
+  on: boolean;
+  /** Another area is chosen: step back so the choice stands out. */
+  dim: boolean;
 }) {
   return (
-    <button
-      aria-pressed={active}
+    <span
       className={clsx(
-        "w-[104px] shrink-0 overflow-hidden rounded-2xl border-2 p-0.5 text-left transition-colors sm:w-[120px]",
-        active ? "border-night" : "border-transparent",
+        "block transition-[opacity,filter] duration-200",
+        dim && "opacity-55 saturate-[0.6] group-hover/tile:opacity-90",
       )}
-      type="button"
-      onClick={onClick}
     >
-      <span className="relative block aspect-[4/3] overflow-hidden rounded-[13px] bg-ink-3">
+      <span
+        className={clsx(
+          "relative block aspect-[4/3] overflow-hidden rounded-[16px] bg-ink-3 transition-shadow duration-200",
+          on
+            ? "shadow-[0_0_0_3px_var(--color-night),0_0_0_6px_var(--color-lime)]"
+            : "group-data-[focus-visible=true]/tile:shadow-[0_0_0_3px_var(--color-lime)]",
+        )}
+      >
         {photo ? (
           <WallCrop
             aspect={4 / 3}
@@ -472,76 +544,94 @@ function WallTile({
         )}
         {parts ? (
           // An area of several walls: a stack, so it reads as "opens more".
-          <span className="absolute left-1 top-1 inline-flex items-center gap-1 rounded-full bg-black/60 px-1.5 py-px text-[11px] font-bold text-white tabular">
+          <span className="absolute left-1.5 top-1.5 inline-flex items-center gap-1 rounded-full bg-black/60 px-1.5 py-px text-[11px] font-bold text-white tabular">
             <StackGlyph />
             {parts}
           </span>
         ) : null}
-        <span className="absolute bottom-1 right-1 rounded-full bg-black/60 px-1.5 text-[11px] font-bold text-white tabular">
+        {on ? (
+          <span className="absolute right-1.5 top-1.5 grid size-6 place-items-center rounded-full bg-lime shadow">
+            <CheckGlyph color="#111111" />
+          </span>
+        ) : null}
+        <span className="absolute bottom-1.5 right-1.5 rounded-full bg-black/60 px-1.5 text-[11px] font-bold text-white tabular">
           {count}
         </span>
       </span>
       <span
         className={clsx(
-          "block truncate px-1 py-1.5 text-[13px] font-bold",
-          active ? "text-cream" : "text-mute",
+          "block truncate px-1 pt-2 text-[14px]",
+          on ? "font-black text-cream" : "font-bold text-mute",
         )}
       >
         {name}
       </span>
-    </button>
+    </span>
   );
 }
 
 /** One wall of the chosen area: its photo, its number big, its route count. */
-function PartTile({
-  name,
+function PartFace({
   label,
   photo,
   count,
-  active,
-  onClick,
+  on,
 }: {
-  name: string;
   label: string;
   photo: WallPhoto | null;
   count: number;
-  active: boolean;
-  onClick: () => void;
+  on: boolean;
 }) {
   return (
-    <button
-      aria-label={name}
-      aria-pressed={active}
+    <span
       className={clsx(
-        "relative w-[84px] shrink-0 overflow-hidden rounded-xl border-2 transition-colors sm:w-[96px]",
-        active ? "border-night" : "border-transparent",
+        "relative block aspect-square overflow-hidden rounded-[12px] bg-ink-3 transition-shadow duration-200",
+        on
+          ? "shadow-[0_0_0_3px_var(--color-night),0_0_0_5px_var(--color-lime)]"
+          : "group-data-[focus-visible=true]/part:shadow-[0_0_0_3px_var(--color-lime)]",
         !count && "opacity-50",
       )}
-      type="button"
-      onClick={onClick}
     >
-      <span className="relative block aspect-square overflow-hidden rounded-[10px] bg-ink-3">
-        {photo ? (
-          <WallCrop
-            aspect={1}
-            className="absolute inset-0"
-            color={null}
-            photo={photo}
-            pin={null}
-          />
-        ) : (
-          <span className="bolt-grid absolute inset-0" />
+      {photo ? (
+        <WallCrop
+          aspect={1}
+          className="absolute inset-0"
+          color={null}
+          photo={photo}
+          pin={null}
+        />
+      ) : (
+        <span className="bolt-grid absolute inset-0" />
+      )}
+      <span
+        className={clsx(
+          "absolute inset-0 transition-colors",
+          on
+            ? "bg-gradient-to-t from-black/70 via-black/10 to-lime/25"
+            : "bg-gradient-to-t from-black/65 via-transparent to-transparent",
         )}
-        <span className="absolute inset-0 bg-gradient-to-t from-black/65 via-transparent to-transparent" />
-        <span className="absolute bottom-1 left-1.5 font-wide text-[22px] font-black leading-none text-white">
-          {label}
-        </span>
-        <span className="absolute bottom-1.5 right-1.5 rounded-full bg-black/60 px-1.5 text-[11px] font-bold text-white tabular">
-          {count}
-        </span>
+      />
+      <span className="absolute bottom-1 left-1.5 font-wide text-[24px] font-black leading-none text-white">
+        {label}
       </span>
-    </button>
+      <span className="absolute bottom-1.5 right-1.5 rounded-full bg-black/60 px-1.5 text-[11px] font-bold text-white tabular">
+        {count}
+      </span>
+    </span>
+  );
+}
+
+function CheckGlyph({ color }: { color: string }) {
+  return (
+    <svg aria-hidden className="!size-3.5" fill="none" viewBox="0 0 14 14">
+      <path
+        d="m3 7.2 2.6 2.6L11 4.4"
+        stroke={color}
+        strokeLinecap="round"
+        strokeLinejoin="round"
+        strokeWidth="2.2"
+      />
+    </svg>
   );
 }
 
