@@ -1,6 +1,5 @@
 "use client";
 
-import { track } from "@vercel/analytics";
 import clsx from "clsx";
 import Link from "next/link";
 import { useEffect, useState } from "react";
@@ -29,12 +28,6 @@ export interface OpenGym extends Place {
   fresh: number;
 }
 
-/** A gym not on VARO yet: sealed, with a way to ask for it. */
-export interface LockedGym extends Place {
-  /** Its directory page (hours, prices), not beta. */
-  href: string;
-}
-
 type Copy = Pick<
   BetaCopy,
   | "dirAll"
@@ -50,28 +43,8 @@ type Copy = Pick<
   | "dirStats"
   | "dirFresh"
   | "dirEnter"
-  | "dirLockedTitle"
-  | "dirLockedLead"
-  | "dirLocked"
-  | "dirWant"
-  | "dirWanted"
   | "dirNone"
 >;
-
-const WANTED_KEY = "varo.wantedGyms";
-
-function readWanted(): Set<string> {
-  try {
-    const raw = localStorage.getItem(WANTED_KEY);
-    const v: unknown = raw ? JSON.parse(raw) : [];
-
-    return new Set(
-      Array.isArray(v) ? v.filter((x) => typeof x === "string") : [],
-    );
-  } catch {
-    return new Set();
-  }
-}
 
 function km(a: { lat: number; lng: number }, b: Place) {
   if (b.lat == null || b.lng == null) return Infinity;
@@ -86,18 +59,16 @@ function km(a: { lat: number; lng: number }, b: Place) {
 }
 
 /**
- * The Beta tab's gym picker: the gyms on VARO as big open cards, every other
- * gym sealed below them, one region filter over both. "Nearest" asks for the
- * location only when tapped. Beta itself is only inside a gym's page.
+ * The Beta tab's gym picker: the gyms on VARO as big cards under a region
+ * filter. "Nearest" asks for the location only when tapped. Beta itself is
+ * only inside a gym's page.
  */
 export function GymDirectory({
   open,
-  locked,
   cities,
   zh,
 }: {
   open: OpenGym[];
-  locked: LockedGym[];
   /** Filter chips in order: city key and its label. */
   cities: { key: string; label: string }[];
   /** Copy comes from here: functions can't cross into a client component. */
@@ -108,11 +79,9 @@ export function GymDirectory({
   const [last, setLast] = useState<LastGym | null>(null);
   const [here, setHere] = useState<{ lat: number; lng: number } | null>(null);
   const [locating, setLocating] = useState<"idle" | "busy" | "denied">("idle");
-  const [wanted, setWanted] = useState<Set<string>>(new Set());
 
   useEffect(() => {
     setLast(readLastGym());
-    setWanted(readWanted());
   }, []);
 
   const locate = () => {
@@ -129,19 +98,6 @@ export function GymDirectory({
     );
   };
 
-  const want = (g: LockedGym) => {
-    if (wanted.has(g.id)) return;
-    const next = new Set(wanted).add(g.id);
-
-    setWanted(next);
-    track("beta_gym_wanted", { gym: g.id });
-    try {
-      localStorage.setItem(WANTED_KEY, JSON.stringify(Array.from(next)));
-    } catch {
-      // Blocked storage: the vote is still counted.
-    }
-  };
-
   const sorted = <T extends Place>(list: T[]) => {
     const inCity = city ? list.filter((g) => g.city === city) : list;
 
@@ -150,9 +106,8 @@ export function GymDirectory({
       : inCity;
   };
   const shownOpen = sorted(open);
-  const shownLocked = sorted(locked);
   const count = (key: string | null) =>
-    [...open, ...locked].filter((g) => !key || g.city === key).length;
+    open.filter((g) => !key || g.city === key).length;
   const distance = (g: Place) => {
     const d = here ? km(here, g) : Infinity;
 
@@ -262,34 +217,6 @@ export function GymDirectory({
           </p>
         )}
       </section>
-
-      {/* Not yet: sealed, so the difference shows. */}
-      {shownLocked.length ? (
-        <section aria-labelledby="locked-gyms" className="pt-16">
-          <h2
-            className="font-wide text-[20px] font-black tracking-tight text-mute sm:text-[24px]"
-            id="locked-gyms"
-          >
-            {c.dirLockedTitle}
-          </h2>
-          <p className="mt-1 max-w-[40rem] text-[14px] text-mute">
-            {c.dirLockedLead}
-          </p>
-          <ul className="mt-6 grid grid-cols-2 gap-x-4 gap-y-7 sm:grid-cols-3 lg:grid-cols-4">
-            {shownLocked.map((g) => (
-              <li key={g.id}>
-                <LockedCard
-                  c={c}
-                  distance={distance(g)}
-                  g={g}
-                  wanted={wanted.has(g.id)}
-                  onWant={() => want(g)}
-                />
-              </li>
-            ))}
-          </ul>
-        </section>
-      ) : null}
     </div>
   );
 }
@@ -350,111 +277,6 @@ function OpenCard({
   );
 }
 
-/** Same shape as an open card, but the picture is sealed: holds behind frosted glass. */
-function LockedCard({
-  g,
-  c,
-  distance,
-  wanted,
-  onWant,
-}: {
-  g: LockedGym;
-  c: Copy;
-  distance: string | null;
-  wanted: boolean;
-  onWant: () => void;
-}) {
-  return (
-    <div>
-      <div className="relative aspect-[16/11] overflow-hidden rounded-[18px] bg-night">
-        <SealedWall seed={g.id} />
-        <span className="absolute inset-0 grid place-items-center">
-          <span className="flex flex-col items-center gap-1.5 text-white/85">
-            <LockGlyph />
-            <span className="text-[12px] font-bold tracking-wide">
-              {c.dirLocked}
-            </span>
-          </span>
-        </span>
-        <button
-          aria-pressed={wanted}
-          className={clsx(
-            "absolute bottom-2.5 right-2.5 inline-flex h-8 items-center gap-1 rounded-full px-3 text-[12px] font-black transition-colors",
-            wanted
-              ? "bg-lime text-night"
-              : "bg-white/90 text-night hover:bg-white",
-          )}
-          type="button"
-          onClick={onWant}
-        >
-          {wanted ? "✓" : "+"} {wanted ? c.dirWanted : c.dirWant}
-        </button>
-      </div>
-      <Link className="mt-2.5 block px-0.5 hover:underline" href={g.href}>
-        <p className="truncate text-[15px] font-bold">{g.name}</p>
-        <p className="truncate text-[13px] text-mute">
-          {g.place}
-          {distance ? ` · ${distance}` : ""}
-        </p>
-      </Link>
-    </div>
-  );
-}
-
-const HOLDS = [
-  "#e5484d",
-  "#f2994a",
-  "#f5d90a",
-  "#30a46c",
-  "#3e8bff",
-  "#8e4ec6",
-  "#ec4899",
-  "#f5f5f5",
-];
-
-/** A wall of holds, different per gym, blurred past reading. */
-function SealedWall({ seed }: { seed: string }) {
-  let h = 0;
-
-  for (const ch of seed) h = (h * 31 + ch.charCodeAt(0)) >>> 0;
-  const rand = () => {
-    h = (h * 1664525 + 1013904223) >>> 0;
-
-    return h / 2 ** 32;
-  };
-  const holds = Array.from({ length: 22 }, () => ({
-    x: rand() * 100,
-    y: rand() * 75,
-    r: 2 + rand() * 4.5,
-    fill: HOLDS[Math.floor(rand() * HOLDS.length)],
-  }));
-
-  return (
-    <>
-      <svg
-        aria-hidden
-        className="absolute inset-0 size-full scale-110 blur-[7px] saturate-50"
-        preserveAspectRatio="xMidYMid slice"
-        viewBox="0 0 100 75"
-      >
-        <rect fill="#2a2a27" height="75" width="100" />
-        {holds.map((d, i) => (
-          <circle
-            key={i}
-            cx={d.x}
-            cy={d.y}
-            fill={d.fill}
-            opacity={0.5}
-            r={d.r}
-          />
-        ))}
-      </svg>
-      <span className="absolute inset-0 bg-[repeating-linear-gradient(135deg,rgb(0_0_0/0.25)_0_6px,transparent_6px_12px)]" />
-      <span className="absolute inset-0 bg-black/45" />
-    </>
-  );
-}
-
 function Seal() {
   return (
     <svg aria-hidden className="size-3.5" fill="none" viewBox="0 0 16 16">
@@ -468,28 +290,6 @@ function Seal() {
         strokeLinecap="round"
         strokeLinejoin="round"
         strokeWidth="1.6"
-      />
-    </svg>
-  );
-}
-
-function LockGlyph() {
-  return (
-    <svg aria-hidden className="size-6" fill="none" viewBox="0 0 24 24">
-      <rect
-        height="10"
-        rx="2.5"
-        stroke="currentColor"
-        strokeWidth="1.8"
-        width="14"
-        x="5"
-        y="10.5"
-      />
-      <path
-        d="M8.5 10.5V8a3.5 3.5 0 0 1 7 0v2.5"
-        stroke="currentColor"
-        strokeLinecap="round"
-        strokeWidth="1.8"
       />
     </svg>
   );

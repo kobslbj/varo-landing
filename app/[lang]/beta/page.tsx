@@ -3,19 +3,15 @@ import type { Country } from "@/lib/gyms/types";
 
 import Link from "next/link";
 
-import {
-  GymDirectory,
-  type LockedGym,
-  type OpenGym,
-} from "@/components/beta/gym-directory";
+import { GymDirectory, type OpenGym } from "@/components/beta/gym-directory";
 import { SiteFooter } from "@/components/landing/site-footer";
 import { SiteHeader } from "@/components/landing/site-header";
 import { Container } from "@/components/landing/ui";
 import { siteConfig } from "@/config/site";
 import { betaCopy } from "@/lib/beta/copy";
 import { betaOverview } from "@/lib/beta/overview";
-import { allCities, allGyms, countryOf, gymPath } from "@/lib/gyms/cities";
-import { localizeDistrict, localizeGym } from "@/lib/gyms/localize";
+import { allCities } from "@/lib/gyms/cities";
+import { localizeDistrict } from "@/lib/gyms/localize";
 import { homeCopy } from "@/lib/home-copy";
 import { getI18n, siteLocale } from "@/lib/i18n";
 import { absoluteUrl, JsonLd, pageMetadata, webPage } from "@/lib/seo";
@@ -49,9 +45,8 @@ export async function generateMetadata(): Promise<Metadata> {
 }
 
 /**
- * The Beta tab: pick a gym. The gyms on VARO open their beta; every other
- * Taiwan bouldering gym is shown sealed, with a way to ask for it. Beta
- * itself is only inside a gym's page (/gyms/…/beta).
+ * The Beta tab: pick a gym on VARO to open its beta. Beta itself is only
+ * inside a gym's page (/gyms/…/beta).
  */
 export default async function BetaIndex() {
   const { locale, t, href, c, h, zh } = await words();
@@ -61,7 +56,6 @@ export default async function BetaIndex() {
     [cityNames[city] ?? city, localizeDistrict(district, locale, country)]
       .filter(Boolean)
       .join(" · ");
-  const onVaro = new Set(gyms.map((g) => g.gym.id));
   const open: OpenGym[] = gyms.map((g) => ({
     id: g.gym.id,
     href: href(g.betaPath),
@@ -75,29 +69,7 @@ export default async function BetaIndex() {
     withBeta: g.withBeta,
     fresh: g.fresh,
   }));
-  // Gyms a boulderer would go to: open, bouldering, not just a kids' wall.
-  const locked: LockedGym[] = allGyms
-    .filter(
-      (g) =>
-        countryOf(g) === "TW" &&
-        g.confirmed &&
-        (g.kind === "boulder" || g.kind === "mixed") &&
-        !onVaro.has(g.id),
-    )
-    .map((g) => {
-      const gym = localizeGym(g, locale);
-
-      return {
-        id: g.id,
-        href: href(gymPath(g)),
-        name: gym.name,
-        place: placeOf(g.city, g.district, g.country),
-        city: g.city,
-        lat: g.lat ?? null,
-        lng: g.lng ?? null,
-      };
-    });
-  const present = new Set([...open, ...locked].map((g) => g.city));
+  const present = new Set(open.map((g) => g.city));
   const cities = allCities
     .filter((x) => x.country === "TW" && present.has(x.name))
     .map((x) => ({ key: x.name, label: cityNames[x.name] ?? x.name }));
@@ -141,7 +113,7 @@ export default async function BetaIndex() {
           </header>
 
           <div className="mt-10">
-            <GymDirectory cities={cities} locked={locked} open={open} zh={zh} />
+            <GymDirectory cities={cities} open={open} zh={zh} />
           </div>
 
           <Link
