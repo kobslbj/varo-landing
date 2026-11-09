@@ -16,6 +16,10 @@ export const uploadCopy = {
     inAppBody:
       "在 IG、LINE、Threads 裡開的網頁，Google 不允許登入。點右上角「⋯」選擇用瀏覽器開啟，或複製連結貼到 Safari。",
     copyLink: "複製連結",
+    inAppPickTitle: "在 IG 裡可能選不了影片",
+    inAppPickBody:
+      "IG、LINE、Threads 裡開的網頁常常讀不到相簿的影片。點右上角「⋯」選擇用瀏覽器開啟，或複製連結貼到 Safari。",
+    reading: "讀取影片中…",
     appleNote:
       "在 App 是用 Apple 登入的話，這裡的 Google 會是另一個帳號。更新到最新版 App，在「設定 › 登入方式」連結 Google，就是同一個帳號。",
     signInFailed: "登入沒有完成，再試一次。",
@@ -73,6 +77,8 @@ export const uploadCopy = {
       unsupported:
         "這支影片在這個瀏覽器處理不了。請改用 iPhone 的 Safari（iOS 16.4 以上）或 Chrome，或在 VARO App 分享。",
       unreadable: "讀不到這支影片，換一支試試。",
+      unreadableInApp:
+        "在 IG 這類 App 裡讀不到影片。請點右上角「⋯」用 Safari 開啟再上傳，或在 VARO App 分享。",
       network: "網路不穩，上傳沒有完成。",
       generic: "出了點問題，再試一次。",
     },
@@ -93,6 +99,10 @@ export const uploadCopy = {
     inAppBody:
       'Google doesn\'t allow sign-in inside Instagram, LINE or Threads. Tap "⋯" and open in your browser, or copy the link into Safari.',
     copyLink: "Copy link",
+    inAppPickTitle: "Picking a video may not work here",
+    inAppPickBody:
+      'Pages opened inside Instagram, LINE or Threads often can\'t read videos from your library. Tap "⋯" and open in your browser, or copy the link into Safari.',
+    reading: "Reading the video…",
     appleNote:
       "If you use Apple in the app, Google here makes a separate account. In the latest app, link Google under Settings › Sign-in methods to keep one account.",
     signInFailed: "Sign-in didn't finish. Try again.",
@@ -154,6 +164,8 @@ export const uploadCopy = {
       unsupported:
         "This browser can't process that video. Try Safari on iPhone (iOS 16.4+) or Chrome, or share from the VARO app.",
       unreadable: "Couldn't read that video. Try another one.",
+      unreadableInApp:
+        'This in-app browser couldn\'t read the video. Tap "⋯" and open in Safari to upload, or share from the VARO app.',
       network: "The connection dropped before the upload finished.",
       generic: "Something went wrong. Try again.",
     },

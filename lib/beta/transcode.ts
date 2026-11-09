@@ -41,25 +41,34 @@ export async function probe(
   at = 0.1,
 ): Promise<{ poster: Blob; width: number; height: number; duration: number }> {
   const url = URL.createObjectURL(blob);
+  const video = document.createElement("video");
 
   try {
-    const video = document.createElement("video");
-
     video.muted = true;
     video.playsInline = true;
     video.preload = "auto";
+    // In the page (out of sight) and load() called: iOS webviews such as
+    // Instagram's otherwise may never load a detached video, and the pick
+    // would wait forever.
+    video.setAttribute("aria-hidden", "true");
+    video.style.cssText =
+      "position:fixed;left:-9999px;top:0;width:2px;height:2px;opacity:0;pointer-events:none";
+    document.body.appendChild(video);
     video.src = url;
-    await new Promise<void>((resolve, reject) => {
-      video.onloadedmetadata = () => resolve();
-      video.onerror = () => reject(new ClipError("unreadable"));
-    });
+    video.load();
+    await whenVideo(video, "loadedmetadata");
     const duration = video.duration;
 
+    // iOS loads no frames without a gesture, so a seek never lands; a muted
+    // inline play (allowed) makes it load them.
+    // Bounded: a play() WebKit leaves pending must not hang the upload.
+    await Promise.race([
+      video.play().catch(() => undefined),
+      new Promise((resolve) => setTimeout(resolve, 3000)),
+    ]);
+    video.pause();
     video.currentTime = Math.min(at, Math.max(0, duration - 0.05));
-    await new Promise<void>((resolve, reject) => {
-      video.onseeked = () => resolve();
-      video.onerror = () => reject(new ClipError("unreadable"));
-    });
+    await whenVideo(video, "seeked");
     const w = video.videoWidth;
     const h = video.videoHeight;
     const scale = Math.min(1, 720 / Math.max(w, h));
@@ -80,8 +89,74 @@ export async function probe(
 
     return { poster, width: w, height: h, duration };
   } finally {
+    video.pause();
+    video.removeAttribute("src");
+    video.load();
+    video.remove();
     URL.revokeObjectURL(url);
   }
+}
+
+/**
+ * Just a video's size and length, from its metadata: what picking needs for
+ * the trim step. No frame is decoded, so it works where seeking doesn't
+ * (iOS before any playback).
+ */
+export async function videoInfo(
+  blob: Blob,
+): Promise<{ width: number; height: number; duration: number }> {
+  const url = URL.createObjectURL(blob);
+  const video = document.createElement("video");
+
+  try {
+    video.muted = true;
+    video.playsInline = true;
+    video.preload = "metadata";
+    video.setAttribute("aria-hidden", "true");
+    video.style.cssText =
+      "position:fixed;left:-9999px;top:0;width:2px;height:2px;opacity:0;pointer-events:none";
+    document.body.appendChild(video);
+    video.src = url;
+    video.load();
+    await whenVideo(video, "loadedmetadata");
+    if (!Number.isFinite(video.duration) || video.duration <= 0) {
+      throw new ClipError("unreadable");
+    }
+
+    return {
+      width: video.videoWidth,
+      height: video.videoHeight,
+      duration: video.duration,
+    };
+  } finally {
+    video.remove();
+    URL.revokeObjectURL(url);
+  }
+}
+
+/** How long reading a picked video may take before we say it can't be read. */
+const READ_TIMEOUT_MS = 15_000;
+
+/** The video fires `event`, or it errors or takes too long: then it's unreadable. */
+function whenVideo(
+  video: HTMLVideoElement,
+  event: "loadedmetadata" | "seeked",
+) {
+  return new Promise<void>((resolve, reject) => {
+    const done = (ok: boolean) => {
+      clearTimeout(timer);
+      video.removeEventListener(event, onEvent);
+      video.removeEventListener("error", onError);
+      if (ok) resolve();
+      else reject(new ClipError("unreadable"));
+    };
+    const onEvent = () => done(true);
+    const onError = () => done(false);
+    const timer = setTimeout(() => done(false), READ_TIMEOUT_MS);
+
+    video.addEventListener(event, onEvent);
+    video.addEventListener("error", onError);
+  });
 }
 
 /** Can this browser make the clip itself? Checked before the person trims. */
