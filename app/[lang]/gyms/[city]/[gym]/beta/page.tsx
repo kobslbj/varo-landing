@@ -217,6 +217,8 @@ export default async function GymBetaPage({ params }: Props) {
                   color: c.finderColor,
                   grade: c.finderGrade,
                   part: c.finderPart,
+                  anyColor: c.finderAnyColor,
+                  anyGrade: c.finderAnyGrade,
                   found: c.finderFound,
                   clear: c.finderClear,
                   none: c.finderNone,

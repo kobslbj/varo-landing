@@ -1,5 +1,5 @@
 import type { Metadata } from "next";
-import type { Country } from "@/lib/gyms/types";
+import type { Country, Gym } from "@/lib/gyms/types";
 
 import Link from "next/link";
 
@@ -10,6 +10,7 @@ import { SiteHeader } from "@/components/landing/site-header";
 import { Container } from "@/components/landing/ui";
 import { siteConfig } from "@/config/site";
 import { betaCopy } from "@/lib/beta/copy";
+import { gymLogoFor } from "@/lib/beta/gym-logos";
 import { betaOverview } from "@/lib/beta/overview";
 import { allCities } from "@/lib/gyms/cities";
 import { localizeDistrict } from "@/lib/gyms/localize";
@@ -49,6 +50,29 @@ export async function generateMetadata(): Promise<Metadata> {
  * The Beta tab: pick a gym on VARO to open its beta. Beta itself is only
  * inside a gym's page (/gyms/…/beta).
  */
+/**
+ * "TAIPEI · HUASHAN": the city, then the branch as the gym's id spells it
+ * (corner-huashan → huashan), which is what the posts say. A gym id without a
+ * branch falls back to the district.
+ */
+function taglineOf(gym: Gym) {
+  const city = allCities.find((x) => x.name === gym.city)?.slug ?? "";
+  const branch = gym.id.includes("-")
+    ? gym.id.slice(gym.id.lastIndexOf("-") + 1)
+    : "";
+  const where =
+    branch ||
+    localizeDistrict(gym.district, "en", gym.country).replace(
+      / district$/i,
+      "",
+    );
+
+  return [city, where]
+    .filter(Boolean)
+    .map((x) => x.replace(/-/g, " "))
+    .join(" · ");
+}
+
 export default async function BetaIndex() {
   const { locale, t, href, c, h, zh } = await words();
   const { gyms } = await betaOverview();
@@ -66,6 +90,8 @@ export default async function BetaIndex() {
     lat: g.gym.lat ?? null,
     lng: g.gym.lng ?? null,
     cover: g.cover,
+    logo: gymLogoFor(g.gym.id),
+    tagline: taglineOf(g.gym),
     routes: g.routes,
     withBeta: g.withBeta,
     fresh: g.fresh,

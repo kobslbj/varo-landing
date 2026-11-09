@@ -2,7 +2,7 @@
 
 import type { FloorPlan } from "@/lib/beta/plans";
 
-import { Tag, TagGroup, type Selection } from "@heroui/react";
+import { ListBox, Select, Tag, TagGroup, type Selection } from "@heroui/react";
 import clsx from "clsx";
 import Link from "next/link";
 import { useEffect, useMemo, useRef, useState } from "react";
@@ -84,6 +84,9 @@ export function RouteBrowser({
     none: string;
     /** "{area} 的哪一面" */
     part: string;
+    /** Dropdown placeholders on phones: "全部顏色", "全部難度". */
+    anyColor: string;
+    anyGrade: string;
   };
   /** The gym's floor plan, shown above the walls as another way to pick one. */
   plan?: FloorPlan | null;
@@ -313,73 +316,170 @@ export function RouteBrowser({
           ) : null}
         </Step>
 
-        {/* 2. What colour the holds are. */}
-        <Step label={labels.color} n={2}>
-          <TagGroup
-            aria-label={labels.color}
-            selectedKeys={f.color ? [f.color] : []}
-            selectionMode="single"
-            onSelectionChange={(keys) =>
-              update({ ...f, color: first(keys), grade: null })
-            }
-          >
-            <TagGroup.List className={CHIPS}>
-              {colors.map((c) => {
-                const on = f.color === c;
-
-                return (
-                  <Tag
-                    key={c}
-                    className={clsx(CHIP, "gap-2 pl-1.5 pr-4")}
-                    id={c}
-                    textValue={colorNames[c] ?? c}
-                  >
-                    <span
-                      aria-hidden
-                      className={clsx(
-                        "relative grid size-8 place-items-center rounded-full",
-                        c === "white" && "ring-1 ring-inset ring-line",
-                        on &&
-                          "ring-2 ring-lime ring-offset-2 ring-offset-night",
-                      )}
-                      style={{ backgroundColor: hold(c).fill }}
-                    >
-                      {on ? <CheckGlyph color={hold(c).ink} /> : null}
+        {/* Phones: colour and grade as two dropdowns side by side, so every
+            choice is one tap away instead of hidden off the edge of a row. */}
+        <div className="grid grid-cols-2 gap-2.5 sm:hidden">
+          <Step label={labels.color} n={2}>
+            <Select
+              aria-label={labels.color}
+              className="w-full"
+              placeholder={labels.anyColor}
+              value={f.color}
+              onChange={(v) =>
+                update({
+                  ...f,
+                  color: pickedKey(v),
+                  grade: null,
+                })
+              }
+            >
+              <Select.Trigger className={TRIGGER}>
+                {f.color ? (
+                  <span
+                    aria-hidden
+                    className={clsx(
+                      "size-5 shrink-0 rounded-full",
+                      f.color === "white" && "ring-1 ring-inset ring-line",
+                    )}
+                    style={{ backgroundColor: hold(f.color).fill }}
+                  />
+                ) : null}
+                <Select.Value className="truncate" />
+                <Select.Indicator />
+              </Select.Trigger>
+              <Select.Popover>
+                <ListBox>
+                  <ListBox.Item id={ANY} textValue={labels.anyColor}>
+                    <span className="text-[16px] font-bold text-mute">
+                      {labels.anyColor}
                     </span>
-                    {colorNames[c] ?? c}
-                  </Tag>
-                );
-              })}
-            </TagGroup.List>
-          </TagGroup>
-        </Step>
+                    <ListBox.ItemIndicator />
+                  </ListBox.Item>
+                  {colors.map((c) => (
+                    <ListBox.Item key={c} id={c} textValue={colorNames[c] ?? c}>
+                      <span
+                        aria-hidden
+                        className={clsx(
+                          "size-6 shrink-0 rounded-full",
+                          c === "white" && "ring-1 ring-inset ring-line",
+                        )}
+                        style={{ backgroundColor: hold(c).fill }}
+                      />
+                      <span className="text-[16px] font-bold">
+                        {colorNames[c] ?? c}
+                      </span>
+                      <ListBox.ItemIndicator />
+                    </ListBox.Item>
+                  ))}
+                </ListBox>
+              </Select.Popover>
+            </Select>
+          </Step>
+          <Step label={labels.grade} n={3}>
+            <Select
+              aria-label={labels.grade}
+              className="w-full"
+              placeholder={labels.anyGrade}
+              value={f.grade}
+              onChange={(v) => update({ ...f, grade: pickedKey(v) })}
+            >
+              <Select.Trigger className={TRIGGER}>
+                <Select.Value className="truncate font-display" />
+                <Select.Indicator />
+              </Select.Trigger>
+              <Select.Popover>
+                <ListBox>
+                  <ListBox.Item id={ANY} textValue={labels.anyGrade}>
+                    <span className="text-[16px] font-bold text-mute">
+                      {labels.anyGrade}
+                    </span>
+                    <ListBox.ItemIndicator />
+                  </ListBox.Item>
+                  {grades.map((g) => (
+                    <ListBox.Item key={g} id={g} textValue={labelOf(g)}>
+                      <span className="font-display text-[17px] font-bold tabular">
+                        {labelOf(g)}
+                      </span>
+                      <ListBox.ItemIndicator />
+                    </ListBox.Item>
+                  ))}
+                </ListBox>
+              </Select.Popover>
+            </Select>
+          </Step>
+        </div>
 
-        {/* 3. The grade on the tag. */}
-        <Step label={labels.grade} n={3}>
-          <TagGroup
-            aria-label={labels.grade}
-            selectedKeys={f.grade ? [f.grade] : []}
-            selectionMode="single"
-            onSelectionChange={(keys) => update({ ...f, grade: first(keys) })}
-          >
-            <TagGroup.List className={CHIPS}>
-              {grades.map((g) => (
-                <Tag
-                  key={g}
-                  className={clsx(
-                    CHIP,
-                    "min-w-14 justify-center px-4 font-display text-[16px] tabular",
-                    "data-[selected=true]:!border-night data-[selected=true]:!bg-lime data-[selected=true]:!text-night",
-                  )}
-                  id={g}
-                  textValue={labelOf(g)}
-                >
-                  {labelOf(g)}
-                </Tag>
-              ))}
-            </TagGroup.List>
-          </TagGroup>
-        </Step>
+        {/* Larger screens: every colour and grade fits, so they stay chips. */}
+        <div className="hidden space-y-5 sm:block">
+          {/* 2. What colour the holds are. */}
+          <Step label={labels.color} n={2}>
+            <TagGroup
+              aria-label={labels.color}
+              selectedKeys={f.color ? [f.color] : []}
+              selectionMode="single"
+              onSelectionChange={(keys) =>
+                update({ ...f, color: first(keys), grade: null })
+              }
+            >
+              <TagGroup.List className={CHIPS}>
+                {colors.map((c) => {
+                  const on = f.color === c;
+
+                  return (
+                    <Tag
+                      key={c}
+                      className={clsx(CHIP, "gap-2 pl-1.5 pr-4")}
+                      id={c}
+                      textValue={colorNames[c] ?? c}
+                    >
+                      <span
+                        aria-hidden
+                        className={clsx(
+                          "relative grid size-8 place-items-center rounded-full",
+                          c === "white" && "ring-1 ring-inset ring-line",
+                          on &&
+                            "ring-2 ring-lime ring-offset-2 ring-offset-night",
+                        )}
+                        style={{ backgroundColor: hold(c).fill }}
+                      >
+                        {on ? <CheckGlyph color={hold(c).ink} /> : null}
+                      </span>
+                      {colorNames[c] ?? c}
+                    </Tag>
+                  );
+                })}
+              </TagGroup.List>
+            </TagGroup>
+          </Step>
+
+          {/* 3. The grade on the tag. */}
+          <Step label={labels.grade} n={3}>
+            <TagGroup
+              aria-label={labels.grade}
+              selectedKeys={f.grade ? [f.grade] : []}
+              selectionMode="single"
+              onSelectionChange={(keys) => update({ ...f, grade: first(keys) })}
+            >
+              <TagGroup.List className={CHIPS}>
+                {grades.map((g) => (
+                  <Tag
+                    key={g}
+                    className={clsx(
+                      CHIP,
+                      "min-w-14 justify-center px-4 font-display text-[16px] tabular",
+                      "data-[selected=true]:!border-night data-[selected=true]:!bg-lime data-[selected=true]:!text-night",
+                    )}
+                    id={g}
+                    textValue={labelOf(g)}
+                  >
+                    {labelOf(g)}
+                  </Tag>
+                ))}
+              </TagGroup.List>
+            </TagGroup>
+          </Step>
+        </div>
+
         {/* Phones: the list is below the fold, one tap to it. */}
         {filtering ? (
           <button
@@ -455,6 +555,13 @@ export function RouteBrowser({
   );
 }
 
+/** The "all" row at the top of a phone dropdown: picking it clears the filter. */
+const ANY = "__any";
+
+function pickedKey(v: unknown): string | null {
+  return v == null || v === ANY ? null : String(v);
+}
+
 /** The one selected key of a single-selection group, or null. */
 function first(keys: Selection): string | null {
   if (keys === "all") return null;
@@ -470,6 +577,8 @@ const TILE =
   "group/tile !block w-[30vw] min-w-[100px] max-w-[132px] shrink-0 snap-start !rounded-[18px] !bg-transparent !p-0 text-left outline-none sm:w-[124px]";
 const PART =
   "group/part !block w-[22vw] min-w-[76px] max-w-[96px] shrink-0 !rounded-[14px] !bg-transparent !p-0 outline-none";
+const TRIGGER =
+  "!flex h-12 w-full items-center gap-2 !rounded-2xl border border-line !bg-ink px-3.5 text-[15px] font-bold !text-cream data-[focus-visible=true]:ring-2 data-[focus-visible=true]:ring-lime";
 const CHIPS =
   "-mx-4 flex !flex-nowrap gap-2 overflow-x-auto px-4 pb-1 [scrollbar-width:none] sm:mx-0 sm:!flex-wrap sm:overflow-visible sm:px-0 [&::-webkit-scrollbar]:hidden";
 const CHIP =

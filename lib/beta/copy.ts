@@ -8,9 +8,9 @@ const taipei = (iso: string) => new Date(Date.parse(iso) + 8 * 3600_000);
 export const betaCopy = {
   "zh-TW": {
     eyebrow: "BETA",
-    dirTitle: ["Beta，", "只在 VARO 岩館"],
+    dirTitle: ["每一條路線的", "beta 影片"],
     dirLead:
-      "合作岩館的每一條現役路線，都標好牆面、顏色和難度，還有岩友的完攀影片。選你的岩館，進去看。",
+      "卡在哪一步，就看別人怎麼爬。VARO 合作岩館的現役路線，都標好牆面、顏色和難度，還有岩友的完攀影片。選你的岩館，找到你正在爬的那條。",
     dirLive: (gyms: number, routes: number) =>
       `${gyms} 間岩館開放中 · ${routes} 條現役路線`,
     dirAll: "全部",
@@ -54,6 +54,8 @@ export const betaCopy = {
     finderColor: "什麼顏色",
     finderGrade: "標籤上的難度",
     finderPart: "{area} 的哪一面",
+    finderAnyColor: "全部顏色",
+    finderAnyGrade: "全部難度",
     finderFound: "{n} 條路線",
     finderClear: "清除",
     finderNone: "沒有符合的路線，換個條件試試。",
@@ -119,9 +121,9 @@ export const betaCopy = {
   },
   en: {
     eyebrow: "BETA",
-    dirTitle: ["Beta,", "only at VARO gyms"],
+    dirTitle: ["Beta videos", "for every route"],
     dirLead:
-      "Every route on the wall at our partner gyms, marked by wall, hold color and grade, with climbers' send videos. Pick your gym to see it.",
+      "Stuck on a move? See how others climbed it. Every route on the wall at VARO's partner gyms is marked by wall, hold color and grade, with climbers' send videos. Pick your gym and find the route you're on.",
     dirLive: (gyms: number, routes: number) =>
       `${gyms} ${gyms === 1 ? "gym" : "gyms"} open · ${routes} routes up`,
     dirAll: "All",
@@ -169,6 +171,8 @@ export const betaCopy = {
     finderColor: "Hold color",
     finderGrade: "Grade on the tag",
     finderPart: "Which part of {area}",
+    finderAnyColor: "Any colour",
+    finderAnyGrade: "Any grade",
     finderFound: "{n} routes",
     finderClear: "Clear",
     finderNone: "No routes match. Try fewer filters.",
