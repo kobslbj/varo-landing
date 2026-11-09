@@ -4,6 +4,7 @@ import type { ReactNode } from "react";
 import Link from "next/link";
 import { notFound } from "next/navigation";
 
+import { GymBetaTeaser } from "@/components/beta/gym-teaser";
 import { GymsClosing, gymsHeading } from "@/components/gyms/sections";
 import { SiteHeader } from "@/components/landing/site-header";
 import { SiteFooter } from "@/components/landing/site-footer";
@@ -22,7 +23,7 @@ import {
 import { checkedAt as taiwanCheckedAt } from "@/lib/gyms/data";
 import { abroadCheckedAt } from "@/lib/gyms/data-abroad";
 import { gymTextLang, localizeGym } from "@/lib/gyms/localize";
-import { getI18n } from "@/lib/i18n";
+import { getI18n, siteLocale } from "@/lib/i18n";
 import { absoluteUrl, JsonLd, pageMetadata, webPage } from "@/lib/seo";
 
 export const dynamicParams = false;
@@ -51,6 +52,7 @@ async function load(params: Props["params"]) {
 
   return {
     ...i18n,
+    raw,
     gym,
     hub: hubFor(gym.city),
     path: gymPath(gym),
@@ -85,6 +87,7 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
 
 export default async function GymPage({ params }: Props) {
   const {
+    raw,
     gym: g,
     locale,
     t,
@@ -309,6 +312,11 @@ export default async function GymPage({ params }: Props) {
               </a>
             )}
           </div>
+          <GymBetaTeaser
+            gym={raw}
+            href={href(`${path}/beta`)}
+            zh={siteLocale(locale) === "zh-TW"}
+          />
           <div className="mt-12 grid items-start gap-12 lg:grid-cols-[minmax(0,1fr)_20rem]">
             <dl className="divide-y divide-line border-y border-line">
               {rows.map(({ label, body }) => (

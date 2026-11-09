@@ -76,6 +76,7 @@ export const sitePages: {
     locales: ["zh-TW"] as Locale[],
   })),
   { path: "/gyms", priority: 0.8 },
+  { path: "/beta", priority: 0.8 },
   ...abroadHubs.map((h) => ({ path: `/gyms/${h.slug}`, priority: 0.7 })),
   ...allCities.map((c) => ({ path: `/gyms/${c.slug}`, priority: 0.7 })),
   ...allGyms.map((g) => ({ path: gymPath(g), priority: 0.6 })),

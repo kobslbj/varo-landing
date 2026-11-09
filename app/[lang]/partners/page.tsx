@@ -3,22 +3,30 @@ import type { Metadata } from "next";
 import clsx from "clsx";
 import Image from "next/image";
 
-import { PartnerCta } from "@/components/landing/partner-cta";
+import { NeedsBoard } from "@/components/partners/needs-board";
+import { RevenueCalc } from "@/components/partners/revenue-calc";
 import { SiteFooter } from "@/components/landing/site-footer";
 import { SiteHeader } from "@/components/landing/site-header";
 import { Container, DemoLabel, holdColors } from "@/components/landing/ui";
-import { partnerHref, siteConfig } from "@/config/site";
-import { type Dictionary, getI18n } from "@/lib/i18n";
+import { siteConfig } from "@/config/site";
+import { type Dictionary, getI18n, siteLocale } from "@/lib/i18n";
+import { partnersCopy } from "@/lib/partners-copy";
 import { JsonLd, pageMetadata, webPage } from "@/lib/seo";
 
-export async function generateMetadata(): Promise<Metadata> {
-  const { t } = await getI18n();
+async function words() {
+  const i18n = await getI18n();
 
-  return pageMetadata("/partners", t.partners.meta);
+  return { ...i18n, p: partnersCopy[siteLocale(i18n.locale)] };
 }
 
-/** Hold colours for the three problem cards, bottom of the wall to the top. */
-const PROBLEM_HOLDS = ["#E5484D", "#F5D90A", "#3E8BFF"];
+export async function generateMetadata(): Promise<Metadata> {
+  const { p } = await words();
+
+  return pageMetadata("/partners", {
+    title: p.metaTitle,
+    description: p.metaDescription,
+  });
+}
 
 /**
  * Routes on the mock wall, each pinned on a real hold of its color in
@@ -33,286 +41,305 @@ const MOCK_ROUTES = [
 ];
 
 /**
- * Recruiting the first partner gyms. The setter tool (varo-gym) has a first
- * version and the app logs on the wall, but nothing is live at a gym yet, so
- * the page separates what exists from what's planned and asks for an email.
+ * For climbing gyms, from the owner's side: what they deal with, what they
+ * need (each item marked live, in progress or planned, the planned ones open
+ * to votes), how VARO sits beside their current system, and a 30-day pilot.
+ * The votes and the form are how we learn what to build next.
  */
 export default async function PartnersPage() {
-  const { locale, t } = await getI18n();
-  const copy = t.partners;
-  const mail = partnerHref(t.partnerSubject, copy.mailBody);
-  const heading =
-    locale === "en" ? "font-display leading-[1.06]" : "display-zh";
+  const { locale, t, p } = await words();
+  const email = siteConfig.partnerEmail;
 
   return (
     <>
       <JsonLd
         graph={[
           webPage(locale, "/partners", {
-            name: copy.meta.title,
-            description: copy.meta.description,
+            name: p.metaTitle,
+            description: p.metaDescription,
           }),
         ]}
       />
       <SiteHeader path="/partners" />
-      <main className="relative overflow-hidden">
-        {/* Bolt-hole grid */}
-        <div
-          aria-hidden
-          className="pointer-events-none absolute inset-0 opacity-[0.25] [background-image:radial-gradient(#2e2e2e_1.2px,transparent_1.2px)] [background-size:30px_30px] [mask-image:linear-gradient(to_bottom,black,transparent_70%)]"
-        />
-
-        {/* Opening */}
-        <Container className="relative pb-20 pt-36 sm:pt-44">
-          <p className="rise flex items-center gap-2 text-[14px] font-semibold tracking-[0.08em] text-lime-ink sm:text-[15px]">
-            <span aria-hidden className="size-2 rounded-full bg-lime" />
-            {copy.eyebrow}
-          </p>
-          <h1
-            className={clsx(
-              "rise mt-6 text-[44px] sm:text-[64px] lg:text-[72px]",
-              heading,
-            )}
-            style={{ ["--rise-delay" as string]: "60ms" }}
-          >
-            {copy.title[0]}
-            <br />
-            <span className="text-lime-ink">{copy.title[1]}</span>
-          </h1>
-          <p
-            className="rise mt-7 max-w-[36rem] text-[17px] leading-[1.8] text-mute [text-wrap:pretty] sm:text-[19px]"
-            style={{ ["--rise-delay" as string]: "120ms" }}
-          >
-            {copy.intro}
-          </p>
-          <p
-            className="rise mt-6 flex max-w-[36rem] gap-2.5 text-[15px] leading-[1.7] text-cream"
-            style={{ ["--rise-delay" as string]: "140ms" }}
-          >
-            <span
-              aria-hidden
-              className="mt-[9px] size-2 shrink-0 rounded-full bg-lime"
-            />
-            {copy.status}
-          </p>
+      <main>
+        {/* ------------------------------------------------------- Hero */}
+        <section className="relative overflow-hidden border-b border-line">
           <div
-            className="rise mt-9 flex flex-wrap items-center gap-x-7 gap-y-4"
-            style={{ ["--rise-delay" as string]: "160ms" }}
-          >
-            {mail ? (
-              <PartnerCta href={mail} place="hero">
-                {copy.cta}
-              </PartnerCta>
-            ) : null}
-            <a
-              className="text-[15px] font-medium text-mute underline decoration-line underline-offset-4 transition-colors hover:text-lime-ink hover:decoration-lime"
-              href="#how"
-            >
-              {copy.howLink} ↓
-            </a>
-          </div>
-        </Container>
-
-        {/* The problem */}
-        <Container className="relative py-16 sm:py-20">
-          <h2 className={clsx("text-[32px] sm:text-[40px]", heading)}>
-            {copy.problem.heading}
-          </h2>
-          <ul className="mt-10 grid gap-4 md:grid-cols-3">
-            {copy.problem.items.map((item, i) => (
-              <li
-                key={item.title}
-                className="rounded-2xl border border-line bg-ink-2 p-6 sm:p-7"
-              >
-                <span
-                  aria-hidden
-                  className="grid h-[26px] w-[32px] place-items-center rounded-[14px_18px_10px_16px]"
-                  style={{ background: PROBLEM_HOLDS[i] }}
+            aria-hidden
+            className="pointer-events-none absolute inset-0 bg-[radial-gradient(50%_60%_at_85%_10%,rgb(198_255_0/0.22),transparent_70%)]"
+          />
+          <Container className="relative grid items-center gap-12 pb-16 pt-24 sm:pt-32 lg:grid-cols-[minmax(0,1.1fr)_minmax(0,1fr)] lg:pb-20">
+            <div>
+              <p className="inline-block rounded-full border border-line bg-ink-2 px-3 py-1 text-[13px] font-bold">
+                {p.eyebrow}
+              </p>
+              <h1 className="mt-5 text-[38px] font-black leading-[1.1] tracking-[-0.03em] sm:text-[58px]">
+                {p.title[0]}
+                <br />
+                <span className="text-mute">{p.title[1]}</span>
+              </h1>
+              <p className="mt-5 max-w-[34rem] text-[16px] leading-[1.8] text-mute sm:text-[18px]">
+                {p.lead}
+              </p>
+              <div className="mt-8 flex flex-wrap gap-3">
+                <a
+                  className="inline-flex h-13 items-center rounded-full bg-lime px-7 text-[16px] font-bold text-night transition-transform active:translate-y-px"
+                  href="#contact"
                 >
-                  <span className="size-[5px] rounded-full bg-black/35" />
-                </span>
-                <h3 className="mt-5 text-[19px] font-bold leading-snug">
-                  {item.title}
-                </h3>
-                <p className="mt-2 text-[16px] leading-[1.7] text-mute">
-                  {item.body}
-                </p>
-              </li>
-            ))}
-          </ul>
-        </Container>
-
-        {/* How it works: setter tool → app */}
-        <Container className="relative py-16 sm:py-20">
-          <div className="scroll-mt-24" id="how" />
-          <h2 className={clsx("text-[32px] sm:text-[40px]", heading)}>
-            {copy.how.heading}
-          </h2>
-          <p className="mt-4 max-w-[36rem] text-[17px] leading-[1.75] text-mute">
-            {copy.how.intro}
-          </p>
-          <div className="mt-10 grid items-center gap-10 lg:grid-cols-2 lg:gap-16">
-            <ol className="flex flex-col gap-8">
-              {copy.how.steps.map((step, i) => (
-                <li key={step.title} className="flex gap-5">
-                  <span className="font-display text-[28px] leading-none text-lime-ink">
-                    {String(i + 1).padStart(2, "0")}
-                  </span>
-                  <div>
-                    <span
-                      className={clsx(
-                        "inline-block rounded-full px-2.5 py-0.5 text-[12px] font-semibold",
-                        i < 2
-                          ? "border border-line text-mute"
-                          : "bg-lime text-night",
-                      )}
-                    >
-                      {i < 2 ? copy.how.setter : copy.how.climber}
-                    </span>
-                    <h3 className="mt-2.5 text-[19px] font-bold leading-snug">
-                      {step.title}
-                    </h3>
-                    <p className="mt-2 text-[16px] leading-[1.7] text-mute">
-                      {step.body}
-                    </p>
+                  {p.ctaPrimary}
+                </a>
+                <a
+                  className="inline-flex h-13 items-center rounded-full border border-line bg-ink-2 px-7 text-[16px] font-bold transition-colors hover:bg-ink-3"
+                  href="#needs"
+                >
+                  {p.ctaSecondary}
+                </a>
+              </div>
+              <p className="mt-4 text-[14px] text-mute">{p.pilotNote}</p>
+              <dl className="mt-10 grid max-w-[34rem] grid-cols-3 gap-px overflow-hidden rounded-2xl border border-line bg-line">
+                {p.heroStats.map((x) => (
+                  <div key={x.label} className="bg-ink-2 px-4 py-4">
+                    <dd className="text-[28px] font-black leading-none tabular">
+                      {x.n}
+                    </dd>
+                    <dt className="mt-1.5 text-[12px] font-semibold leading-snug text-mute">
+                      {x.label}
+                    </dt>
                   </div>
+                ))}
+              </dl>
+            </div>
+            <WallMock copy={t.partners.how} />
+          </Container>
+        </section>
+
+        {/* ------------------------------------------------ What we hear */}
+        <section>
+          <Container className="py-16 sm:py-20">
+            <h2 className="text-[26px] font-black tracking-tight sm:text-[36px]">
+              {p.painTitle}
+            </h2>
+            <ul className="mt-8 grid gap-3 sm:grid-cols-2 lg:grid-cols-5">
+              {p.pains.map((x, i) => (
+                <li
+                  key={x.title}
+                  className="rounded-2xl border border-line bg-ink-2 p-5"
+                >
+                  <p className="text-[13px] font-bold text-mute tabular">
+                    0{i + 1}
+                  </p>
+                  <p className="mt-2 text-[17px] font-extrabold leading-snug">
+                    {x.title}
+                  </p>
+                  <p className="mt-2 text-[14px] leading-[1.7] text-mute">
+                    {x.body}
+                  </p>
+                </li>
+              ))}
+            </ul>
+          </Container>
+        </section>
+
+        {/* ------------------------------------- How VARO makes money */}
+        <section className="theme-dark bg-night">
+          <Container className="py-16 sm:py-24">
+            <h2 className="text-[28px] font-black tracking-tight text-cream sm:text-[40px]">
+              {p.modelTitle}
+            </h2>
+            <p className="mt-3 max-w-[42rem] text-[16px] leading-[1.8] text-mute">
+              {p.modelLead}
+            </p>
+            <ol className="mt-10 grid gap-3 sm:grid-cols-3 sm:gap-4">
+              {p.model.map((x, i) => (
+                <li
+                  key={x.k}
+                  className="rounded-2xl border border-line bg-ink-2 p-6"
+                >
+                  <p className="flex items-baseline gap-2">
+                    <span className="text-[13px] font-bold text-mute tabular">
+                      0{i + 1}
+                    </span>
+                    <span className="text-[26px] font-black text-lime">
+                      {x.k}
+                    </span>
+                  </p>
+                  <p className="mt-3 text-[18px] font-extrabold text-cream">
+                    {x.title}
+                  </p>
+                  <p className="mt-2 text-[14px] leading-[1.75] text-mute">
+                    {x.body}
+                  </p>
                 </li>
               ))}
             </ol>
-            <WallMock copy={copy.how} />
-          </div>
-        </Container>
+          </Container>
+        </section>
 
-        {/* What the gym gets */}
-        <Container className="relative py-16 sm:py-20">
-          <h2 className={clsx("text-[32px] sm:text-[40px]", heading)}>
-            {copy.value.heading}
-          </h2>
-          <p className="mt-8 text-[14px] font-semibold tracking-[0.04em] text-lime-ink">
-            {copy.value.now.label}
-          </p>
-          <ul className="mt-4 grid gap-4 md:grid-cols-3">
-            {copy.value.now.items.map((item) => (
-              <li
-                key={item.title}
-                className="rounded-2xl border border-line bg-ink-2 p-6 sm:p-7"
-              >
-                <h3 className="text-[19px] font-bold leading-snug">
-                  {item.title}
-                </h3>
-                <p className="mt-2 text-[16px] leading-[1.7] text-mute">
-                  {item.body}
-                </p>
-              </li>
-            ))}
-          </ul>
-          <p className="mt-10 text-[14px] font-semibold tracking-[0.04em] text-mute">
-            {copy.value.planned.label}
-          </p>
-          <ul className="mt-4 grid gap-4 md:grid-cols-2">
-            {copy.value.planned.items.map((item) => (
-              <li
-                key={item.title}
-                className="rounded-2xl border border-dashed border-line p-6 sm:p-7"
-              >
-                <h3 className="text-[19px] font-bold leading-snug">
-                  {item.title}
-                </h3>
-                <p className="mt-2 text-[16px] leading-[1.7] text-mute">
-                  {item.body}
-                </p>
-              </li>
-            ))}
-          </ul>
-        </Container>
+        {/* -------------------------------------------- Revenue estimate */}
+        <section>
+          <Container className="py-16 sm:py-24">
+            <h2 className="text-[26px] font-black tracking-tight sm:text-[36px]">
+              {p.calcTitle}
+            </h2>
+            <p className="mt-3 max-w-[40rem] text-[16px] leading-[1.8] text-mute">
+              {p.calcLead}
+            </p>
+            <div className="mt-8">
+              <RevenueCalc
+                labels={{
+                  visits: p.calcVisits,
+                  price: p.calcPrice,
+                  lift: p.calcLift,
+                  monthly: p.calcMonthly,
+                  yearly: p.calcYearly,
+                  note: p.calcNote,
+                }}
+              />
+            </div>
+          </Container>
+        </section>
 
-        {/* Getting started */}
-        <Container className="relative py-16 sm:py-20">
-          <h2 className={clsx("text-[32px] sm:text-[40px]", heading)}>
-            {copy.setup.heading}
-          </h2>
-          <ol className="mt-10 grid gap-4 md:grid-cols-3">
-            {copy.setup.steps.map((step, i) => (
-              <li key={step.title} className="border-t-2 border-line pt-5">
-                <span className="font-display text-[22px] text-lime-ink">
-                  {i + 1}
-                </span>
-                <h3 className="mt-2 text-[19px] font-bold leading-snug">
-                  {step.title}
-                </h3>
-                <p className="mt-2 text-[16px] leading-[1.7] text-mute">
-                  {step.body}
-                </p>
-              </li>
-            ))}
-          </ol>
-        </Container>
+        {/* ------------------------------------ Needs, with honest status */}
+        <section
+          className="scroll-mt-20 border-y border-line bg-ink-3/40"
+          id="needs"
+        >
+          <Container className="py-16 sm:py-24">
+            <h2 className="max-w-[24ch] text-[28px] font-black tracking-tight sm:text-[40px]">
+              {p.needsTitle}
+            </h2>
+            <p className="mt-3 max-w-[40rem] text-[16px] leading-[1.8] text-mute">
+              {p.needsLead}
+            </p>
+            <div className="mt-10">
+              <NeedsBoard
+                email={email}
+                groups={p.groups}
+                labels={{
+                  status: p.status,
+                  vote: p.vote,
+                  voted: p.voted,
+                  formTitle: p.formTitle,
+                  formLead: p.formLead,
+                  formGym: p.formGym,
+                  formGymPlaceholder: p.formGymPlaceholder,
+                  formRole: p.formRole,
+                  roles: p.roles,
+                  formContact: p.formContact,
+                  formNote: p.formNote,
+                  formNotePlaceholder: p.formNotePlaceholder,
+                  formPicked: p.formPicked,
+                  formNone: p.formNone,
+                  formSend: p.formSend,
+                  mailSubject: p.mailSubject,
+                  mail: p.mail,
+                }}
+              />
+            </div>
+          </Container>
+        </section>
 
-        {/* FAQ */}
-        <Container className="relative py-16 sm:py-20">
-          <h2 className={clsx("text-[32px] sm:text-[40px]", heading)}>
-            {copy.faq.heading}
-          </h2>
-          <dl className="mt-10 grid gap-x-12 gap-y-8 md:grid-cols-2">
-            {copy.faq.items.map((item) => (
-              <div key={item.q}>
-                <dt className="text-[18px] font-bold leading-snug">{item.q}</dt>
-                <dd className="mt-2 text-[16px] leading-[1.7] text-mute">
-                  {item.a}
-                </dd>
-              </div>
-            ))}
-          </dl>
-        </Container>
-
-        {/* Founding partners + contact */}
-        <Container className="relative py-16 sm:py-20">
-          <div className="grid gap-10 rounded-3xl border border-line bg-ink-2 p-7 sm:p-10 lg:grid-cols-2 lg:gap-16 lg:p-14">
+        {/* ------------------------------------------ Beside your system */}
+        <section>
+          <Container className="grid gap-10 py-16 sm:py-24 lg:grid-cols-2 lg:gap-16">
             <div>
-              <h2 className={clsx("text-[30px] sm:text-[36px]", heading)}>
-                {copy.pilot.heading}
+              <h2 className="text-[26px] font-black tracking-tight sm:text-[36px]">
+                {p.fitTitle}
               </h2>
-              <ul className="mt-7 flex flex-col gap-4">
-                {copy.pilot.items.map((item) => (
+              <p className="mt-3 max-w-[32rem] text-[16px] leading-[1.8] text-mute">
+                {p.fitLead}
+              </p>
+              <h3 className="mt-10 text-[20px] font-extrabold">
+                {p.promiseTitle}
+              </h3>
+              <ul className="mt-3 max-w-[30rem] border-t border-line">
+                {p.promises.map((x) => (
                   <li
-                    key={item}
-                    className="flex gap-3 text-[17px] leading-[1.6]"
+                    key={x}
+                    className="border-b border-line py-3 text-[15px] font-semibold"
                   >
-                    <span aria-hidden className="mt-[2px] text-lime-ink">
-                      ✓
-                    </span>
-                    {item}
+                    {x}
                   </li>
                 ))}
               </ul>
             </div>
-
-            <div className="lg:border-l lg:border-line lg:pl-16">
-              <h2 className={clsx("text-[30px] sm:text-[36px]", heading)}>
-                {copy.contact.heading}
-              </h2>
-              <p className="mt-5 text-[16px] leading-[1.75] text-mute">
-                {copy.contact.body}
-              </p>
-              {mail ? (
-                <div className="mt-8">
-                  <PartnerCta href={mail} place="contact">
-                    {copy.contact.button}
-                  </PartnerCta>
-                </div>
-              ) : null}
-              <p className="mt-5 text-[14px] text-mute">
-                {copy.contact.or}{" "}
-                <a
-                  className="text-cream underline decoration-line underline-offset-4 transition-colors hover:text-lime-ink hover:decoration-lime"
-                  href={`mailto:${siteConfig.partnerEmail}`}
-                >
-                  {siteConfig.partnerEmail}
-                </a>
-              </p>
+            <div className="grid content-start gap-3 sm:grid-cols-2">
+              <div className="rounded-2xl border border-line bg-ink-2 p-6">
+                <p className="text-[13px] font-bold text-mute">{p.fitYours}</p>
+                <ul className="mt-3 space-y-2">
+                  {p.fitYoursItems.map((x) => (
+                    <li key={x} className="text-[16px] font-semibold">
+                      {x}
+                    </li>
+                  ))}
+                </ul>
+              </div>
+              <div className="theme-dark rounded-2xl bg-night p-6">
+                <p className="text-[13px] font-bold text-lime">{p.fitVaro}</p>
+                <ul className="mt-3 space-y-2">
+                  {p.fitVaroItems.map((x) => (
+                    <li
+                      key={x}
+                      className="text-[16px] font-semibold text-cream"
+                    >
+                      {x}
+                    </li>
+                  ))}
+                </ul>
+              </div>
             </div>
-          </div>
-        </Container>
+          </Container>
+        </section>
+
+        {/* ------------------------------------------------- 30-day pilot */}
+        <section className="border-t border-line bg-ink-2">
+          <Container className="py-16 sm:py-24">
+            <h2 className="text-[26px] font-black tracking-tight sm:text-[36px]">
+              {p.pilotTitle}
+            </h2>
+            <ol className="mt-8 grid gap-3 sm:grid-cols-3 sm:gap-4">
+              {p.pilot.map((x, i) => (
+                <li
+                  key={x.title}
+                  className="rounded-2xl border border-line bg-ink p-6"
+                >
+                  <p className="text-[13px] font-bold text-mute tabular">
+                    0{i + 1}
+                  </p>
+                  <p className="mt-2 text-[18px] font-extrabold">{x.title}</p>
+                  <p className="mt-2 text-[14px] leading-[1.75] text-mute">
+                    {x.body}
+                  </p>
+                </li>
+              ))}
+            </ol>
+            <a
+              className="mt-8 inline-flex h-12 items-center rounded-full bg-night px-6 text-[15px] font-bold text-day"
+              href="#contact"
+            >
+              {p.ctaPrimary} →
+            </a>
+          </Container>
+        </section>
+
+        {/* ---------------------------------------------------------- FAQ */}
+        <section>
+          <Container className="grid gap-8 py-16 sm:py-24 lg:grid-cols-[minmax(0,1fr)_minmax(0,2fr)]">
+            <h2 className="text-[26px] font-black tracking-tight sm:text-[36px]">
+              {p.faqTitle}
+            </h2>
+            <dl className="divide-y divide-line border-y border-line">
+              {p.faq.map((x) => (
+                <div key={x.q} className="py-5">
+                  <dt className="text-[17px] font-extrabold">{x.q}</dt>
+                  <dd className="mt-2 text-[15px] leading-[1.8] text-mute">
+                    {x.a}
+                  </dd>
+                </div>
+              ))}
+            </dl>
+          </Container>
+        </section>
       </main>
       <SiteFooter />
     </>

@@ -1,0 +1,291 @@
+"use client";
+
+import Link from "next/link";
+import { useEffect, useState } from "react";
+
+import { GradeChip } from "./grade-chip";
+
+import { supabaseBrowser } from "@/lib/supabase/browser";
+
+const copy = {
+  "zh-TW": {
+    loading: "載入中…",
+    signedOut: "登入後就能看到你分享過的 beta。",
+    signIn: "去上傳頁登入",
+    empty: "你還沒有分享過 beta。去岩館頁找一條你爬過的路線吧。",
+    browse: "看全部岩館",
+    views: "觀看",
+    bumps: "碰拳",
+    helped: "幫人完攀",
+    total: (n: number) => `${n} 支 beta`,
+    note: "刪除或改成私人，請到 VARO App 的紀錄裡操作。",
+  },
+  en: {
+    loading: "Loading…",
+    signedOut: "Sign in to see the beta you've shared.",
+    signIn: "Sign in on an upload page",
+    empty:
+      "You haven't shared any beta yet. Find a route you've climbed on a gym page.",
+    browse: "Browse gyms",
+    views: "Views",
+    bumps: "Fist bumps",
+    helped: "Helped send",
+    total: (n: number) => `${n} beta`,
+    note: "To delete one or make it private, open it in the VARO app.",
+  },
+};
+
+interface Row {
+  id: string;
+  routeId: string;
+  grade: string | null;
+  color: string | null;
+  wall: string | null;
+  gym: string;
+  poster: string | null;
+  createdAt: string;
+  views: number;
+  bumps: number;
+  helped: number;
+}
+
+/**
+ * The beta I've shared, with what came of each: views, fist bumps, and how
+ * many people sent after watching. Only I can see the last two.
+ */
+export function MyBeta({
+  lang,
+  gymsHref,
+  shortHref,
+}: {
+  lang: "zh-TW" | "en";
+  gymsHref: string;
+  /** "/beta/r" (localized): the short link that finds a route's page. */
+  shortHref: string;
+}) {
+  const c = copy[lang];
+  const [rows, setRows] = useState<Row[] | null>(null);
+  const [signedOut, setSignedOut] = useState(false);
+
+  useEffect(() => {
+    void (async () => {
+      try {
+        await load();
+      } catch {
+        // No env, no network or a refused query (even a synchronous throw
+        // from the client): an empty list rather than "Loading…" forever.
+        setRows([]);
+      }
+    })();
+
+    async function load() {
+      const supabase = supabaseBrowser();
+      const { data: auth } = await supabase.auth.getUser();
+
+      if (!auth.user) {
+        setSignedOut(true);
+
+        return;
+      }
+      const { data } = await supabase
+        .from("media_assets")
+        .select(
+          "id, thumbnail_path, created_at, climb_logs(route_id, routes(grade_label, hold_color, wall, gyms(name, branch)))",
+        )
+        .eq("owner_id", auth.user.id)
+        .eq("visibility", "public")
+        .eq("kind", "video")
+        .eq("status", "uploaded")
+        .order("created_at", { ascending: false })
+        .limit(60);
+
+      type R = {
+        id: string;
+        thumbnail_path: string | null;
+        created_at: string;
+        climb_logs: {
+          route_id: string | null;
+          routes: {
+            grade_label: string | null;
+            hold_color: string | null;
+            wall: string | null;
+            gyms: { name: string; branch: string | null } | null;
+          } | null;
+        } | null;
+      };
+      const list = ((data ?? []) as unknown as R[]).filter(
+        (r) => r.climb_logs?.route_id,
+      );
+      const thumbs = list.flatMap((r) =>
+        r.thumbnail_path ? [r.thumbnail_path] : [],
+      );
+      const signed: { path: string | null; signedUrl: string }[] = thumbs.length
+        ? ((await supabase.storage.from("media").createSignedUrls(thumbs, 3600))
+            .data ?? [])
+        : [];
+      const posterFor = new Map<string, string>(
+        signed.flatMap((s) =>
+          s.path && s.signedUrl
+            ? [[s.path, s.signedUrl] as [string, string]]
+            : [],
+        ),
+      );
+      // Counts come from beta_clips(), which shows bumps and helped to the owner only.
+      const routes = Array.from(
+        new Set(list.map((r) => r.climb_logs!.route_id!)),
+      );
+      const stats = new Map<
+        string,
+        { views: number; bumps: number; helped: number }
+      >();
+
+      await Promise.all(
+        routes.map(async (routeId) => {
+          const { data: clips } = await supabase.rpc("beta_clips", {
+            p_route_id: routeId,
+          });
+
+          for (const cl of (clips ?? []) as {
+            media_id: string | null;
+            views: number | null;
+            bumps: number | null;
+            helped: number | null;
+          }[]) {
+            if (cl.media_id) {
+              stats.set(cl.media_id, {
+                views: cl.views ?? 0,
+                bumps: cl.bumps ?? 0,
+                helped: cl.helped ?? 0,
+              });
+            }
+          }
+        }),
+      );
+
+      setRows(
+        list.map((r) => {
+          const route = r.climb_logs!.routes;
+          const s = stats.get(r.id);
+
+          return {
+            id: r.id,
+            routeId: r.climb_logs!.route_id!,
+            grade: route?.grade_label ?? null,
+            color: route?.hold_color ?? null,
+            wall: route?.wall ?? null,
+            gym: [route?.gyms?.name, route?.gyms?.branch]
+              .filter(Boolean)
+              .join(" "),
+            poster: r.thumbnail_path
+              ? (posterFor.get(r.thumbnail_path) ?? null)
+              : null,
+            createdAt: r.created_at,
+            views: s?.views ?? 0,
+            bumps: s?.bumps ?? 0,
+            helped: s?.helped ?? 0,
+          };
+        }),
+      );
+    }
+  }, []);
+
+  if (signedOut) {
+    return (
+      <p className="rounded-2xl border border-dashed border-line px-6 py-12 text-center text-mute">
+        {c.signedOut}
+      </p>
+    );
+  }
+  if (!rows) return <p className="py-12 text-center text-mute">{c.loading}</p>;
+  if (!rows.length) {
+    return (
+      <div className="rounded-2xl border border-dashed border-line px-6 py-12 text-center">
+        <p className="text-mute">{c.empty}</p>
+        <Link
+          className="mt-4 inline-block font-semibold underline underline-offset-4"
+          href={gymsHref}
+        >
+          {c.browse}
+        </Link>
+      </div>
+    );
+  }
+  const sum = (k: "views" | "bumps" | "helped") =>
+    rows.reduce((n, r) => n + r[k], 0);
+
+  return (
+    <div>
+      <dl className="grid grid-cols-3 overflow-hidden rounded-[20px] border border-line bg-ink-2">
+        {(
+          [
+            ["views", c.views],
+            ["bumps", c.bumps],
+            ["helped", c.helped],
+          ] as const
+        ).map(([k, label], i) => (
+          <div
+            key={k}
+            className={`px-4 py-5 ${i ? "border-l border-line" : ""} ${k === "helped" ? "bg-lime" : ""}`}
+          >
+            <dd className="font-display text-[34px] leading-none tabular">
+              {sum(k)}
+            </dd>
+            <dt className="mt-2 text-[13px] font-semibold text-mute">
+              {label}
+            </dt>
+          </div>
+        ))}
+      </dl>
+      <p className="mt-8 text-[14px] font-semibold text-mute">
+        {c.total(rows.length)}
+      </p>
+      <ul className="mt-3 grid grid-cols-2 gap-3 sm:grid-cols-3">
+        {rows.map((r) => (
+          <li key={r.id}>
+            <Link
+              className="lift theme-dark group relative block aspect-[9/14] overflow-hidden rounded-[20px] bg-night"
+              href={`${shortHref}/${r.routeId}`}
+            >
+              {r.poster ? (
+                // eslint-disable-next-line @next/next/no-img-element -- my clip's poster, from storage
+                <img
+                  alt=""
+                  className="absolute inset-0 size-full object-cover"
+                  src={r.poster}
+                />
+              ) : (
+                <span className="bolt-grid absolute inset-0" />
+              )}
+              <span className="absolute inset-0 bg-gradient-to-t from-black/85 via-black/10 to-black/30" />
+              <span className="absolute left-2.5 top-2.5">
+                <GradeChip color={r.color} grade={r.grade} size="sm" />
+              </span>
+              <span className="absolute inset-x-0 bottom-0 p-3">
+                <span className="block truncate text-[13px] font-bold text-white">
+                  {r.gym}
+                </span>
+                <span className="block truncate text-[12px] text-white/70">
+                  {r.wall}
+                </span>
+                <span className="mt-2 flex gap-2 text-[11px] font-bold text-white tabular">
+                  <span>
+                    {lang === "zh-TW" ? `觀看 ${r.views}` : `${r.views} views`}
+                  </span>
+                  <span>
+                    {lang === "zh-TW" ? `碰拳 ${r.bumps}` : `${r.bumps} bumps`}
+                  </span>
+                  <span className="text-lime">
+                    {lang === "zh-TW"
+                      ? `幫 ${r.helped} 人完攀`
+                      : `Helped ${r.helped} send`}
+                  </span>
+                </span>
+              </span>
+            </Link>
+          </li>
+        ))}
+      </ul>
+      <p className="mt-6 text-[13px] text-mute">{c.note}</p>
+    </div>
+  );
+}

@@ -14,6 +14,8 @@ export interface SiteConfig {
   siteUrl: string;
   /** Public App Store listing. The download button is hidden until this is set. */
   appStoreUrl: string | null;
+  /** The App Store id, for the iPhone Safari app banner (`apple-itunes-app`). */
+  appStoreId: string;
   /** Inbox for gym partnership enquiries, used by the /partners page. */
   partnerEmail: string | null;
   contactEmail: string | null;
@@ -34,6 +36,7 @@ export const siteConfig: SiteConfig = {
   siteUrl: process.env.NEXT_PUBLIC_SITE_URL ?? "https://getvaro.app",
   appStoreUrl:
     "https://apps.apple.com/tw/app/varo-bouldering-climbing/id6821378123",
+  appStoreId: "6821378123",
   partnerEmail: process.env.NEXT_PUBLIC_PARTNER_EMAIL ?? "support@getvaro.app",
   contactEmail: "support@getvaro.app",
   privacyUrl: "/privacy",

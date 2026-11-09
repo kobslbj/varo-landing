@@ -21,7 +21,11 @@ export const hasLocale = (value: string): value is Locale =>
 
 /** The locales a page exists in, from its unprefixed path. */
 export const localesFor = (path: string): readonly Locale[] =>
-  path === "/gyms" || path.startsWith("/gyms/") ? locales : siteLocales;
+  path === "/gyms" ||
+  // A gym's beta pages (/gyms/…/beta) are Chinese and English only.
+  (path.startsWith("/gyms/") && !/\/beta(\/|$)/.test(path))
+    ? locales
+    : siteLocales;
 
 /**
  * `localizePath("en", "/privacy")` → `/en/privacy`; the default locale stays
