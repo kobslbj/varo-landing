@@ -1,6 +1,6 @@
 import type { MetadataRoute } from "next";
 
-import { activeRoutes, gymsWithRoutes } from "@/lib/beta/data";
+import { activeRoutes, betaClips, gymsWithRoutes } from "@/lib/beta/data";
 import { allGyms, gymPath } from "@/lib/gyms/cities";
 import { localesFor, localizePath, type Locale } from "@/lib/i18n/config";
 import { absoluteUrl, sitePages } from "@/lib/seo";
@@ -28,8 +28,9 @@ function entry(
 
 /**
  * Every page in every locale, each listing its translations (hreflang), plus
- * each gym's beta page and its routes on the wall now. A retired route
- * leaves the sitemap.
+ * each gym's beta page and its routes on the wall now that have beta (the
+ * rest are noindex until a clip arrives). A retired route leaves the sitemap.
+ * If Supabase can't answer, this throws and the last good sitemap stays.
  */
 export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
   const pages = sitePages.flatMap(({ path, priority, locales: only }) =>
@@ -44,13 +45,19 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
 
       if (!gym) return [];
       const base = `${gymPath(gym)}/beta`;
-      const routes = await activeRoutes(id);
+      const [routes, clips] = await Promise.all([
+        activeRoutes(id),
+        betaClips({ gymId: id }),
+      ]);
 
       if (!routes.length) return [];
+      const withBeta = new Set(clips.map((c) => c.routeId));
 
       return [
         ...entry(base, 0.7, "daily"),
-        ...routes.flatMap((r) => entry(`${base}/${r.id}`, 0.5, "weekly")),
+        ...routes
+          .filter((r) => withBeta.has(r.id))
+          .flatMap((r) => entry(`${base}/${r.id}`, 0.5, "weekly")),
       ];
     }),
   );

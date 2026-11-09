@@ -9,9 +9,15 @@ export const betaCopy = {
   "zh-TW": {
     eyebrow: "BETA",
     hubTitle: (gym: string) => `${gym} 的路線與 beta`,
-    hubMetaTitle: (gym: string) => `${gym}｜現役路線與 beta 影片｜VARO`,
+    hubMetaTitle: (gym: string) => `${gym}｜抱石路線與 beta 影片｜VARO`,
     hubMetaDescription: (gym: string, routes: number, withBeta: number) =>
-      `${gym}現在牆上的 ${routes} 條路線，${withBeta} 條有 beta 影片：館方示範與岩友的完攀影片，依牆面與難度整理。`,
+      `${gym}現在牆上的 ${routes} 條抱石路線，${withBeta} 條有 beta 影片：館方示範與岩友的完攀影片，依牆面、顏色與難度整理。`,
+    latestSet: (date: string) => `最新路線 ${date}上線`,
+    fullDate: (iso: string) => {
+      const d = taipei(iso);
+
+      return `${d.getUTCFullYear()} 年 ${d.getUTCMonth() + 1} 月 ${d.getUTCDate()} 日`;
+    },
     hubLead:
       "現在牆上的每一條路線，和岩友、館方分享的 beta。卡關的時候，看看別人怎麼爬。",
     statRoutes: "條現役路線",
@@ -92,9 +98,17 @@ export const betaCopy = {
     eyebrow: "BETA",
     hubTitle: (gym: string) => `Routes & beta at ${gym}`,
     hubMetaTitle: (gym: string) =>
-      `${gym} | Current routes & beta videos | VARO`,
+      `${gym} | Bouldering routes & beta videos | VARO`,
     hubMetaDescription: (gym: string, routes: number, withBeta: number) =>
-      `${routes} routes on the wall at ${gym} now, ${withBeta} with beta videos from the gym and from climbers, by wall and grade.`,
+      `${routes} bouldering routes on the wall at ${gym} now, ${withBeta} with beta videos from the gym and from climbers, by wall, hold color and grade.`,
+    latestSet: (date: string) => `Newest route set ${date}`,
+    fullDate: (iso: string) =>
+      taipei(iso).toLocaleDateString("en", {
+        year: "numeric",
+        month: "short",
+        day: "numeric",
+        timeZone: "UTC",
+      }),
     hubLead:
       "Every route on the wall now, with beta shared by climbers and the gym. Stuck? See how others climbed it.",
     statRoutes: "routes up",

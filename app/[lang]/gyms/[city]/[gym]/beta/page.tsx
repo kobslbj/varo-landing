@@ -64,6 +64,12 @@ export default async function GymBetaPage({ params }: Props) {
   const cities = t.gyms.cities as Record<string, string>;
   const cityName = cities[gym.city] ?? gym.city;
   const routeById = new Map(routes.map((r) => [r.id, r]));
+  // The newest set date on a route now up: says when routes last went up,
+  // not that the whole gym was reset.
+  const latestSet = routes.reduce<string | null>(
+    (max, r) => (r.setDate && (!max || r.setDate > max) ? r.setDate : max),
+    null,
+  );
   const strip = newest(clips, 12).flatMap((clip) => {
     const r = routeById.get(clip.routeId);
 
@@ -95,6 +101,8 @@ export default async function GymBetaPage({ params }: Props) {
               routes.length,
               perRoute.size,
             ),
+            // The gym itself, as its directory page describes it.
+            about: { "@id": `${absoluteUrl(href(gymPath))}#gym` },
             breadcrumb: {
               "@type": "BreadcrumbList",
               itemListElement: [
@@ -164,6 +172,12 @@ export default async function GymBetaPage({ params }: Props) {
             </h1>
             <p className="mt-2 text-[15px] text-mute tabular">
               {c.hubSummary(routes.length, perRoute.size)}
+              {latestSet ? (
+                <>
+                  <span aria-hidden> · </span>
+                  {c.latestSet(c.fullDate(latestSet))}
+                </>
+              ) : null}
             </p>
           </header>
 

@@ -21,13 +21,21 @@ export async function GymBetaTeaser({
   /** Localized link to the gym's beta page. */
   href: string;
 }) {
-  const app = await betaGymFor(gym);
+  // The directory page is built statically; a Supabase hiccup only hides this.
+  const data = await (async () => {
+    const app = await betaGymFor(gym);
 
-  if (!app) return null;
-  const [routes, clips] = await Promise.all([
-    activeRoutes(app.id),
-    betaClips({ gymId: app.id }),
-  ]);
+    if (!app) return null;
+    const [routes, clips] = await Promise.all([
+      activeRoutes(app.id),
+      betaClips({ gymId: app.id }),
+    ]);
+
+    return { routes, clips };
+  })().catch(() => null);
+
+  if (!data) return null;
+  const { routes, clips } = data;
 
   if (!routes.length) return null;
   const c = betaCopy[zh ? "zh-TW" : "en"];
