@@ -208,6 +208,7 @@ export default async function RouteBetaPage({ params }: Props) {
                   aspect={16 / 10}
                   className="lg:hidden"
                   color={route.holdColor}
+                  label={route.gradeLabel}
                   photo={photo}
                   pin={pin}
                   zoom={2}
@@ -218,6 +219,7 @@ export default async function RouteBetaPage({ params }: Props) {
                   }
                   className="hidden lg:block"
                   color={route.holdColor}
+                  label={route.gradeLabel}
                   photo={photo}
                   pin={pin}
                   ring="lg"
@@ -248,6 +250,7 @@ export default async function RouteBetaPage({ params }: Props) {
                     <WallCrop
                       aspect={1}
                       color={route.holdColor}
+                      label={route.gradeLabel}
                       photo={photo}
                       pin={pin}
                       ring="sm"
