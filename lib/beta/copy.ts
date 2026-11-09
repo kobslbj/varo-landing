@@ -65,10 +65,6 @@ export const betaCopy = {
     firstTitle: "這條還沒有 beta",
     firstBody: "爬完了嗎？上傳你的影片當 beta，你會是第一個分享的人。",
     uploadCta: "上傳我的 beta",
-    askFriend: "請朋友幫你拍",
-    askText: (route: string, gym: string) =>
-      `我在爬${gym}的${route}，下一次幫我拍一支 beta 好嗎？拍完可以直接上傳到這裡：`,
-    askCopied: "已複製，貼給朋友",
     uploadSub: "手機或電腦的影片都可以，最長 60 秒。",
     orApp: "也可以在 VARO App 分享",
     sameWall: "同一面牆的其他路線",
@@ -154,10 +150,6 @@ export const betaCopy = {
     firstBody:
       "Sent it? Upload your video as beta. You'll be the first to share one.",
     uploadCta: "Upload my beta",
-    askFriend: "Ask a friend to film it",
-    askText: (route: string, gym: string) =>
-      `I'm on the ${route} at ${gym}. Could you film my next try? We can upload it as beta here:`,
-    askCopied: "Copied. Send it to a friend",
     uploadSub: "From your phone or computer, up to 60 seconds.",
     orApp: "Or share it from the VARO app",
     sameWall: "More on this wall",

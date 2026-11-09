@@ -17,7 +17,22 @@ import {
 } from "@/lib/beta/transcode";
 import { supabaseBrowser } from "@/lib/supabase/browser";
 
+interface Me {
+  id: string;
+  name: string;
+  username: string | null;
+  email: string | null;
+  avatar: string | null;
+}
+
 type Result = "sent" | "flash" | "attempted";
+
+/**
+ * Sign in with Apple on the web: on once Supabase has the Apple Services ID
+ * and client secret. The secret is a JWT that lasts at most 6 months, so it
+ * must be renewed (see docs/web-apple-sign-in.md in the app repo).
+ */
+const APPLE_ON_WEB = process.env.NEXT_PUBLIC_APPLE_SIGNIN === "1";
 
 type Phase =
   | { at: "loading" }
@@ -66,7 +81,7 @@ export function BetaUploader({
 }) {
   const c = uploadCopy[lang];
   const [phase, setPhase] = useState<Phase>({ at: "loading" });
-  const [me, setMe] = useState<{ id: string; name: string } | null>(null);
+  const [me, setMe] = useState<Me | null>(null);
   const [error, setError] = useState<string | null>(null);
   const [file, setFile] = useState<File | null>(null);
   const [fileUrl, setFileUrl] = useState<string | null>(null);
@@ -96,7 +111,7 @@ export function BetaUploader({
     }
     const { data: profile } = await supabase
       .from("profiles")
-      .select("id, display_name")
+      .select("id, display_name, username, avatar_path")
       .eq("id", user.id)
       .maybeSingle();
 
@@ -105,7 +120,21 @@ export function BetaUploader({
 
       return;
     }
-    setMe({ id: profile.id, name: profile.display_name });
+    const picture =
+      user.user_metadata?.avatar_url ?? user.user_metadata?.picture;
+
+    setMe({
+      id: profile.id,
+      name: profile.display_name,
+      username: profile.username ?? null,
+      email: user.email ?? null,
+      // The VARO photo first, then the Google one.
+      avatar: profile.avatar_path
+        ? `${process.env.NEXT_PUBLIC_SUPABASE_URL}/storage/v1/object/public/avatars/${profile.avatar_path}`
+        : typeof picture === "string" && picture.startsWith("https://")
+          ? picture
+          : null,
+    });
     setPhase({ at: "pick" });
   }, []);
 
@@ -137,14 +166,12 @@ export function BetaUploader({
     );
   }, []);
 
-  // Google only on the web (2026-11-08): Apple's web sign-in needs a secret
-  // that expires every 6 months.
-  const signIn = async () => {
+  const signIn = async (provider: "google" | "apple") => {
     setError(null);
-    track("web_beta_signin", { provider: "google" });
+    track("web_beta_signin", { provider });
     const next = window.location.pathname;
     const { error: e } = await supabaseBrowser().auth.signInWithOAuth({
-      provider: "google",
+      provider,
       options: {
         redirectTo: `${window.location.origin}${route.callbackPath}?next=${encodeURIComponent(next)}`,
       },
@@ -360,6 +387,9 @@ export function BetaUploader({
       ) : null}
 
       <div className="overflow-hidden rounded-[28px] border border-line bg-ink-2">
+        {me && (phase.at === "pick" || phase.at === "trim") ? (
+          <Account c={c} me={me} onSwitch={() => void signOut()} />
+        ) : null}
         {phase.at === "loading" ? (
           <p className="p-8 text-center text-mute">{c.loading}</p>
         ) : null}
@@ -391,16 +421,29 @@ export function BetaUploader({
                 </button>
               </div>
             ) : null}
+            {APPLE_ON_WEB ? (
+              <button
+                className="mt-6 flex h-13 w-full items-center justify-center gap-2.5 rounded-full bg-black text-[16px] font-bold text-white transition-transform active:translate-y-px"
+                type="button"
+                onClick={() => void signIn("apple")}
+              >
+                <AppleGlyph />
+                {c.apple}
+              </button>
+            ) : null}
             <button
-              className="btn-brutal mt-6 flex h-13 w-full items-center justify-center gap-2.5 rounded-full bg-ink-2 text-[16px] font-bold text-cream"
+              className={clsx(
+                "btn-brutal flex h-13 w-full items-center justify-center gap-2.5 rounded-full bg-ink-2 text-[16px] font-bold text-cream",
+                APPLE_ON_WEB ? "mt-3" : "mt-6",
+              )}
               type="button"
-              onClick={() => void signIn()}
+              onClick={() => void signIn("google")}
             >
               <GoogleGlyph />
               {c.google}
             </button>
             <p className="mt-5 rounded-2xl bg-ink px-4 py-3 text-[13px] leading-[1.7] text-mute">
-              {c.appleNote}
+              {APPLE_ON_WEB ? c.sameMethodNote : c.appleNote}
             </p>
           </section>
         ) : null}
@@ -452,7 +495,6 @@ export function BetaUploader({
                 onChange={(e) => void pick(e.target.files?.[0])}
               />
             </label>
-            <SignedIn c={c} name={me?.name} onSignOut={() => void signOut()} />
           </section>
         ) : null}
 
@@ -768,44 +810,75 @@ function ProfileStep({
       >
         {c.createAccount}
       </button>
-      <div className="mt-5 text-center">
-        <button
-          className="text-[14px] font-semibold underline underline-offset-4"
-          type="button"
-          onClick={() => (hint ? onSwitch() : setHint(true))}
-        >
-          {c.usedApp}
-        </button>
-        {hint ? (
-          <p className="mt-2 text-[13px] text-mute">{c.usedAppHint}</p>
-        ) : null}
-      </div>
+      {/* With Apple on the web they can just pick it; the hint is for Google-only. */}
+      {APPLE_ON_WEB ? null : (
+        <div className="mt-5 text-center">
+          <button
+            className="text-[14px] font-semibold underline underline-offset-4"
+            type="button"
+            onClick={() => (hint ? onSwitch() : setHint(true))}
+          >
+            {c.usedApp}
+          </button>
+          {hint ? (
+            <p className="mt-2 text-[13px] text-mute">{c.usedAppHint}</p>
+          ) : null}
+        </div>
+      )}
     </section>
   );
 }
 
-function SignedIn({
+/**
+ * Whose account the beta goes to, plain to see before picking a clip: a
+ * wrong Google account means the beta lands on another VARO account.
+ */
+function Account({
   c,
-  name,
-  onSignOut,
+  me,
+  onSwitch,
 }: {
   c: UploadCopy;
-  name?: string;
-  onSignOut: () => void;
+  me: Me;
+  onSwitch: () => void;
 }) {
-  if (!name) return null;
-
   return (
-    <p className="mt-6 flex items-center justify-between text-[13px] text-mute">
-      <span>{c.signedInAs(name)}</span>
+    <div className="flex items-center gap-3 border-b border-line bg-ink px-6 py-4 sm:px-8">
+      {me.avatar ? (
+        // eslint-disable-next-line @next/next/no-img-element -- avatar from storage or Google
+        <img
+          alt=""
+          className="size-11 shrink-0 rounded-full object-cover"
+          referrerPolicy="no-referrer"
+          src={me.avatar}
+        />
+      ) : (
+        <span className="flex size-11 shrink-0 items-center justify-center rounded-full bg-lime text-[18px] font-extrabold text-night">
+          {Array.from(me.name.trim())[0]?.toUpperCase() ?? "?"}
+        </span>
+      )}
+      <div className="min-w-0 flex-1">
+        <p className="text-[12px] font-semibold text-mute">{c.uploadingTo}</p>
+        <p className="truncate text-[16px] font-extrabold">
+          {me.name}
+          {me.username ? (
+            <span className="ml-1.5 text-[13px] font-semibold text-mute">
+              @{me.username}
+            </span>
+          ) : null}
+        </p>
+        {me.email ? (
+          <p className="truncate text-[12px] text-mute">{me.email}</p>
+        ) : null}
+      </div>
       <button
-        className="underline underline-offset-4"
+        className="h-9 shrink-0 rounded-full border border-line bg-ink-2 px-3.5 text-[13px] font-bold transition-colors hover:border-cream/30"
         type="button"
-        onClick={onSignOut}
+        onClick={onSwitch}
       >
-        {c.signOut}
+        {c.switchAccount}
       </button>
-    </p>
+    </div>
   );
 }
 
@@ -850,6 +923,20 @@ function ErrorNote({ children }: { children: React.ReactNode }) {
     <p className="mt-4 rounded-2xl border-2 border-hold-red/50 bg-hold-red/10 px-4 py-3 text-[14px] font-semibold text-[#a3141a]">
       {children}
     </p>
+  );
+}
+
+function AppleGlyph() {
+  return (
+    <svg
+      aria-hidden
+      className="size-5"
+      fill="currentColor"
+      viewBox="0 0 512 512"
+    >
+      <path d="M349.13 136.86c-40.32 0-57.36 19.24-85.44 19.24-28.79 0-50.75-19.1-85.69-19.1-34.2 0-70.67 20.88-93.83 56.45-32.52 50.16-27 144.63 25.67 225.11 18.84 28.81 44 61.12 77 61.47h.6c28.68 0 37.2-18.78 76.67-19h.6c38.88 0 46.68 18.89 75.24 18.89h.6c33-.35 59.51-36.15 78.35-64.85 13.56-20.64 18.6-31 29-54.35-76.19-28.92-88.43-136.93-13.08-178.34-23-28.8-55.32-45.48-85.79-45.48z" />
+      <path d="M340.25 32c-24 1.63-52 16.91-68.4 36.86-14.88 18.08-27.12 44.9-22.32 70.91h1.92c25.56 0 51.72-15.39 67-35.11 14.72-20.3 25.88-49.06 21.8-72.66z" />
+    </svg>
   );
 }
 

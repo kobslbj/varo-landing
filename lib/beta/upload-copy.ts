@@ -9,12 +9,15 @@ export const uploadCopy = {
     signInBody:
       "在 App 用 Google 登入的人，這裡是同一個帳號。還沒有 App 也可以，登入就會建立 VARO 帳號。",
     google: "用 Google 登入",
+    apple: "用 Apple 登入",
+    sameMethodNote:
+      "選你在 VARO App 用的那一個，上傳的 beta 就會在你的 App 裡。",
     inAppTitle: "請改用 Safari 或 Chrome 開啟",
     inAppBody:
       "在 IG、LINE、Threads 裡開的網頁，Google 不允許登入。點右上角「⋯」選擇用瀏覽器開啟，或複製連結貼到 Safari。",
     copyLink: "複製連結",
     appleNote:
-      "在 App 是用 Apple 登入的話，網頁的 Google 帳號會是另一個帳號。請直接在 VARO App 記下這條、把影片分享成 beta。",
+      "在 App 是用 Apple 登入的話，這裡的 Google 會是另一個帳號。更新到最新版 App，在「設定 › 登入方式」連結 Google，就是同一個帳號。",
     signInFailed: "登入沒有完成，再試一次。",
     signingIn: "登入中…",
     loading: "載入中…",
@@ -27,8 +30,8 @@ export const uploadCopy = {
     usedApp: "我在 App 是用 Apple 登入的 →",
     usedAppHint:
       "繼續的話會建立一個新帳號，跟 App 裡的分開。建議改在 VARO App 分享這支 beta。再按一次就登出。",
-    signedInAs: (name: string) => `已登入：${name}`,
-    signOut: "登出",
+    uploadingTo: "beta 會存到這個帳號",
+    switchAccount: "換帳號",
     pickTitle: "選擇影片",
     pickBody: "手機相簿或電腦裡的影片都可以。最長 60 秒，可以剪。",
     pickButton: "選擇影片",
@@ -83,12 +86,15 @@ export const uploadCopy = {
     signInBody:
       "If you use Google in the VARO app, it's the same account here. No app yet? Signing in creates your VARO account.",
     google: "Sign in with Google",
+    apple: "Sign in with Apple",
+    sameMethodNote:
+      "Pick the one you use in the VARO app, and your beta shows up there too.",
     inAppTitle: "Open this in Safari or Chrome",
     inAppBody:
       'Google doesn\'t allow sign-in inside Instagram, LINE or Threads. Tap "⋯" and open in your browser, or copy the link into Safari.',
     copyLink: "Copy link",
     appleNote:
-      "If you sign in to the app with Apple, a Google sign-in here makes a separate account. Log the route in the VARO app and share your video as beta there instead.",
+      "If you use Apple in the app, Google here makes a separate account. In the latest app, link Google under Settings › Sign-in methods to keep one account.",
     signInFailed: "Sign-in didn't finish. Try again.",
     signingIn: "Signing in…",
     loading: "Loading…",
@@ -102,8 +108,8 @@ export const uploadCopy = {
     usedApp: "I sign in to the app with Apple →",
     usedAppHint:
       "Continuing makes a new account, separate from the app's. Sharing this beta from the VARO app is better. Tap again to sign out.",
-    signedInAs: (name: string) => `Signed in as ${name}`,
-    signOut: "Sign out",
+    uploadingTo: "Your beta goes to this account",
+    switchAccount: "Switch",
     pickTitle: "Pick a video",
     pickBody:
       "From your phone or computer. Up to 60 seconds, and you can trim it.",

@@ -4,7 +4,6 @@ import Link from "next/link";
 import { notFound } from "next/navigation";
 
 import { AppCta } from "@/components/beta/app-cta";
-import { AskFriend } from "@/components/beta/ask-friend";
 import { ClipCard } from "@/components/beta/clip-card";
 import { GradeChip } from "@/components/beta/grade-chip";
 import { WallCrop } from "@/components/beta/wall-crop";
@@ -334,24 +333,9 @@ export default async function RouteBetaPage({ params }: Props) {
                   </p>
                   {route.retired ? null : (
                     <div className="mt-7 flex flex-col items-center gap-3">
-                      <div className="flex flex-wrap justify-center gap-3">
-                        <CtaLink href={`${href(path)}/upload`}>
-                          {c.uploadCta}
-                        </CtaLink>
-                        {/* Most climbers can't film themselves: ask whoever's on the mat. */}
-                        <AskFriend
-                          copied={c.askCopied}
-                          label={c.askFriend}
-                          routeId={route.id}
-                          text={c.askText(
-                            [heading, route.gradeLabel]
-                              .filter(Boolean)
-                              .join(" "),
-                            gym.name,
-                          )}
-                          url={absoluteUrl(href(path))}
-                        />
-                      </div>
+                      <CtaLink href={`${href(path)}/upload`}>
+                        {c.uploadCta}
+                      </CtaLink>
                       {siteConfig.appStoreUrl ? (
                         <a
                           className="text-[14px] text-mute underline underline-offset-4"
