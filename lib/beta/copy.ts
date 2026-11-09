@@ -8,6 +8,34 @@ const taipei = (iso: string) => new Date(Date.parse(iso) + 8 * 3600_000);
 export const betaCopy = {
   "zh-TW": {
     eyebrow: "BETA",
+    dirTitle: ["Beta，", "只在 VARO 岩館"],
+    dirLead:
+      "合作岩館的每一條現役路線，都標好牆面、顏色和難度，還有岩友的完攀影片。選你的岩館，進去看。",
+    dirLive: (gyms: number, routes: number) =>
+      `${gyms} 間岩館開放中 · ${routes} 條現役路線`,
+    dirAll: "全部",
+    dirLast: "上次去的",
+    dirNear: "離我最近",
+    dirLocating: "定位中…",
+    dirDenied: "沒拿到位置，從清單選就好",
+    dirKm: (km: string) => `${km} 公里`,
+    dirOpenTitle: "VARO 限定",
+    dirOpenLead: "只有這幾間，能在 VARO 看到每條路線的 beta。",
+    dirExclusive: "VARO 限定",
+    dirOpen: "開放中",
+    dirStats: (routes: number, beta: number) =>
+      beta ? `${routes} 條路線 · ${beta} 條有 beta` : `${routes} 條路線`,
+    dirFresh: (n: number) => `14 天內新上 ${n} 條`,
+    dirEnter: "進去看 beta",
+    dirLockedTitle: "還沒加入的岩館",
+    dirLockedLead:
+      "這些岩館的路線還不在 VARO。按「想看」，我們會帶著人數去找館方。",
+    dirLocked: "beta 未開放",
+    dirWant: "想看這間",
+    dirWanted: "已記下",
+    dirNone: "這個地區還沒有岩館。",
+    dirGymCta: "你是館方？讓岩友在這裡找到你的每一條路線",
+    dirGymLink: "岩館合作",
     hubTitle: (gym: string) => `${gym} 的路線與 beta`,
     hubMetaTitle: (gym: string) => `${gym}｜抱石路線與 beta 影片｜VARO`,
     hubMetaDescription: (gym: string, routes: number, withBeta: number) =>
@@ -96,6 +124,34 @@ export const betaCopy = {
   },
   en: {
     eyebrow: "BETA",
+    dirTitle: ["Beta,", "only at VARO gyms"],
+    dirLead:
+      "Every route on the wall at our partner gyms, marked by wall, hold color and grade, with climbers' send videos. Pick your gym to see it.",
+    dirLive: (gyms: number, routes: number) =>
+      `${gyms} ${gyms === 1 ? "gym" : "gyms"} open · ${routes} routes up`,
+    dirAll: "All",
+    dirLast: "Last visited",
+    dirNear: "Nearest",
+    dirLocating: "Locating…",
+    dirDenied: "No location; pick from the list",
+    dirKm: (km: string) => `${km} km`,
+    dirOpenTitle: "Only on VARO",
+    dirOpenLead: "The only gyms where you can see beta for every route.",
+    dirExclusive: "VARO only",
+    dirOpen: "Open",
+    dirStats: (routes: number, beta: number) =>
+      beta ? `${routes} routes · ${beta} with beta` : `${routes} routes`,
+    dirFresh: (n: number) => `${n} new in 14 days`,
+    dirEnter: "See the beta",
+    dirLockedTitle: "Not on VARO yet",
+    dirLockedLead:
+      "These gyms' routes aren't in VARO yet. Tap “Want it” and we'll take the count to the gym.",
+    dirLocked: "Beta locked",
+    dirWant: "Want it",
+    dirWanted: "Noted",
+    dirNone: "No gyms in this area yet.",
+    dirGymCta: "Run a gym? Let climbers find every one of your routes here",
+    dirGymLink: "Partner with VARO",
     hubTitle: (gym: string) => `Routes & beta at ${gym}`,
     hubMetaTitle: (gym: string) =>
       `${gym} | Bouldering routes & beta videos | VARO`,

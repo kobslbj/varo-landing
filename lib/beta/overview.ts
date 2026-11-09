@@ -4,6 +4,7 @@ import {
   activeRoutes,
   betaClips,
   gymsWithRoutes,
+  zones,
   type BetaClip,
   type BetaRoute,
 } from "./data";
@@ -23,6 +24,8 @@ export interface OverviewGym {
   fresh: number;
   /** A few routes to show while the gym has no beta yet. */
   sample: BetaRoute[];
+  /** A wall photo for the gym's card, if any zone has one. */
+  cover: string | null;
 }
 
 /** One clip with the route and gym it belongs to, newest first. */
@@ -54,9 +57,16 @@ export async function betaOverview() {
 
       return gym
         ? [
-            Promise.all([activeRoutes(id), betaClips({ gymId: id })]).then(
-              ([routes, clips]) => ({ gym, routes, clips }),
-            ),
+            Promise.all([
+              activeRoutes(id),
+              betaClips({ gymId: id }),
+              zones(id),
+            ]).then(([routes, clips, walls]) => ({
+              gym,
+              routes,
+              clips,
+              cover: walls.find((z) => z.photoUrl)?.photoUrl ?? null,
+            })),
           ]
         : [];
     }),
@@ -65,7 +75,7 @@ export async function betaOverview() {
   const gyms: OverviewGym[] = [];
   const clips: OverviewClip[] = [];
 
-  for (const { gym, routes, clips: all } of rows) {
+  for (const { gym, routes, clips: all, cover } of rows) {
     if (!routes.length) continue;
     const path = gymPath(gym);
     const byId = new Map(routes.map((r) => [r.id, r]));
@@ -90,6 +100,7 @@ export async function betaOverview() {
             Date.parse(a.setDate ?? a.createdAt),
         )
         .slice(0, 8),
+      cover,
     });
     for (const clip of live) {
       clips.push({
