@@ -9,32 +9,42 @@ const UUID = /^[0-9a-f-]{36}$/i;
 
 /**
  * Rebuild a route's beta pages now instead of when their 5-minute cache runs
- * out: after a web upload (`{ path, routeId }`), and from the app when a clip
- * is shared or taken back (`{ routeId }`) or a shared clip finishes uploading
- * (`{ mediaId }`, one of the caller's own clips). Signed-in VARO users only,
- * so nobody can loop it to make every visit rebuild and hit Supabase.
+ * out: after a web upload or a take-back on the website (`{ routeId }`), and
+ * from the app when a clip is shared or taken back (`{ routeId }`) or a
+ * shared clip finishes uploading (`{ mediaId }`, one of the caller's own
+ * clips).
+ *
+ * Signed-in VARO users only, and anyone can sign up, so two more limits keep
+ * one account from making every visit rebuild and hit Supabase: the pages are
+ * always the route's own (looked up here; a path sent by the caller is
+ * ignored), and each account gets a limited number of rebuilds a minute.
  */
 export async function POST(request: NextRequest) {
   const token = request.headers.get("authorization")?.replace(/^Bearer /, "");
+  const userId = token ? await signedIn(token) : null;
 
-  if (!token || !(await signedIn(token))) {
+  if (!token || !userId) {
     return NextResponse.json({ ok: false }, { status: 401 });
   }
   const body = (await request.json().catch(() => null)) as {
-    path?: string;
     routeId?: string;
     mediaId?: string;
   } | null;
   let routeId = body?.routeId ?? "";
-  let path = body?.path ?? "";
 
-  if (!path && !routeId && UUID.test(body?.mediaId ?? "")) {
+  if (!routeId && UUID.test(body?.mediaId ?? "")) {
     routeId = (await routeOfMyClip(token, body!.mediaId!)) ?? "";
   }
   if (!UUID.test(routeId)) {
     return NextResponse.json({ ok: false }, { status: 400 });
   }
-  if (!path) path = (await hubOfRoute(routeId)) ?? "";
+  // Counted only now: the app asks after every clip it uploads, and a clip
+  // that isn't beta stopped above without rebuilding anything.
+  if (!allow(userId)) {
+    return NextResponse.json({ ok: false }, { status: 429 });
+  }
+  const path = (await hubOfRoute(routeId)) ?? "";
+
   if (!HUB.test(path)) {
     return NextResponse.json({ ok: false }, { status: 400 });
   }
@@ -47,6 +57,35 @@ export async function POST(request: NextRequest) {
   return NextResponse.json({ ok: true });
 }
 
+// A visit's shared clips landing one after another is a busy minute for one person.
+const PER_MINUTE = 20;
+const calls = new Map<string, { n: number; until: number }>();
+
+/**
+ * At most PER_MINUTE calls a minute per account. Kept in this server
+ * instance's memory, so it is a brake on a loop, not an exact quota: each
+ * warm instance counts on its own.
+ */
+function allow(userId: string) {
+  const now = Date.now();
+
+  if (calls.size > 5000) {
+    calls.forEach((v, k) => {
+      if (v.until <= now) calls.delete(k);
+    });
+  }
+  const c = calls.get(userId);
+
+  if (!c || c.until <= now) {
+    calls.set(userId, { n: 1, until: now + 60_000 });
+
+    return true;
+  }
+  c.n += 1;
+
+  return c.n <= PER_MINUTE;
+}
+
 function supabase() {
   const url = process.env.SUPABASE_URL;
   const key = process.env.SUPABASE_PUBLISHABLE_KEY;
@@ -54,20 +93,23 @@ function supabase() {
   return url && key ? { url, key } : null;
 }
 
-/** The bearer token is a live Supabase session. */
+/** The account behind the bearer token, if it is a live Supabase session. */
 async function signedIn(token: string) {
   const s = supabase();
 
-  if (!s) return false;
+  if (!s) return null;
   try {
     const res = await fetch(`${s.url}/auth/v1/user`, {
       headers: { apikey: s.key, Authorization: `Bearer ${token}` },
       cache: "no-store",
     });
 
-    return res.ok;
+    if (!res.ok) return null;
+    const user = (await res.json()) as { id?: string };
+
+    return typeof user.id === "string" && UUID.test(user.id) ? user.id : null;
   } catch {
-    return false;
+    return null;
   }
 }
 

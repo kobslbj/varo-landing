@@ -65,7 +65,6 @@ export interface UploadRoute {
   /** Localized links. */
   routeHref: string;
   routeUrl: string;
-  hubPath: string;
   callbackPath: string;
   privacyPath: string;
   minePath: string;
@@ -226,7 +225,7 @@ export function BetaUploader({
               "Content-Type": "application/json",
               Authorization: `Bearer ${data.session?.access_token ?? ""}`,
             },
-            body: JSON.stringify({ path: route.hubPath, routeId: route.id }),
+            body: JSON.stringify({ routeId: route.id }),
           }),
       )
       .catch(() => undefined);
@@ -236,14 +235,15 @@ export function BetaUploader({
     if (sharingId || reading) return;
     setSharingId(id);
     setError(null);
-    const { data, error: e } = await supabaseBrowser()
-      .from("media_assets")
-      .update({ visibility: "public" })
-      .eq("id", id)
-      .select("id");
+    // One call that also remembers what the clip was (private or with
+    // friends), so taking it back later returns it there and no wider.
+    const { error: e } = await supabaseBrowser().rpc("set_beta_shared", {
+      p_media: id,
+      p_share: true,
+    });
 
     setSharingId(null);
-    if (e || !data?.length) {
+    if (e) {
       setError(c.errors.generic);
 
       return;
