@@ -58,7 +58,7 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
 }
 
 export default async function UploadPage({ params }: Props) {
-  const { gym, app, route, clips, photo, u, href, zh, betaPath, routePath } =
+  const { gym, app, route, clips, photo, u, href, zh, routePath } =
     await load(params);
   const color = holdName(route.holdColor, zh);
 
@@ -115,7 +115,6 @@ export default async function UploadPage({ params }: Props) {
                 gymId: app.id,
                 routeHref: href(routePath),
                 routeUrl: absoluteUrl(href(routePath)),
-                hubPath: betaPath,
                 callbackPath: href("/auth/callback"),
                 privacyPath: href("/privacy"),
                 minePath: href("/beta/mine"),

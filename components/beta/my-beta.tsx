@@ -1,7 +1,7 @@
 "use client";
 
 import Link from "next/link";
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 
 import { GradeChip } from "./grade-chip";
 
@@ -62,7 +62,10 @@ const copy = {
 interface Row {
   id: string;
   routeId: string;
-  /** Its visit is shared with friends: taken off beta, friends still see it. */
+  /**
+   * Taken off beta, friends still see it: it was a friend clip before it was
+   * shared and its visit is shared with friends (set_beta_shared decides).
+   */
   friendsVisit: boolean;
   grade: string | null;
   color: string | null;
@@ -98,6 +101,9 @@ export function MyBeta({
     step: "menu" | "takeBack" | "delete";
   } | null>(null);
   const [busy, setBusy] = useState(false);
+  // The guard itself: `busy` only re-renders the buttons, and a second tap
+  // can land before that. Set before the request, cleared when it answers.
+  const working = useRef(false);
   const [notice, setNotice] = useState<{ id: string; text: string } | null>(
     null,
   );
@@ -124,22 +130,25 @@ export function MyBeta({
     setOpen(null);
   };
 
-  /** Off the beta, kept in the log: back to friends if its visit is shared, else private. */
+  /**
+   * Off the beta, kept in the log. The server decides where it lands: back
+   * with friends only if it was a friend clip, its visit is still shared and
+   * there is room (five per visit), else private. A clip already taken back
+   * elsewhere stays as it is, so a page left open never re-shares anything.
+   */
   const takeBack = async (r: Row) => {
-    if (busy) return;
+    if (working.current) return;
+    working.current = true;
     setBusy(true);
     setNotice(null);
-    const { data, error } = await supabaseBrowser()
-      .from("media_assets")
-      .update({ visibility: r.friendsVisit ? "friends" : "private" })
-      .eq("id", r.id)
-      // Only while it's still public: a page left open must not re-share a
-      // clip made private in the app since.
-      .eq("visibility", "public")
-      .select("id");
+    const { error } = await supabaseBrowser().rpc("set_beta_shared", {
+      p_media: r.id,
+      p_share: false,
+    });
 
+    working.current = false;
     setBusy(false);
-    if (error || !data?.length) {
+    if (error) {
       setNotice({ id: r.id, text: c.failed });
 
       return;
@@ -153,13 +162,15 @@ export function MyBeta({
    * files go with cleanup-orphans: once the rows are gone only I can read them.
    */
   const remove = async (r: Row) => {
-    if (busy) return;
+    if (working.current) return;
+    working.current = true;
     setBusy(true);
     setNotice(null);
     const { error } = await supabaseBrowser().rpc("delete_web_beta", {
       p_media_id: r.id,
     });
 
+    working.current = false;
     if (error) {
       setBusy(false);
       setNotice({
@@ -198,7 +209,7 @@ export function MyBeta({
       const { data } = await supabase
         .from("media_assets")
         .select(
-          "id, thumbnail_path, created_at, climb_logs(route_id, sessions(visibility), routes(grade_label, hold_color, wall, gyms(name, branch)))",
+          "id, thumbnail_path, created_at, beta_from, climb_logs(route_id, sessions(visibility), routes(grade_label, hold_color, wall, gyms(name, branch)))",
         )
         .eq("owner_id", auth.user.id)
         .eq("visibility", "public")
@@ -211,6 +222,7 @@ export function MyBeta({
         id: string;
         thumbnail_path: string | null;
         created_at: string;
+        beta_from: string | null;
         climb_logs: {
           route_id: string | null;
           sessions: { visibility: string } | null;
@@ -279,7 +291,11 @@ export function MyBeta({
           return {
             id: r.id,
             routeId: r.climb_logs!.route_id!,
-            friendsVisit: r.climb_logs!.sessions?.visibility === "friends",
+            friendsVisit:
+              r.beta_from === "friends" &&
+              // As the server: any visit that isn't private.
+              !!r.climb_logs!.sessions &&
+              r.climb_logs!.sessions.visibility !== "private",
             grade: route?.grade_label ?? null,
             color: route?.hold_color ?? null,
             wall: route?.wall ?? null,
