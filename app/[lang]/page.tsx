@@ -20,6 +20,7 @@ import {
 } from "@/components/home/sections";
 import { Discover } from "@/components/landing/discover";
 import { DownloadCta } from "@/components/landing/download-cta";
+import { PartnerGyms } from "@/components/landing/partner-gyms";
 import { LogScreen, ShareScreen } from "@/components/landing/screens";
 import { SiteFooter } from "@/components/landing/site-footer";
 import { SiteHeader } from "@/components/landing/site-header";
@@ -184,6 +185,17 @@ export default async function Home() {
                 <DemoLabel>{h.demo}</DemoLabel>
               </div>
             </div>
+          </Container>
+        </section>
+
+        {/* ------------------------------------------------ Partner gyms */}
+        <section className="border-y border-line bg-ink-2">
+          <Container className="py-7 sm:py-8">
+            <PartnerGyms
+              betaPaths={withRoutes}
+              href={href}
+              label={h.partnersLabel}
+            />
           </Container>
         </section>
 

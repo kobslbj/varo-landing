@@ -36,6 +36,7 @@ const zh = {
   ctaPrimary: "預約 30 分鐘營收健檢",
   ctaSecondary: "看 VARO 能幫你什麼",
   pilotNote: "首批合作岩館免費試用，我們幫你完成上架。",
+  partnersLabel: "已經合作的岩館",
   heroStats: [
     { n: "51", label: "間全台岩館在 VARO 地圖上" },
     { n: "3", label: "種營收：新客、回訪、加購" },
@@ -396,6 +397,7 @@ const en: typeof zh = {
   ctaPrimary: "Book a 30-minute revenue review",
   ctaSecondary: "See what VARO can do",
   pilotNote: "Free for our first partner gyms. We do the setup.",
+  partnersLabel: "Gyms already working with us",
   heroStats: [
     { n: "51", label: "Taiwan gyms on the VARO map" },
     { n: "3", label: "revenue levers: new, returning, spend" },
