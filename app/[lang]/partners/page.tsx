@@ -3,6 +3,7 @@ import type { Metadata } from "next";
 import clsx from "clsx";
 import Image from "next/image";
 
+import { PartnerGyms } from "@/components/landing/partner-gyms";
 import { NeedsBoard } from "@/components/partners/needs-board";
 import { RevenueCalc } from "@/components/partners/revenue-calc";
 import { SiteFooter } from "@/components/landing/site-footer";
@@ -47,7 +48,7 @@ const MOCK_ROUTES = [
  * The votes and the form are how we learn what to build next.
  */
 export default async function PartnersPage() {
-  const { locale, t, p } = await words();
+  const { locale, t, p, href } = await words();
   const email = siteConfig.partnerEmail;
 
   return (
@@ -110,6 +111,13 @@ export default async function PartnersPage() {
               </dl>
             </div>
             <WallMock copy={t.partners.how} />
+          </Container>
+        </section>
+
+        {/* ------------------------------------------- Who's already in */}
+        <section className="border-b border-line bg-ink-2">
+          <Container className="py-7 sm:py-8">
+            <PartnerGyms href={href} label={p.partnersLabel} />
           </Container>
         </section>
 

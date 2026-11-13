@@ -21,11 +21,26 @@ const FLOW: GymLogo = {
   name: "Flow",
 };
 
+const CAVE: GymLogo = {
+  src: "/gym-logos/cave-white.png",
+  width: 640,
+  height: 185,
+  name: "千手抱石 Cave Bouldering",
+};
+
 const LOGOS: Record<string, GymLogo> = {
+  "cave-bouldering": CAVE,
   "corner-huashan": CORNER,
   "corner-zhongshan": CORNER,
   "flow-neihu": FLOW,
 };
+
+/** Gyms we work with, one entry per brand, in the order they joined. `id` is the branch its logo links to. */
+export const partnerGyms: { id: string; logo: GymLogo }[] = [
+  { id: "corner-huashan", logo: CORNER },
+  { id: "flow-neihu", logo: FLOW },
+  { id: "cave-bouldering", logo: CAVE },
+];
 
 export function gymLogoFor(directoryId: string): GymLogo | null {
   return LOGOS[directoryId] ?? null;
